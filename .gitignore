@@ -26,3 +26,7 @@ yarn-error.log*
 .idea
 /.idea
 .idea/
+
+#DB passwords
+/public/php/dbCredentials.php
+public/php/dbCredentials.php
