@@ -9,7 +9,7 @@ const globalAppVars = {};
 export const GlobalAppContext = createContext();
 
 function App() {
-    fetch("./php/checkUserLogin.php", {
+    fetch("./php/login/checkUserLogin.php", {
         method: "GET",
     }).then((x) => {
         x.json().then((x) => {
