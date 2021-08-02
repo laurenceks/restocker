@@ -1,29 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const LoginInput = ({type, placeholder, id, label, inputClass}) => {
+const LoginCheckbox = ({placeholder, id, label, inputClass}) => {
     return (
-        <div className="form-floating">
-            <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`} id={id}
-                   placeholder={placeholder}/>
-            <label htmlFor={id}>{label}</label>
+        <div className="checkbox my-3 d-flex align-items-center">
+            <input type="checkbox" value="remember-me" id={id} className={`ms-2${inputClass && ` ${inputClass}`}`}/>
+            <label htmlFor={id} className={"ms-2"}>
+                {label}
+            </label>
         </div>
     );
 };
 
-LoginInput.propTypes = {
-    type: PropTypes.string,
-    placeholder: PropTypes.string,
+LoginCheckbox.propTypes = {
+    placeholder: PropTypes.bool,
     id: PropTypes.string,
     label: PropTypes.string,
     inputClass: PropTypes.string
 };
-LoginInput.defaultProps = {
-    type: "text",
-    placeholder: null,
-    id: "floatingLabel" + Math.random(),
-    label: "Input",
+LoginCheckbox.defaultProps = {
+    placeholder: false,
+    id: "inputCheckbox-" + Math.random(),
+    label: "Checkbox",
     inputClass: null
 };
 
-export default LoginInput;
+export default LoginCheckbox;

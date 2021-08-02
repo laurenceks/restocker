@@ -1,41 +1,33 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
 import LoginInput from "./loginComponents/LoginInput";
 import LoginCheckbox from "./loginComponents/LoginCheckbox";
 import {NavLink} from "react-router-dom";
 import LoginLink from "./loginComponents/LoginLink";
+import validateForm from "../../functions/formValidation.js"
 
-const Login = props => {
+const forgot = (e) => {
+    console.log("Forgot!")
+}
+const ForgotPassword = props => {
+    const forgotPasswordForm = useRef();
     return (
-        <form className={"loginForm align-middle"}>
-            <h1 className="h3 mb-3 fw-normal">Register</h1>
-            <div className="mb-3">
-                <LoginInput type={"text"} placeholder={"John"} label={"First name"} id={"inputRegisterFirstName"}
-                            inputClass={"rounded-0 rounded-top"}/>
-                <LoginInput type={"text"} placeholder={"Smith"} label={"Last name"} id={"inputRegisterLastName"}
-                            inputClass={"rounded-0 rounded-bottom stackedInput"}/>
-            </div>
-            <div className="mb-3">
+        <form className={"loginForm align-middle"} ref={forgotPasswordForm} onSubmit={(e) => {
+            validateForm(e, forgotPasswordForm, forgot)
+        }} noValidate>
+            <h1 className="h3 mb-3 fw-normal">Forgot password</h1>
+            <div className="mb-3 loginFormInputGroup">
                 <LoginInput type={"email"} placeholder={"you@example.com"} label={"Email address"}
                             id={"inputRegisterEmail"}
-                            inputClass={"rounded-0 rounded-top"}/>
-                <LoginInput type={"password"} placeholder={"Password"} label={"Password"} id={"inputRegisterPassword"}
-                            inputClass={"stackedInput rounded-0"}/>
-                <LoginInput type={"password"} placeholder={"Confirm password"} label={"Confirm password"}
-                            id={"inputRegisterConfirmPassword"}
-                            inputClass={"stackedInput rounded-0 rounded-bottom"}/>
+                            invalidFeedback={"Please enter the email address of your account"}/>
             </div>
-            <LoginInput type={"text"} placeholder={"Organisation"} label={"Organisation"}
-                        id={"inputRegisterOrganisation"}/>
-            <LoginLink to={"/registerOrganisation"} label={"Register a new organisation"}/>
-            <LoginCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}/>
-            <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>
-            <LoginLink to={"/login"} label={"Login with an existing account"}/>
+            <button className="w-100 btn btn-lg btn-primary" type="submit">Send password reset</button>
+            <LoginLink to={"/login"} label={"Login"}/>
             <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
         </form>
     );
 };
 
-Login.propTypes = {};
+ForgotPassword.propTypes = {};
 
-export default Login;
+export default ForgotPassword;

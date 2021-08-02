@@ -1,38 +1,80 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@700&display=swap');
+
+div#Root {
+    width: 100%;
+    height: 100%;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+div.App {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+form.loginForm {
+    width: 100%;
+    max-width: 350px;
+    margin-top: clamp(50px, 15%, 150px);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+div.loginFormInputGroup > div.form-floating:first-of-type:not(:only-of-type) > input,
+div.loginFormInputGroup > div.form-floating:last-of-type > input.is-invalid{
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
 }
 
-.App-link {
-  color: #61dafb;
+div.loginFormInputGroup > div.form-floating:not(:first-of-type):not(:last-of-type):not(:only-child) > input,
+div.loginFormInputGroup > div.form-floating:not(:last-of-type) > div.inputFeedbackTooltip {
+    border-radius: 0 !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+div.loginFormInputGroup > div.form-floating:not(:first-of-type) > input,
+div.loginFormInputGroup > div.form-floating:not(:first-of-type) > div.inputFeedbackTooltip {
+    margin-top: -1px;
+}
+
+div.loginFormInputGroup > div.form-floating:last-of-type:not(:only-child) > input,
+div.loginFormInputGroup > div.form-floating:last-of-type > div.inputFeedbackTooltip {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+input.loginInput {
+    transition: border-radius 200ms ease, border-width 200ms ease;
+}
+input.loginInput:focus {
+    position: relative;
+    z-index: 1;
+}
+
+input.loginInput.is-invalid:focus{
+    box-shadow: none;
+    border-width: 5px;
+}
+
+input.loginInput:focus ~ label {
+    z-index: 2;
+}
+
+input.loginInput.stackedInput, input.loginInput.stackedInput ~ div.inputFeedbackTooltip {
+    margin-top: -1px;
+}
+
+input[type="checkbox"], input[type="checkbox"] ~ label {
+    cursor: pointer;
+}
+
+div.inputFeedbackTooltip {
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    max-height: 0;
+    transition: max-height 400ms ease, padding 400ms ease;
+}
+
+input.is-invalid ~ div.inputFeedbackTooltip {
+    max-height: 100px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
