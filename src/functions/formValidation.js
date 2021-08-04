@@ -17,7 +17,6 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
     }
 
     formInputs.forEach(x => {
-        console.log(x.type, x.dataset.checkrequired)
         if (!x.value || x.value === "") {
             invalidInputs.push(x);
             formIsValid = false;
@@ -37,7 +36,6 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
                 updateOutput(x);
             }
         } else if (x.type === "checkbox" && x.dataset.checkrequired && !x.checked) {
-            console.log("Not checked, but needed!")
                 x.classList.add("is-invalid");
                 invalidInputs.push(x);
                 formIsValid = false;
