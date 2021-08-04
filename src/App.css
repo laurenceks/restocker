@@ -19,7 +19,7 @@ form.loginForm {
 }
 
 div.loginFormInputGroup > div.form-floating:first-of-type:not(:only-of-type) > input,
-div.loginFormInputGroup > div.form-floating:last-of-type > input.is-invalid{
+div.loginFormInputGroup > div.form-floating:last-of-type > input.is-invalid {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
@@ -30,12 +30,12 @@ div.loginFormInputGroup > div.form-floating:not(:last-of-type) > div.inputFeedba
 }
 
 div.loginFormInputGroup > div.form-floating:not(:first-of-type) > input,
-div.loginFormInputGroup > div.form-floating:not(:first-of-type) > div.inputFeedbackTooltip {
+div.loginFormInputGroup > div.form-floating:not(:first-of-type) > div.inputFeedbackTooltip{
     margin-top: -1px;
 }
 
 div.loginFormInputGroup > div.form-floating:last-of-type:not(:only-child) > input,
-div.loginFormInputGroup > div.form-floating:last-of-type > div.inputFeedbackTooltip {
+div.loginFormInputGroup > div.form-floating:last-of-type > div.inputFeedbackTooltip{
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
@@ -43,12 +43,13 @@ div.loginFormInputGroup > div.form-floating:last-of-type > div.inputFeedbackTool
 input.loginInput {
     transition: border-radius 200ms ease, border-width 200ms ease;
 }
+
 input.loginInput:focus {
     position: relative;
     z-index: 1;
 }
 
-input.loginInput.is-invalid:focus{
+input.loginInput.is-invalid:focus {
     box-shadow: none;
     border-width: 5px;
 }
@@ -67,14 +68,18 @@ input[type="checkbox"], input[type="checkbox"] ~ label {
 
 div.inputFeedbackTooltip {
     overflow: hidden;
+    margin-top: 0;
     padding-top: 0;
     padding-bottom: 0;
     max-height: 0;
-    transition: max-height 400ms ease, padding 400ms ease;
+    transition: max-height 400ms ease, padding 400ms ease, margin 400ms ease;
 }
 
 input.is-invalid ~ div.inputFeedbackTooltip {
     max-height: 100px;
     padding-top: 1rem;
     padding-bottom: 1rem;
+}
+input[type="checkbox"].is-invalid ~ div.inputFeedbackTooltip {
+    margin-top: 1rem;
 }
