@@ -2,12 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 
-const LoginInput = ({type, placeholder, id, label, inputClass, invalidFeedback, passwordId}) => {
+const LoginInput = ({type, placeholder, id, label, inputClass, invalidFeedback, passwordId, onChange}) => {
     return (
         <div className="form-floating">
             <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`} id={id}
                    placeholder={placeholder}
-                   data-passwordid={passwordId}/>
+                   data-passwordid={passwordId}
+                   onChange={(e) => {
+                       if (onChange) {
+                           onChange(id, e.target.value)
+                       }
+                   }}/>
             <label htmlFor={id}>{label}</label>
             {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
         </div>
@@ -29,7 +34,8 @@ LoginInput.defaultProps = {
     label: "Input",
     inputClass: null,
     invalidFeedback: null,
-    passwordId: null
+    passwordId: null,
+    onChange: null
 };
 
 export default LoginInput;
