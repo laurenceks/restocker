@@ -1,20 +1,19 @@
 import React, {createContext, useContext} from 'react';
 import PropTypes from 'prop-types';
 import {GlobalAppContext} from "../App";
-import {Route, Switch, useHistory} from "react-router-dom";
+import {Redirect, Route, Switch} from "react-router-dom";
 import Login from "./login/Login";
 import Register from "./login/Register";
 import ForgotPassword from "./login/ForgotPassword";
+import Verify from "./login/Verify";
 
 const NotAuthorised = props => {
-    //if no other path, render login
-    const history = useHistory();
-    if (history.location.pathname === "/") {
-        history.push("/login")
-    }
 
     return (
         <Switch>
+            <Route path="/verify">
+                <Verify/>
+            </Route>
             <Route path="/login">
                 <Login/>
             </Route>
@@ -26,6 +25,9 @@ const NotAuthorised = props => {
             </Route>
             <Route path="/forgotPassword">
                 <ForgotPassword/>
+            </Route>
+            <Route>
+                <Redirect to="/login"/>
             </Route>
         </Switch>
     );
