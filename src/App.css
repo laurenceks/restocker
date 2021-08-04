@@ -12,7 +12,7 @@ div.App {
     height: 100%;
 }
 
-form.loginForm {
+form.loginForm, div.loginForm {
     width: 100%;
     max-width: 350px;
     margin-top: clamp(50px, 15%, 150px);
