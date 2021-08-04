@@ -16,9 +16,9 @@ try {
     $output["success"] = true;
     $output["feedback"] = "User is logged in";
 } catch (\Delight\Auth\InvalidEmailException $e) {
-    $output["feedback"] = "Wrong email address";
+    $output["feedback"] = "Wrong or unknown email/password";
 } catch (\Delight\Auth\InvalidPasswordException $e) {
-    $output["feedback"] = "Wrong password";
+    $output["feedback"] = "Wrong or unknown email/password";
 } catch (\Delight\Auth\EmailNotVerifiedException $e) {
     $output["feedback"] = "Email not verified";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
