@@ -1,14 +1,14 @@
 const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/) => {
     e.preventDefault();
 
-    const ignoredInputTypes = ["text", "textarea", "password"]
+    const inputsNotCheckedByRegex = ["text", "textarea", "password", "checkbox"]
 
     let formIsValid = true;
     const invalidInputs = [];
     const validInputs = [];
     const values = {};
     const passIds = {};
-    const formInputs = formRef.current.querySelectorAll("input:not([type='checkbox']), textarea");
+    const formInputs = formRef.current.querySelectorAll("input, textarea");
 
     const updateOutput = (x) => {
         x.classList.remove("is-invalid");
@@ -17,11 +17,12 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
     }
 
     formInputs.forEach(x => {
+        console.log(x.type, x.dataset.checkrequired)
         if (!x.value || x.value === "") {
             invalidInputs.push(x);
             formIsValid = false;
             x.classList.add("is-invalid");
-        } else if (ignoredInputTypes.indexOf(x.type) === -1) {
+        } else if (inputsNotCheckedByRegex.indexOf(x.type) === -1) {
             let exp = /regex/;
             if (x.type === "email") {
                 exp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -35,6 +36,11 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
             } else {
                 updateOutput(x);
             }
+        } else if (x.type === "checkbox" && x.dataset.checkrequired && !x.checked) {
+            console.log("Not checked, but needed!")
+                x.classList.add("is-invalid");
+                invalidInputs.push(x);
+                formIsValid = false;
         } else {
             updateOutput(x);
         }
