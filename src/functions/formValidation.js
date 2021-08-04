@@ -5,8 +5,16 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
 
     let formIsValid = true;
     const invalidInputs = [];
+    const validInputs = [];
+    const values = {};
     const passIds = {};
     const formInputs = formRef.current.querySelectorAll("input:not([type='checkbox']), textarea");
+
+    const updateOutput = (x) => {
+        x.classList.remove("is-invalid");
+        validInputs.push(x);
+        values[x.id] = x.value
+    }
 
     formInputs.forEach(x => {
         if (!x.value || x.value === "") {
@@ -25,10 +33,10 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
                 invalidInputs.push(x);
                 formIsValid = false;
             } else {
-                x.classList.remove("is-invalid");
+                updateOutput(x);
             }
         } else {
-            x.classList.remove("is-invalid");
+            updateOutput(x);
         }
 
         if (x.dataset.passwordid) {
@@ -55,7 +63,13 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
     });
 
     if (formIsValid) {
-        callBack(formRef.current, invalidInputs);
+        callBack({
+            event: e,
+            form: formRef.current,
+            values: values,
+            validInputs: validInputs,
+            invalidInputs: invalidInputs
+        });
     }
 }
 
