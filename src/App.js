@@ -1,29 +1,30 @@
-import React, {createContext} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import {Route, Switch, Redirect, useLocation} from "react-router-dom";
+import {Route, Switch, Redirect, useLocation, useHistory} from "react-router-dom";
 import Main from "./components/Main";
 import NotAuthorised from "./components/NotAuthorised";
 
-const globalAppVars = {};
 export const GlobalAppContext = createContext();
 
 function App() {
-    fetch("./php/login/checkUserLogin.php", {
-        method: "GET",
-    }).then((x) => {
-        x.json().then((x) => {
-            globalAppVars.isLoggedIn = x;
-        })
-    });
+    const [globalAppContext, setGlobalAppContext] = useState({loginCheckedOnce: false, isLoggedIn: false});
+    const history = useHistory()
+    useEffect(() => {
+        fetch("./php/login/checkUserLogin.php", {
+            method: "GET",
+        }).then((x) => {
+            x.json().then((x) => {
+                setGlobalAppContext({...globalAppContext, loginCheckedOnce: true, isLoggedIn: x});
+            })
+        });
+    }, []);
 
     return (
-        <GlobalAppContext.Provider value={globalAppVars}>
+        <GlobalAppContext.Provider value={[globalAppContext, setGlobalAppContext]}>
             <div className={"App"}>
-                {globalAppVars.isLoggedIn ?
-                    <Main/>
-                    :
-                    <NotAuthorised/>}
+                {(globalAppContext.loginCheckedOnce && globalAppContext.isLoggedIn) ?
+                    < Main/> : globalAppContext.loginCheckedOnce && <NotAuthorised/>}
             </div>
         </GlobalAppContext.Provider>
     )
