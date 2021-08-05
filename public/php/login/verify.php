@@ -24,7 +24,7 @@ if (!$input || !$input['selector'] || !$input['token']) {
     } catch (\Delight\Auth\TokenExpiredException $e) {
         $output["feedback"] = "Token expired";
     } catch (\Delight\Auth\UserAlreadyExistsException $e) {
-        $output["feedback"] = "Email address already exists";
+        $output["feedback"] = "Email address already verified";
     } catch (\Delight\Auth\TooManyRequestsException $e) {
         $output["feedback"] = "Too many requests";
     }
