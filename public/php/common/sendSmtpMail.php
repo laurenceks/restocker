@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
-function composeSmtpMail($email, $name, $message, $messageAlt){
+function composeSmtpMail($email, $name, $subject, $message, $messageAlt){
     require '../common/smtpCredentials.php';
     $emailFrom = "noreply@restocker.com";
     $emailFromName = "Restocker user registration";
@@ -21,8 +21,8 @@ function composeSmtpMail($email, $name, $message, $messageAlt){
     $mail->Username = $smtpUsername;
     $mail->Password = $smtpPassword;
     $mail->setFrom($emailFrom, $emailFromName);
-    $mail->addAddress($email, $name);
-    $mail->Subject = 'Verify your Restocker account ';
+    $mail->addAddress($email, $name || "User");
+    $mail->Subject = $subject;
     $mail->msgHTML($message); //$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,
     $mail->AltBody = $messageAlt;
 
