@@ -16,26 +16,12 @@ try {
     $userId = $auth->register($input['inputRegisterEmail'], $input['inputRegisterPassword'], null, function ($selector, $token) use ($input, $output) {
 
         require_once "../common/sendSmtpMail.php";
+        require_once "../common/verificationEmail.php";
+        require_once "../common/sendVerificaitonEmail.php";
 
-        $serverString = ($_SERVER['SERVER_NAME'] == "localhost" ? "http://" : "https://") . $_SERVER['SERVER_NAME'] . ($_SERVER['SERVER_NAME'] == "localhost" ? ":3000/#" : "");
-        $url = $serverString . '/verify?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
-        $messageAlt = "Please copy and paste the below link into your browser to verify your Restocker account.\n\r\n\r" . $url;
-        $message = file_get_contents('verifyHTMLTemplate.html', __DIR__);
-        $message=  mb_convert_encoding($message, 'HTML-ENTITIES', "UTF-8");
-        $message = str_replace("%URL%", $url, $message);
-        $message = str_replace("%USER%", $input["inputRegisterFirstName"], $message);
-
-        $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], $message, $messageAlt);
-
-        if (!$mailToSend->send()) {
-            $output["mail"]->status = "fail";
-            $output["mail"]->success = false;
-            $output["mail"]->response = $mailToSend->ErrorInfo;
-        } else {
-            $output["mail"]->status = "success";
-            $output["mail"]->success = true;
-            $output["mail"]->response = "Message sent successfully";
-        }
+        $emailParams = composeVerificaitonEmail($input, $selector, $token);
+        $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], $emailParams["message"], $emailParams["messageAlt"]);
+        $output["mail"] = ($mailToSend);
     });
 
     $output["success"] = true;
