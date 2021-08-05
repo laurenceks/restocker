@@ -6,6 +6,7 @@ import Login from "./login/Login";
 import Register from "./login/Register";
 import ForgotPassword from "./login/ForgotPassword";
 import Verify from "./login/Verify";
+import ReVerify from "./login/ReVerify";
 
 const NotAuthorised = props => {
 
@@ -13,6 +14,9 @@ const NotAuthorised = props => {
         <Switch>
             <Route path="/verify">
                 <Verify/>
+            </Route>
+            <Route path="/reVerify">
+                <ReVerify/>
             </Route>
             <Route path="/login">
                 <Login/>
