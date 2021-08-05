@@ -7,7 +7,11 @@ function composeVerificaitonEmail($input, $selector, $token)
     $message = file_get_contents('verifyHTMLTemplate.html', __DIR__);
     $message = mb_convert_encoding($message, 'HTML-ENTITIES', "UTF-8");
     $message = str_replace("%URL%", $url, $message);
-    $message = str_replace("%USER%", $input["inputRegisterFirstName"], $message);
+    if (isset($input["inputRegisterFirstName"])) {
+        $message = str_replace("%USER%", $input["inputRegisterFirstName"], $message);
+    } else {
+        $message = str_replace(", %USER%", "", $message);
+    }
 
     return array("serverString" => $serverString, "url" => $url, "messageAlt" => $messageAlt, "message" => $message);
 }
