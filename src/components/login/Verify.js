@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import LoginLink from "./loginComponents/LoginLink";
+import {NavLink} from "react-router-dom";
 
 const Verify = () => {
     const [paramsState, setParamsState] = useState({validParams: false, validationInProgress: false});
-    useEffect( () => {
+    useEffect(() => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
         if (!params.get("selector") || !params.get("token")) {
             setParamsState({
@@ -17,7 +18,7 @@ const Verify = () => {
                 ...paramsState,
                 validParams: true,
                 validationInProgress: true,
-                text: "Verifying",
+                feedback: "Verifying",
                 feedbackClass: "bg-warning",
                 params: {
                     token: params.get("token"),
@@ -44,7 +45,9 @@ const Verify = () => {
             <h1 className="h3 mb-3 fw-normal">Verify your account</h1>
             <h2>Icon here</h2>
             <div className={`p-3 rounded text-light ${paramsState.feedbackClass}`}>{paramsState.feedback}</div>
-            <LoginLink to={"/login"} label="Login"/>
+            {(!paramsState.success && paramsState.feedback !== "Email address already verified") &&
+            <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
+            {paramsState.success && <LoginLink to={"/login"} label="Login"/>}
         </div>
     );
 };
