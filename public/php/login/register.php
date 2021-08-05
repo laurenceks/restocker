@@ -20,7 +20,7 @@ try {
         require_once "../common/sendVerificaitonEmail.php";
 
         $emailParams = composeVerificaitonEmail($input, $selector, $token);
-        $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], $emailParams["message"], $emailParams["messageAlt"]);
+        $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendVerificationEmail($mailToSend);
     });
 
