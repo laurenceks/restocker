@@ -21,7 +21,7 @@ try {
 
         $emailParams = composeVerificaitonEmail($input, $selector, $token);
         $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], $emailParams["message"], $emailParams["messageAlt"]);
-        $output["mail"] = ($mailToSend);
+        $output["mail"] = sendVerificationEmail($mailToSend);
     });
 
     $output["success"] = true;
