@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import LoginLink from "./loginComponents/LoginLink";
 import {NavLink} from "react-router-dom";
+import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
 
 const Verify = () => {
     const [paramsState, setParamsState] = useState({validParams: false, validationInProgress: false});
@@ -10,8 +11,9 @@ const Verify = () => {
             setParamsState({
                 ...paramsState,
                 validParams: false,
-                text: "Invalid parameters passed",
-                feedbackClass: "bg-danger"
+                feedback: "Invalid parameters passed",
+                feedbackClass: "bg-danger",
+                icon: <IoCloseCircleOutline className="largeIcon text-danger"/>
             })
         } else {
             setParamsState({
@@ -20,6 +22,7 @@ const Verify = () => {
                 validationInProgress: true,
                 feedback: "Verifying",
                 feedbackClass: "bg-warning",
+                icon: <IoSyncCircleOutline className="largeIcon text-warning spinner"/>,
                 params: {
                     token: params.get("token"),
                     selector: params.get("selector")
@@ -33,7 +36,12 @@ const Verify = () => {
                 })
             }).then((x) => {
                 x.json().then((x) => {
-                    setParamsState({...paramsState, ...x, feedbackClass: x.success ? "bg-success" : "bg-danger"})
+                    setParamsState({
+                            ...paramsState, ...x, feedbackClass: x.success ? "bg-success" : "bg-danger",
+                            icon: x.success ? <IoCheckmarkCircleOutline className="largeIcon text-success"/> :
+                                <IoCloseCircleOutline className="largeIcon text-danger"/>
+                        }
+                    )
                 })
             });
         }
@@ -43,7 +51,9 @@ const Verify = () => {
     return (
         <div className="loginForm">
             <h1 className="h3 mb-3 fw-normal">Verify your account</h1>
-            <h2>Icon here</h2>
+            <div className="my-3 w-100 d-flex justify-content-center">
+                {paramsState.icon}
+            </div>
             <div className={`p-3 rounded text-light ${paramsState.feedbackClass}`}>{paramsState.feedback}</div>
             {(!paramsState.success && paramsState.feedback !== "Email address already verified") &&
             <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
