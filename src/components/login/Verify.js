@@ -2,8 +2,11 @@ import React, {useEffect, useState} from 'react';
 import LoginLink from "./loginComponents/LoginLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
+import NotAuthorised from "../NotAuthorised";
+import PropTypes from "prop-types";
+import LoginFeedback from "./LoginFeedback";
 
-const Verify = () => {
+const Verify = ({type}) => {
     const [paramsState, setParamsState] = useState({validParams: false, validationInProgress: false});
     useEffect(() => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
@@ -28,7 +31,7 @@ const Verify = () => {
                     selector: params.get("selector")
                 }
             })
-            fetch("./php/login/verify.php", {
+            fetch(type === "verify" ? "./php/login/verify/verify.php" : "./php/login/verify/verifyPasswordReset.php", {
                 method: "POST",
                 body: JSON.stringify({
                     token: params.get("token"),
@@ -54,12 +57,22 @@ const Verify = () => {
             <div className="my-3 w-100 d-flex justify-content-center">
                 {paramsState.icon}
             </div>
-            <div className={`p-3 rounded text-light ${paramsState.feedbackClass}`}>{paramsState.feedback}</div>
-            {(!paramsState.success && paramsState.feedback !== "Email address already verified") &&
+            {(type === "password" && paramsState.success) ? "Password reset component" :
+                <LoginFeedback marginTop={false} feedbackClass={paramsState.feedbackClass}
+                               feedbackText={paramsState.feedback}/>}
+            {(!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify") &&
             <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
             {paramsState.success && <LoginLink to={"/login"} label="Login"/>}
         </div>
     );
 };
+
+Verify.propTypes = {
+    type: PropTypes.string
+};
+
+Verify.defaultProps = {
+    type: "verify"
+}
 
 export default Verify;
