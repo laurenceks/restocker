@@ -15,14 +15,13 @@ try {
     $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input) {
         require_once "../common/sendSmtpMail.php";
         require_once "../common/verificationEmail.php";
-        require_once "../common/sendVerificaitonEmail.php";
 
         //TODO: get name from DB;
         $name = null;
 
-        $emailParams = composeVerificaitonEmail($input, $selector, $token);
+        $emailParams = composeVerificationEmail($input, $selector, $token);
         $mailToSend = composeSmtpMail($input['inputReVerifyEmail'], $name, "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
-        $output["mail"] = sendVerificationEmail($mailToSend);
+        $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;
     $output["feedback"] = "Verification email re-sent, please check " . $input["inputReVerifyEmail"] . " for a verification link";

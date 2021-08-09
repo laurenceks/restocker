@@ -1,5 +1,5 @@
 <?php
-function composeVerificaitonEmail($input, $selector, $token)
+function composeForgotEmail($input, $selector, $token)
 {
     $serverString = ($_SERVER['SERVER_NAME'] == "localhost" ? "http://" : "https://") . $_SERVER['SERVER_NAME'] . ($_SERVER['SERVER_NAME'] == "localhost" ? ":3000/#" : "");
     $url = $serverString . '/verify?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
