@@ -22,7 +22,7 @@ try {
 } catch (\Delight\Auth\EmailNotVerifiedException $e) {
     $output["feedback"] = "Email not verified";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
-    $output["feedback"] = "Too many requests";
+    $output["feedback"] = "Too many requests - please try again later";
 }
 
 echo json_encode($output);

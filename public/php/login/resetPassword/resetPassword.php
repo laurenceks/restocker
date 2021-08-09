@@ -15,7 +15,7 @@ if (!$input || !$input['selector'] || !$input['token']) {
     $output["feedback"] = "Parameters did not reach server";
 } else {
     try {
-        $auth->confirmEmail($input['selector'], $input['token']);
+        $auth->resetPassword($input['selector'], $input['token'], $input['inputResetPassword']);
 
         $output["feedback"] = 'Email address has been verified';
         $output["success"] = true;
@@ -23,8 +23,10 @@ if (!$input || !$input['selector'] || !$input['token']) {
         $output["feedback"] = "Invalid token";
     } catch (\Delight\Auth\TokenExpiredException $e) {
         $output["feedback"] = "Token expired";
-    } catch (\Delight\Auth\UserAlreadyExistsException $e) {
-        $output["feedback"] = "Email address already verified";
+    } catch (\Delight\Auth\InvalidPasswordException  $e) {
+        $output["feedback"] = "Invalid password";
+    } catch (\Delight\Auth\ResetDisabledException  $e) {
+        $output["feedback"] = "Password resets are not allowed for this account - please contact your organisation's administrator";
     } catch (\Delight\Auth\TooManyRequestsException $e) {
         $output["feedback"] = "Too many requests - please try again later";
     }

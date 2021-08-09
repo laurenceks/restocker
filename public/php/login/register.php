@@ -33,7 +33,7 @@ try {
 } catch (\Delight\Auth\UserAlreadyExistsException $e) {
     $output["feedback"] = "User already exists";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
-    $output["feedback"] = "Too many requests";
+    $output["feedback"] = "Too many requests - please try again later";
 }
 
 echo json_encode($output);
