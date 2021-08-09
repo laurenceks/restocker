@@ -8,8 +8,8 @@ function composeSmtpMail($email, $name, $subject, $message, $messageAlt)
 {
     require 'smtpCredentials.php';
     $emailFrom = "noreply@restocker.com";
-    $emailFromName = "Restocker user registration";
-    $headers = "From: Restocker user registration <noreply@restocker.com>";
+    $emailFromName = "Restocker";
+    $headers = "From: Restocker <noreply@restocker.com>";
     $headers .= "Reply-To: noreply@restocker.com";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
