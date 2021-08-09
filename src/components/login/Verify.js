@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import LoginLink from "./loginComponents/LoginLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
-import NotAuthorised from "../NotAuthorised";
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
+import ResetPassword from "./ResetPassword";
 
 const Verify = ({type}) => {
     const [paramsState, setParamsState] = useState({validParams: false, validationInProgress: false});
@@ -57,7 +57,8 @@ const Verify = ({type}) => {
             <div className="my-3 w-100 d-flex justify-content-center">
                 {paramsState.icon}
             </div>
-            {(type === "password" && paramsState.success) ? "Password reset component" :
+            {(type === "password" && paramsState.success) ?
+                <ResetPassword token={paramsState.token} selector={paramsState.selector}/> :
                 <LoginFeedback marginTop={false} feedbackClass={paramsState.feedbackClass}
                                feedbackText={paramsState.feedback}/>}
             {(!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify") &&
@@ -65,13 +66,17 @@ const Verify = ({type}) => {
             {paramsState.success && <LoginLink to={"/login"} label="Login"/>}
         </div>
     );
-};
+}
+;
 
-Verify.propTypes = {
+Verify.propTypes =
+{
     type: PropTypes.string
-};
+}
+;
 
-Verify.defaultProps = {
+Verify.defaultProps =
+{
     type: "verify"
 }
 
