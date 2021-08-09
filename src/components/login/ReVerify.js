@@ -10,7 +10,7 @@ const ReVerify = props => {
     const [reVerifyFeedback, setReverifyFeedback] = useState(null);
     const reVerifyForm = useRef();
     const reVerify = formOutput => {
-        fetch("./php/login/resendVerify.php", {
+        fetch("./php/login/verify/resendVerify.php", {
             method: "POST",
             body: JSON.stringify(formOutput.values)
         }).then((x) => {
