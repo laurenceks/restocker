@@ -1,9 +1,9 @@
 <?php
-require '../vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 use Delight\Auth\Auth;
 
-require_once "../common/db.php";
+require_once "../../common/db.php";
 
 $auth = new Auth($db);
 
@@ -12,9 +12,9 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass());
 
 try {
-    $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input) {
-        require_once "../common/sendSmtpMail.php";
-        require_once "../common/verificationEmail.php";
+    $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input, $output) {
+        require_once "../../common/sendSmtpMail.php";
+        require_once "verificationEmail.php";
 
         //TODO: get name from DB;
         $name = null;
