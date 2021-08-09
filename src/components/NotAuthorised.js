@@ -30,6 +30,9 @@ const NotAuthorised = props => {
             <Route path="/forgotPassword">
                 <ForgotPassword/>
             </Route>
+            <Route path="/resetPassword">
+                <Verify type={"password"}/>
+            </Route>
             <Route>
                 <Redirect to="/login"/>
             </Route>
