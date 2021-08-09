@@ -13,7 +13,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass());
 
 try {
-    $userId = $auth->register($input['inputRegisterEmail'], $input['inputRegisterPassword'], null, function ($selector, $token) use ($input, $output) {
+    $userId = $auth->register($input['inputRegisterEmail'], $input['inputRegisterPassword'], null, function ($selector, $token) use ($input, &$output) {
 
         require_once "../common/sendSmtpMail.php";
         require_once "verify/verificationEmail.php";
