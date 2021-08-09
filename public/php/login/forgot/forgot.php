@@ -1,9 +1,9 @@
 <?php
-require '../vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 use Delight\Auth\Auth;
 
-require_once "../common/db.php";
+require_once "../../common/db.php";
 
 $auth = new Auth($db);
 
@@ -12,19 +12,19 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass());
 
 try {
-    $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input) {
-        require_once "../common/sendSmtpMail.php";
-        require_once "../common/verificationEmail.php";
+    $auth->forgotPassword($input["inputForgotEmail"], function ($selector, $token) use ($input, &$output) {
+        require_once "../../common/sendSmtpMail.php";
+        require_once "forgotEmail.php";
 
         //TODO: get name from DB;
         $name = null;
 
-        $emailParams = composeVerificationEmail($input, $selector, $token);
-        $mailToSend = composeSmtpMail($input['inputReVerifyEmail'], $name, "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
+        $emailParams = composeForgotEmail($input, $selector, $token);
+        $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, "Recover your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;
-    $output["feedback"] = "Verification email re-sent, please check " . $input["inputReVerifyEmail"] . " for a verification link";
+    $output["feedback"] = "Password reset email sent, please check " . $input["inputForgotEmail"] . " for a recovery link";
 } catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
     $output["feedback"] = "Unknown email address, please register";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
