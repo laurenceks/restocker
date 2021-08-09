@@ -16,12 +16,11 @@ try {
     $userId = $auth->register($input['inputRegisterEmail'], $input['inputRegisterPassword'], null, function ($selector, $token) use ($input, $output) {
 
         require_once "../common/sendSmtpMail.php";
-        require_once "../common/verificationEmail.php";
-        require_once "../common/sendVerificaitonEmail.php";
+        require_once "verify/verificationEmail.php";
 
-        $emailParams = composeVerificaitonEmail($input, $selector, $token);
+        $emailParams = composeVerificationEmail($input, $selector, $token);
         $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
-        $output["mail"] = sendVerificationEmail($mailToSend);
+        $output["mail"] = sendSmtpMail($mailToSend);
     });
 
     $output["success"] = true;
