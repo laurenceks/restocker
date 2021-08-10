@@ -7,7 +7,7 @@ import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 
 
-const Login = props => {
+const Register = props => {
         const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
         const registerForm = useRef();
 
@@ -77,8 +77,8 @@ const Login = props => {
     }
 ;
 
-Login.propTypes =
+Register.propTypes =
     {}
 ;
 
-export default Login;
+export default Register;
