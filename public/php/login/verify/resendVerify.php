@@ -9,7 +9,7 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass());
+$output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass(), "keepFormActive" => false);
 
 try {
     $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input, $output) {
@@ -26,7 +26,8 @@ try {
     $output["success"] = true;
     $output["feedback"] = "Verification email re-sent, please check " . $input["inputReVerifyEmail"] . " for a verification link";
 } catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
-    $output["feedback"] = "Unknown email address, please register";
+    $output["feedback"] = "No verification found to re-send - are your already verified or did you forget to register?";
+    $output["keepFormActive"] = true;
 } catch (\Delight\Auth\TooManyRequestsException $e) {
     $output["feedback"] = "There have been too many requests, please try again later";
 }

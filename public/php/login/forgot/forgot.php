@@ -9,7 +9,7 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass());
+$output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass(), "keepFormActive" => false);
 
 try {
     $auth->forgotPassword($input["inputForgotEmail"], function ($selector, $token) use ($input, &$output) {
@@ -25,8 +25,11 @@ try {
     });
     $output["success"] = true;
     $output["feedback"] = "Password reset email sent, please check " . $input["inputForgotEmail"] . " for a recovery link";
-} catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
-    $output["feedback"] = "Unknown email address, please register";
+} catch (\Delight\Auth\InvalidEmailException $e) {
+    $output["feedback"] = "Unknown email address, please check for typos or register";
+    $output["keepFormActive"] = true;
+} catch (\Delight\Auth\EmailNotVerifiedException $e) {
+    $output["feedback"] = "Email not verified";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
     $output["feedback"] = "There have been too many requests, please try again later";
 }
