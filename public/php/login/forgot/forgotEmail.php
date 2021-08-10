@@ -1,5 +1,5 @@
 <?php
-function composeForgotEmail($input, $selector, $token)
+function composeForgotEmail($selector, $token, $name = null)
 {
     $serverString = ($_SERVER['SERVER_NAME'] == "localhost" ? "http://" : "https://") . $_SERVER['SERVER_NAME'] . ($_SERVER['SERVER_NAME'] == "localhost" ? ":3000/#" : "");
     $url = $serverString . '/resetPassword?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
@@ -7,8 +7,8 @@ function composeForgotEmail($input, $selector, $token)
     $message = file_get_contents('forgotHTMLTemplate.html', __DIR__);
     $message = mb_convert_encoding($message, 'HTML-ENTITIES', "UTF-8");
     $message = str_replace("%URL%", $url, $message);
-    if (isset($input["firstName"])) {
-        $message = str_replace("%USER%", $input["inputRegisterFirstName"], $message);
+    if ($name) {
+        $message = str_replace("%USER%", $name, $message);
     } else {
         $message = str_replace(", %USER%", "", $message);
     }

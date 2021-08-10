@@ -17,7 +17,7 @@ try {
         require_once "../common/sendSmtpMail.php";
         require_once "verify/verificationEmail.php";
 
-        $emailParams = composeVerificationEmail($input, $selector, $token);
+        $emailParams = composeVerificationEmail($selector, $token, $input["inputRegisterFirstName"]);
         $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });

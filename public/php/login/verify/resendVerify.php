@@ -12,14 +12,13 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred", "mail" => new stdClass(), "keepFormActive" => false);
 
 try {
-    $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input, $output) {
+    $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input, &$output) {
         require_once "../../common/sendSmtpMail.php";
         require_once "verificationEmail.php";
-
-        //TODO: get name from DB;
-        $name = null;
-
-        $emailParams = composeVerificationEmail($input, $selector, $token);
+        require "../../common/getUserInfo.php";
+        require "../../common/getUserIdFromSelector.php";
+        $name = getUserInfo(getUserIdFromSelector($selector, "users_confirmations"))->firstName;
+        $emailParams = composeVerificationEmail($selector, $token, $name);
         $mailToSend = composeSmtpMail($input['inputReVerifyEmail'], $name, "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });

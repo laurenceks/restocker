@@ -15,12 +15,12 @@ try {
     $auth->forgotPassword($input["inputForgotEmail"], function ($selector, $token) use ($input, &$output) {
         require_once "../../common/sendSmtpMail.php";
         require_once "forgotEmail.php";
+        require "../../common/getUserInfo.php";
+        require "../../common/getUserIdFromSelector.php";
 
-        //TODO: get name from DB;
-        $name = null;
-
-        $emailParams = composeForgotEmail($input, $selector, $token);
-        $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, "Recover your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);
+        $name = getUserInfo(getUserIdFromSelector($selector, "users_resets"))->firstName;
+        $emailParams = composeForgotEmail($selector, $token, $name);
+        $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;

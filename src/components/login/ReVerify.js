@@ -15,7 +15,8 @@ const ReVerify = props => {
             method: "POST",
             body: JSON.stringify(formOutput.values)
         }).then((x) => {
-            x.json().then((x) => {
+            x.text().then((x) => {
+                console.log(x);
                 setReverifyFeedback({
                     ...reVerifyFeedback,
                     ...x,
