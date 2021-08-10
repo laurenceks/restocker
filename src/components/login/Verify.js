@@ -12,8 +12,7 @@ const Verify = ({type}) => {
             validParams: false, validationInProgress: false, params: {
                 token: params.get("token"),
                 selector: params.get("selector")
-            },
-            update: 0,
+            }
         });
         useEffect(() => {
             if (!params.get("selector") || !params.get("token")) {
@@ -22,8 +21,7 @@ const Verify = ({type}) => {
                     validParams: false,
                     feedback: "Invalid parameters passed",
                     feedbackClass: "bg-danger",
-                    icon: <IoCloseCircleOutline className="largeIcon text-danger"/>,
-                    update: 1,
+                    icon: <IoCloseCircleOutline className="largeIcon text-danger"/>
                 })
             } else {
                 setParamsState({
@@ -32,7 +30,6 @@ const Verify = ({type}) => {
                     validationInProgress: true,
                     feedback: "Verifying",
                     feedbackClass: "bg-warning",
-                    update: 1,
                     icon: <IoSyncCircleOutline className="largeIcon text-warning spinner"/>
                 });
                 fetch(type === "verify" ? "./php/login/verify/verify.php" : "./php/login/resetPassword/verifyPasswordReset.php", {
@@ -46,7 +43,6 @@ const Verify = ({type}) => {
                         setParamsState({
                                 ...paramsState,
                                 ...x,
-                                update: 2,
                                 feedbackClass: x.success ? "bg-success" : "bg-danger",
                                 icon: x.success ? <IoCheckmarkCircleOutline className="largeIcon text-success"/> :
                                     <IoCloseCircleOutline className="largeIcon text-danger"/>

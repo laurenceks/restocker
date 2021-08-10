@@ -14,6 +14,7 @@ const Login = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
     const history = useHistory();
     const login = formOutput => {
+        setLoginFeedback({inProgress: true})
         fetch("./php/login/login.php", {
             method: "POST",
             body: JSON.stringify(formOutput.values)
@@ -23,7 +24,7 @@ const Login = props => {
                     setGlobalAppContext({...globalAppContext, isLoggedIn: true, loginCheckedOnce: true});
                     history.push("/");
                 } else {
-                    setLoginFeedback({text: x.feedback, class: "bg-danger"})
+                    setLoginFeedback({feedback: x.feedback, feedbackClass: "bg-danger", inProgress: false})
                 }
             })
         });
@@ -33,23 +34,24 @@ const Login = props => {
         <form className={"loginForm align-middle"} ref={loginForm} onSubmit={(e) => {
             validateForm(e, loginForm, login)
         }} noValidate>
-            <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-            <div className="loginFormInputGroup mb-3">
-                <LoginInput type={"email"} placeholder={"you@example.com"}
-                            label={"Email address"}
-                            id={"inputLoginEmail"}
-                            invalidFeedback={"Please enter your email address"}/>
-                <LoginInput type={"password"} placeholder={"Password"} label={"Password"}
-                            id={"inputLoginPassword"}
-                            invalidFeedback={"Please enter your password"}/>
-            </div>
-            <LoginCheckbox id={"inputLoginRemember"} label={"Remember me"}/>
-            <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-            {loginFeedback &&
-            <LoginFeedback feedbackText={loginFeedback.text} feedbackClass={loginFeedback.class}/>}
-            <LoginLink to={"/forgotPassword"} label={"Forgot password"}/>
-            <LoginLink to={"/register"} label={"Register"}/>
-            <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
+            <fieldset disabled={loginFeedback?.inProgress && "disabled"}>
+                <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
+                <div className="loginFormInputGroup mb-3">
+                    <LoginInput type={"email"} placeholder={"you@example.com"}
+                                label={"Email address"}
+                                id={"inputLoginEmail"}
+                                invalidFeedback={"Please enter your email address"}/>
+                    <LoginInput type={"password"} placeholder={"Password"} label={"Password"}
+                                id={"inputLoginPassword"}
+                                invalidFeedback={"Please enter your password"}/>
+                </div>
+                <LoginCheckbox id={"inputLoginRemember"} label={"Remember me"}/>
+                <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+                {(loginFeedback && !loginFeedback.inProgress) &&
+                <LoginFeedback feedbackText={loginFeedback.feedback} feedbackClass={loginFeedback.feedbackClass}/>}
+                <LoginLink to={"/forgotPassword"} label={"Forgot password"}/>
+                <LoginLink to={"/register"} label={"Register"}/>
+                <p className="my-3 text-muted">&copy; Laurence Summers 2021</p></fieldset>
         </form>
     );
 };

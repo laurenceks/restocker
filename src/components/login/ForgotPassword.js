@@ -7,21 +7,20 @@ import {useHistory} from "react-router-dom";
 
 
 const Forgot = props => {
-    const [forgotFeedback, setForgotFeedback] = useState(null);
+    const [forgotFeedback, setForgotFeedback] = useState({inProgress: false});
     const forgotForm = useRef();
     const forgot = formOutput => {
+        setForgotFeedback({...forgotFeedback, inProgress: true})
         fetch("./php/login/forgot/forgot.php", {
             method: "POST",
             body: JSON.stringify(formOutput.values)
         }).then((x) => {
-            x.text().then((x) => {
-                console.log(x);
-                x = JSON.parse(x);
+            x.json().then((x) => {
                 setForgotFeedback({
                     ...forgotFeedback,
-                    success: x.success,
-                    text: x.feedback,
-                    class: x.success ? "bg-success" : "bg-danger",
+                    ...x,
+                    inProgress: false,
+                    feedbackClass: x.success ? "bg-success" : "bg-danger",
                 })
             })
         });
@@ -31,21 +30,24 @@ const Forgot = props => {
         <form className={"loginForm align-middle"} ref={forgotForm} onSubmit={(e) => {
             validateForm(e, forgotForm, forgot)
         }} noValidate>
-            <h1 className="h3 mb-3 fw-normal">Forgot password</h1>
-            {!forgotFeedback && <>
-                <div className="reVerifyFormInputGroup mb-3">
-                    <LoginInput type={"email"} placeholder={"you@example.com"}
-                                label={"Email address"}
-                                id={"inputForgotEmail"}
-                                invalidFeedback={"Please enter your email address"}/>
-                </div>
-                <button className="w-100 btn btn-lg btn-primary" type="submit">Send password reset</button>
-            </>
-            }
-            {forgotFeedback &&
-            <LoginFeedback feedbackText={forgotFeedback.text} feedbackClass={forgotFeedback.class}/>}
-            <LoginLink to={"/login"} label={"Back to login"}/>
-            <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
+            <fieldset disabled={forgotFeedback.inProgress && "disabled"}><h1 className="h3 mb-3 fw-normal">Forgot
+                password</h1>
+                {(!forgotFeedback.feedback || forgotFeedback.keepFormActive) && <>
+                    <div className="loginFormInputGroup mb-3">
+                        <LoginInput type={"email"} placeholder={"you@example.com"}
+                                    label={"Email address"}
+                                    id={"inputForgotEmail"}
+                                    invalidFeedback={"Please enter your email address"}/>
+                    </div>
+                    <button className="w-100 btn btn-lg btn-primary" type="submit">Send password reset</button>
+                </>
+                }
+                {(forgotFeedback?.feedback && !forgotFeedback?.inProgress) &&
+                <LoginFeedback feedbackText={forgotFeedback.feedback} feedbackClass={forgotFeedback.feedbackClass}/>}
+                {forgotFeedback?.feedback === "Email not verified" &&
+                <LoginLink to={"/reVerify"} label={"Re-send verification email"}/>}
+                <LoginLink to={"/login"} label={"Back to login"}/>
+                <p className="my-3 text-muted">&copy; Laurence Summers 2021</p></fieldset>
         </form>
     );
 };
