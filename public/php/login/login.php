@@ -12,7 +12,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
-    $auth->login($input['inputLoginEmail'], $input['inputLoginPassword']);
+    $rememberDuration = $input["inputLoginRemember"] == "true" ? 60 * 60 * 48 : null;
+    $auth->login($input['inputLoginEmail'], $input['inputLoginPassword'], $rememberDuration);
     require_once "../common/getUserInfo.php";
     try {
         $output["user"] = getUserInfo($auth->getUserId());
