@@ -1,5 +1,5 @@
 <?php
-require_once "dbCredentials.php";
+require "dbCredentials.php";
 try {
     $db = new PDO("mysql:host=$dbServer;dbname=$dbName", $dbUser, $dbPass);
     // set the PDO error mode to exception
