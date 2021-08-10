@@ -21,7 +21,7 @@ const Login = props => {
         }).then((x) => {
             x.json().then((x) => {
                 if (x.success) {
-                    setGlobalAppContext({...globalAppContext, isLoggedIn: true, loginCheckedOnce: true});
+                    setGlobalAppContext({...globalAppContext, user: x.user, isLoggedIn: true, loginCheckedOnce: true});
                     history.push("/");
                 } else {
                     setLoginFeedback({feedback: x.feedback, feedbackClass: "bg-danger", inProgress: false})

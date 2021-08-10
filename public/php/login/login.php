@@ -13,8 +13,15 @@ $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
     $auth->login($input['inputLoginEmail'], $input['inputLoginPassword']);
-    $output["success"] = true;
-    $output["feedback"] = "User is logged in";
+    require_once "../common/getUserInfo.php";
+    try {
+        $output["user"] = getUserInfo($auth->getUserId());
+        $output["success"] = true;
+        $output["feedback"] = "User is logged in";
+    } catch (exception $e) {
+        $output["feedback"] = $e->getMessage();
+    }
+
 } catch (\Delight\Auth\InvalidEmailException $e) {
     $output["feedback"] = "Wrong or unknown email/password";
 } catch (\Delight\Auth\InvalidPasswordException $e) {
