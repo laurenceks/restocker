@@ -15,7 +15,12 @@ function App() {
             method: "GET",
         }).then((x) => {
             x.json().then((x) => {
-                setGlobalAppContext({...globalAppContext, loginCheckedOnce: true, isLoggedIn: x});
+                setGlobalAppContext({
+                    ...globalAppContext,
+                    loginCheckedOnce: true,
+                    isLoggedIn: x.isLoggedIn,
+                    user: x.user
+                });
             })
         });
     }, []);
