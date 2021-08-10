@@ -6,13 +6,13 @@ const Main = props => {
     return (
         <div>
             <h1>Restocker</h1>
-            <p>You are logged in.</p>
+            <p>You are logged in as {globalAppContext.user.firstName}</p>
             <p>The main app will go here</p>
             <p><a onClick={(e) => {
                 fetch("./php/login/tempLogout.php", {
                     method: "GET",
                 }).then((x) => {
-                    setGlobalAppContext({...globalAppContext, isLoggedIn: false});
+                    setGlobalAppContext({...globalAppContext, isLoggedIn: false, user:null});
                 });
             }}>Logout</a></p>
         </div>
