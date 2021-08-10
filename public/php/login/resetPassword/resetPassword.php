@@ -15,9 +15,11 @@ if (!$input || !$input['selector'] || !$input['token']) {
     $output["feedback"] = "Parameters did not reach server";
 } else {
     try {
-        $auth->resetPassword($input['selector'], $input['token'], $input['inputResetPassword']);
+        $auth->resetPassword($input['selector'], $input['token'], $input['inputPasswordResetPassword']);
 
-        $output["feedback"] = 'Email address has been verified';
+        //TODO send email notifying of password reset
+
+        $output["feedback"] = 'Password has been reset';
         $output["success"] = true;
     } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
         $output["feedback"] = "Invalid token";

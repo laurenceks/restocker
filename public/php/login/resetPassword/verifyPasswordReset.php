@@ -17,7 +17,7 @@ if (!$input || !$input['selector'] || !$input['token']) {
     try {
         $auth->canResetPasswordOrThrow($input['selector'], $input['token']);
 
-        $output["feedback"] = 'Email address has been verified';
+        $output["feedback"] = 'Password reset request has been verified';
         $output["success"] = true;
     } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
         $output["feedback"] = "Invalid token";
