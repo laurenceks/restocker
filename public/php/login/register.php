@@ -26,8 +26,7 @@ try {
 
         //TODO check if new organisation and if so assign manager/admin role
 
-        // prepare sql and bind parameters
-        $addUserInfo = $db->prepare("INSERT INTO users_info (user_id, first_name, last_name, role, organisation) VALUES (:userId, :firstname, :lastname, null, :organisation)");
+        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, organisation) VALUES (:userId, :firstname, :lastname, null, :organisation)");
         $addUserInfo->bindParam(':userId', $userId);
         $addUserInfo->bindParam(':firstname', $input['inputRegisterFirstName']);
         $addUserInfo->bindParam(':lastname', $input['inputRegisterLastName']);
