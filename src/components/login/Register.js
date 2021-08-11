@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import LoginInput from "./loginComponents/LoginInput";
 import LoginCheckbox from "./loginComponents/LoginCheckbox";
@@ -9,7 +9,18 @@ import LoginFeedback from "./LoginFeedback";
 
 const Register = props => {
         const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
+        const [organisations, setOrganisations] = useState(null);
         const registerForm = useRef();
+
+        useEffect(() => {
+            fetch("./php/common/getUserOrganisations.php", {
+                method: "GET",
+            }).then((x) => {
+                x.json().then((x) => {
+                    setOrganisations(x);
+                })
+            })
+        }, []);
 
         const register = formOutput => {
             setRegisterFeedback({...registerFeedback, inProgress: true})
@@ -31,14 +42,15 @@ const Register = props => {
             <form className={"loginForm align-middle"} ref={registerForm} onSubmit={(e) => {
                 validateForm(e, registerForm, register)
             }} noValidate>
-                <fieldset disabled={registerFeedback.inProgress && "disabled"}>
+                <fieldset disabled={(registerFeedback.inProgress || !organisations) && "disabled"}>
                     {!registerFeedback.success &&
                     <><h1 className="h3 mb-3 fw-normal">Register</h1>
                         <div className="mb-3 loginFormInputGroup">
                             <LoginInput type={"text"} placeholder={"John"} label={"First name"}
                                         id={"inputRegisterFirstName"}
                                         inputClass={""} invalidFeedback={"Please enter your first name"}/>
-                            <LoginInput type={"text"} placeholder={"Smith"} label={"Last name"} id={"inputRegisterLastName"}
+                            <LoginInput type={"text"} placeholder={"Smith"} label={"Last name"}
+                                        id={"inputRegisterLastName"}
                                         inputClass={""} invalidFeedback={"Please enter your last name"}/>
                         </div>
                         <div className="mb-3 loginFormInputGroup">
@@ -56,11 +68,13 @@ const Register = props => {
                         </div>
                         <div className="mb-3 loginFormInputGroup">
                             <LoginInput type={"text"} placeholder={"Organisation"} label={"Organisation"}
-                                        id={"inputRegisterOrganisation"} invalidFeedback={"Please select your organisation"}
+                                        id={"inputRegisterOrganisation"}
+                                        invalidFeedback={"Please select your organisation"}
                             />
                         </div>
                         <LoginCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
-                                       invalidFeedback={"You must agree to the terms and conditions"} checkRequired={true}/>
+                                       invalidFeedback={"You must agree to the terms and conditions"}
+                                       checkRequired={true}/>
                         <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>
                     </>
                     }
