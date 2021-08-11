@@ -59,7 +59,6 @@ const Register = props => {
                                         id={"inputRegisterOrganisation"} invalidFeedback={"Please select your organisation"}
                             />
                         </div>
-                        <LoginLink to={"/registerOrganisation"} label={"Register a new organisation"}/>
                         <LoginCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
                                        invalidFeedback={"You must agree to the terms and conditions"} checkRequired={true}/>
                         <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>

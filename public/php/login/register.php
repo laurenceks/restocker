@@ -24,19 +24,39 @@ try {
     try {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        //TODO check if new organisation and if so assign manager/admin role
+        $role = "user";
+        $organisationId = isset($input["organisationId"]) ? $input["organisationId"] : null;
 
-        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, organisation) VALUES (:userId, :firstname, :lastname, null, :organisation)");
+        if (!$organisationId) {
+            //no organisation - create it and set user to admin
+            $role = "admin";
+            $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation) VALUES (:organisation)");
+            $addOrganisation->bindParam(":organisation", $input["inputRegisterOrganisation"]);
+            $addOrganisation->execute();
+            $organisationId = $db->lastInsertId();
+            $output["organisationId"] = $organisationId;
+        }
+
+
+        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, organisationId) VALUES (:userId, :firstname, :lastname, :role, :organisationId)");
         $addUserInfo->bindParam(':userId', $userId);
         $addUserInfo->bindParam(':firstname', $input['inputRegisterFirstName']);
         $addUserInfo->bindParam(':lastname', $input['inputRegisterLastName']);
-        //$addUserInfo->bindParam(':role', null);
-        $addUserInfo->bindParam(':organisation', $input['inputRegisterOrganisation']);
+        $addUserInfo->bindParam(':role', $role);
+        $addUserInfo->bindParam(':organisationId', $organisationId);
 
         $addUserInfo->execute();
 
     } catch (PDOException $e) {
         echo $output["feedback"] = $e->getMessage();
+    }
+
+    if (!isset($input["organisationId"])) {
+        try {
+            $auth->admin()->addRoleForUserById($userId, \Delight\Auth\Role::ADMIN);
+        } catch (\Delight\Auth\UnknownIdException $e) {
+            $output["feedback"] = "Unable to assign user admin role, please contact the support team";
+        }
     }
 
     $output["success"] = true;
