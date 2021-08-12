@@ -5,11 +5,15 @@ import LoginCheckbox from "./loginComponents/LoginCheckbox";
 import LoginLink from "./loginComponents/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
+import InputFeedbackTooltip from "./loginComponents/InputFeedbackTooltip";
+import {Typeahead} from "react-bootstrap-typeahead";
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 
 const Register = props => {
         const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
-        const [organisations, setOrganisations] = useState(null);
+        const [organisations, setOrganisations] = useState([]);
+        const [organisation, setOrganisation] = useState(null);
         const registerForm = useRef();
 
         useEffect(() => {
@@ -26,7 +30,7 @@ const Register = props => {
             setRegisterFeedback({...registerFeedback, inProgress: true})
             fetch("./php/login/register.php", {
                 method: "POST",
-                body: JSON.stringify(formOutput.values)
+                body: JSON.stringify(...formOutput.values, organisation)
             }).then((x) => {
                 x.json().then((x) => {
                     setRegisterFeedback({
@@ -67,9 +71,22 @@ const Register = props => {
                                         inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                         </div>
                         <div className="mb-3 loginFormInputGroup">
-                            <LoginInput type={"text"} placeholder={"Organisation"} label={"Organisation"}
-                                        id={"inputRegisterOrganisation"}
-                                        invalidFeedback={"Please select your organisation"}
+                            <LoginInput type={"typeahead"}
+                                        id={"inputRegisterOrganisationWrap"}
+                                        typeaheadProps={{
+                                            inputProps:
+                                                {
+                                                    id: "inputRegisterOrganisation",
+                                                    useFloatingLabel: true,
+                                                    floatingLabelText: "Organisation",
+                                                    className: "loginInput"
+                                                },
+                                            allowNew: true,
+                                            onChange: (e) => setOrganisation(e),
+                                            labelKey: "organisation",
+                                            options: organisations
+                                        }}
+                                        invalidFeedback={"Please select your organisation, or add a new one"}
                             />
                         </div>
                         <LoginCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
@@ -78,9 +95,11 @@ const Register = props => {
                         <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>
                     </>
                     }
-                    {(registerFeedback.feedback && !registerFeedback.inProgress) &&
-                    <LoginFeedback feedbackText={registerFeedback.feedback}
-                                   feedbackClass={registerFeedback.feedbackClass}/>}
+                    {
+                        (registerFeedback.feedback && !registerFeedback.inProgress) &&
+                        <LoginFeedback feedbackText={registerFeedback.feedback}
+                                       feedbackClass={registerFeedback.feedbackClass}/>
+                    }
                     <LoginLink to={"/login"}
                                label={registerFeedback.success ? "Back to login" : "Login with an existing account"}/>
                     <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
