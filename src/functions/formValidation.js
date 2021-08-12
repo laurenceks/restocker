@@ -1,4 +1,4 @@
-const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/) => {
+const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequirements = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/) => {
     e.preventDefault();
 
     const inputsNotCheckedByRegex = ["text", "textarea", "password", "checkbox"]
@@ -52,6 +52,12 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
                 passIds[x.dataset.passwordid] = []
             }
             passIds[x.dataset.passwordid].push(x);
+        }
+        if (x.dataset.statename && typeaheadStates[x.dataset.statename]) {
+            if (typeaheadStates[x.dataset.statename].length === 0) {
+                x.classList.add("is-invalid");
+                x.closest("div.loginInputWrap")?.classList.add("is-invalid");
+            }
         }
     });
 
