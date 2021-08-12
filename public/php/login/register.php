@@ -25,18 +25,18 @@ try {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $role = "user";
-        $organisationId = isset($input["organisationId"]) ? $input["organisationId"] : null;
-
-        if (!$organisationId) {
-            //no organisation - create it and set user to admin
+        if (isset($input["organisation"]["customOption"])) {
+            //new organisation - add to DB list and mark user as an admin
             $role = "admin";
             $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation) VALUES (:organisation)");
             $addOrganisation->bindParam(":organisation", $input["inputRegisterOrganisation"]);
             $addOrganisation->execute();
             $organisationId = $db->lastInsertId();
             $output["organisationId"] = $organisationId;
+        } else {
+            //organisation exists - just use passed organisationId
+            $organisationId = $input["organisation"]["id"];
         }
-
 
         $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, organisationId) VALUES (:userId, :firstname, :lastname, :role, :organisationId)");
         $addUserInfo->bindParam(':userId', $userId);
