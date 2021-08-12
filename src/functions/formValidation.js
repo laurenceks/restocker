@@ -8,10 +8,11 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
     const validInputs = [];
     const values = {};
     const passIds = {};
-    const formInputs = formRef.current.querySelectorAll("input, textarea");
+    const formInputs = formRef.current.querySelectorAll("input:not(.rbt-input-hint), textarea");
 
     const updateOutput = (x) => {
         x.classList.remove("is-invalid");
+        x.closest("div.loginInputWrap")?.classList.remove("is-invalid");
         validInputs.push(x);
         values[x.id] = x.value
     }
@@ -21,6 +22,7 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
             invalidInputs.push(x);
             formIsValid = false;
             x.classList.add("is-invalid");
+            x.closest("div.loginInputWrap")?.classList.add("is-invalid");
         } else if (inputsNotCheckedByRegex.indexOf(x.type) === -1) {
             let exp = /regex/;
             if (x.type === "email") {
@@ -30,15 +32,17 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
             }
             if (!exp.test(x.value)) {
                 x.classList.add("is-invalid");
+                x.closest("div.loginInputWrap")?.classList.add("is-invalid");
                 invalidInputs.push(x);
                 formIsValid = false;
             } else {
                 updateOutput(x);
             }
         } else if (x.type === "checkbox" && x.dataset.checkrequired === "true" && !x.checked) {
-                x.classList.add("is-invalid");
-                invalidInputs.push(x);
-                formIsValid = false;
+            x.classList.add("is-invalid");
+            x.closest("div.loginInputWrap")?.classList.add("is-invalid");
+            invalidInputs.push(x);
+            formIsValid = false;
         } else {
             updateOutput(x);
         }
@@ -58,10 +62,12 @@ const validateForm = (e, formRef, callBack, passwordRequirements = /^(?=.*\d)(?=
         })) {
             formIsValid = false;
             passIds[x].slice(-1)[0].classList.add("is-invalid");
+            passIds[x].slice(-1)[0].closest("div.loginInputWrap")?.classList.add("is-invalid");
             invalidInputs.push(passIds[x].slice(-1)[0]);
         } else if (!passwordRequirements.test(passIds[x][0].value)) {
             formIsValid = false;
             passIds[x][0].classList.add("is-invalid");
+            passIds[x][0].closest("div.loginInputWrap")?.classList.add("is-invalid");
             invalidInputs.push(passIds[x][0]);
         }
     });

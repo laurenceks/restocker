@@ -1,19 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
+import {Typeahead} from "react-bootstrap-typeahead";
 
-const LoginInput = ({type, placeholder, id, label, inputClass, invalidFeedback, passwordId, onChange}) => {
+const LoginInput = ({
+                        type,
+                        placeholder,
+                        id,
+                        label,
+                        inputClass,
+                        invalidFeedback,
+                        passwordId,
+                        onChange,
+                        typeaheadProps
+                    }) => {
     return (
-        <div className="form-floating">
-            <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`} id={id}
-                   placeholder={placeholder}
-                   data-passwordid={passwordId}
-                   onChange={(e) => {
-                       if (onChange) {
-                           onChange(id, e.target.value)
-                       }
-                   }}/>
-            <label htmlFor={id}>{label}</label>
+        <div className={"loginInputWrap"}>
+            {type === "typeahead" ?
+                <Typeahead
+                    id={id}
+                    {...typeaheadProps}
+                />
+                :
+                <div className="form-floating">
+                    <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`}
+                           id={id}
+                           placeholder={placeholder}
+                           data-passwordid={passwordId}
+                           onChange={(e) => {
+                               if (onChange) {
+                                   onChange(id, e.target.value)
+                               }
+                           }}/>
+                    <label htmlFor={id}>{label}</label>
+                </div>
+            }
             {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
         </div>
     );

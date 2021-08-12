@@ -18,24 +18,24 @@ form.loginForm, div.loginForm {
     margin-top: clamp(50px, 15%, 150px);
 }
 
-div.loginFormInputGroup > div.form-floating:first-of-type:not(:only-of-type) > input,
-div.loginFormInputGroup > div.form-floating:last-of-type > input.is-invalid {
+div.loginFormInputGroup > div.loginInputWrap:first-of-type:not(:only-of-type) input,
+div.loginFormInputGroup > div.loginInputWrap:last-of-type input.is-invalid {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
 
-div.loginFormInputGroup > div.form-floating:not(:first-of-type):not(:last-of-type):not(:only-child) > input,
-div.loginFormInputGroup > div.form-floating:not(:last-of-type) > div.inputFeedbackTooltip {
+div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type):not(:last-of-type):not(:only-child) input,
+div.loginFormInputGroup > div.loginInputWrap:not(:last-of-type) div.inputFeedbackTooltip {
     border-radius: 0 !important;
 }
 
-div.loginFormInputGroup > div.form-floating:not(:first-of-type) > input,
-div.loginFormInputGroup > div.form-floating:not(:first-of-type) > div.inputFeedbackTooltip{
+div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) input,
+div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) div.inputFeedbackTooltip{
     margin-top: -1px;
 }
 
-div.loginFormInputGroup > div.form-floating:last-of-type:not(:only-child) > input,
-div.loginFormInputGroup > div.form-floating:last-of-type > div.inputFeedbackTooltip{
+div.loginFormInputGroup > div.loginInputWrap:last-of-type:not(:only-child) input,
+div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip{
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
@@ -75,7 +75,8 @@ div.inputFeedbackTooltip {
     transition: max-height 400ms ease, padding 400ms ease, margin 400ms ease;
 }
 
-input.is-invalid ~ div.inputFeedbackTooltip {
+input.is-invalid ~ div.inputFeedbackTooltip,
+div.loginInputWrap.is-invalid > div.inputFeedbackTooltip {
     max-height: 100px;
     padding-top: 1rem;
     padding-bottom: 1rem;
