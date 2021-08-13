@@ -16,7 +16,7 @@ try {
     $auth->login($input['inputLoginEmail'], $input['inputLoginPassword'], $rememberDuration);
     require_once "../common/getUserInfo.php";
     try {
-        $output["user"] = getUserInfo($auth->getUserId());
+        $output["user"] = getUserInfo($auth->getUserId(), $auth);
         $output["success"] = true;
         $output["feedback"] = "User is logged in";
     } catch (exception $e) {
