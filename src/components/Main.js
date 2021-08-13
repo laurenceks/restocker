@@ -6,7 +6,7 @@ const Main = props => {
     return (
         <div>
             <h1>Restocker</h1>
-            <p>You are logged in as {globalAppContext.user.firstName}</p>
+            <p>You are logged in as {globalAppContext.user.firstName}, part of {globalAppContext.user.organisation}</p>
             <p>The main app will go here</p>
             <p><a onClick={(e) => {
                 fetch("./php/login/tempLogout.php", {
