@@ -17,8 +17,13 @@ try {
     require_once "../common/getUserInfo.php";
     try {
         $output["user"] = getUserInfo($auth->getUserId(), $auth);
-        $output["success"] = true;
-        $output["feedback"] = "User is logged in";
+        if ($output["user"]->approved === "1") {
+            $output["success"] = true;
+            $output["feedback"] = "User is logged in";
+        } else {
+            $output["success"] = false;
+            $output["feedback"] = "Your account is pending approval by an organisation admin";
+        }
     } catch (exception $e) {
         $output["feedback"] = $e->getMessage();
     }

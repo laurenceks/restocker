@@ -25,9 +25,11 @@ try {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $role = "user";
+        $approved = 0;
         if (isset($input["organisation"]["customOption"])) {
             //new organisation - add to DB list and mark user as an admin
             $role = "admin";
+            $approved = 1;
             $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation) VALUES (:organisation)");
             $addOrganisation->bindParam(":organisation", $input["inputRegisterOrganisation"]);
             $addOrganisation->execute();
@@ -38,15 +40,15 @@ try {
             $organisationId = $input["organisation"]["id"];
         }
 
-        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, organisationId) VALUES (:userId, :firstname, :lastname, :role, :organisationId)");
+        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, approved, organisationId) VALUES (:userId, :firstname, :lastname, :role, :approved, :organisationId)");
         $addUserInfo->bindParam(':userId', $userId);
         $addUserInfo->bindParam(':firstname', $input['inputRegisterFirstName']);
         $addUserInfo->bindParam(':lastname', $input['inputRegisterLastName']);
         $addUserInfo->bindParam(':role', $role);
+        $addUserInfo->bindParam(':approved', $approved);
         $addUserInfo->bindParam(':organisationId', $organisationId);
 
         $addUserInfo->execute();
-
     } catch (PDOException $e) {
         echo $output["feedback"] = $e->getMessage();
     }
