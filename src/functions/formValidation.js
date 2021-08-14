@@ -10,19 +10,24 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
     const passIds = {};
     const formInputs = formRef.current.querySelectorAll("input:not(.rbt-input-hint), textarea");
 
-    const updateOutput = (x) => {
-        x.classList.remove("is-invalid");
-        x.closest("div.loginInputWrap")?.classList.remove("is-invalid");
-        validInputs.push(x);
-        values[x.id] = x.value
+    const updateOutput = (element, invalidate = true) => {
+            console.log(element.id, formIsValid, invalidate);
+        if (invalidate) {
+            element.classList.add("is-invalid");
+            element.closest("div.loginInputWrap")?.classList.add("is-invalid");
+            invalidInputs.push(element);
+            formIsValid = false;
+        } else {
+            element.classList.remove("is-invalid");
+            element.closest("div.loginInputWrap")?.classList.remove("is-invalid");
+            validInputs.push(element);
+            values[element.id] = element.value
+        }
     }
 
     formInputs.forEach(x => {
         if (!x.value || x.value === "") {
-            invalidInputs.push(x);
-            formIsValid = false;
-            x.classList.add("is-invalid");
-            x.closest("div.loginInputWrap")?.classList.add("is-invalid");
+            updateOutput(x);
         } else if (inputsNotCheckedByRegex.indexOf(x.type) === -1) {
             let exp = /regex/;
             if (x.type === "email") {
@@ -30,21 +35,11 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
             } else if (x.type === "tel") {
                 exp = /^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?\#(\d{4}|\d{3}))?$|\+[0-9]{1,3} ?[0-9 ]{1,15}/;
             }
-            if (!exp.test(x.value)) {
-                x.classList.add("is-invalid");
-                x.closest("div.loginInputWrap")?.classList.add("is-invalid");
-                invalidInputs.push(x);
-                formIsValid = false;
-            } else {
-                updateOutput(x);
-            }
+            updateOutput(x, !exp.test(x.value))
         } else if (x.type === "checkbox" && x.dataset.checkrequired === "true" && !x.checked) {
-            x.classList.add("is-invalid");
-            x.closest("div.loginInputWrap")?.classList.add("is-invalid");
-            invalidInputs.push(x);
-            formIsValid = false;
+            updateOutput(x)
         } else {
-            updateOutput(x);
+            updateOutput(x,false);
         }
 
         if (x.dataset.passwordid) {
@@ -55,8 +50,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
         }
         if (x.dataset.statename && typeaheadStates[x.dataset.statename]) {
             if (typeaheadStates[x.dataset.statename].length === 0) {
-                x.classList.add("is-invalid");
-                x.closest("div.loginInputWrap")?.classList.add("is-invalid");
+                updateOutput(x);
             }
         }
     });
@@ -66,17 +60,13 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
         if (!passIds[x].every(elm => {
             return elm.value === passIds[x][0].value;
         })) {
-            formIsValid = false;
-            passIds[x].slice(-1)[0].classList.add("is-invalid");
-            passIds[x].slice(-1)[0].closest("div.loginInputWrap")?.classList.add("is-invalid");
-            invalidInputs.push(passIds[x].slice(-1)[0]);
+            updateOutput(passIds[x].slice(-1)[0]);
         } else if (!passwordRequirements.test(passIds[x][0].value)) {
-            formIsValid = false;
-            passIds[x][0].classList.add("is-invalid");
-            passIds[x][0].closest("div.loginInputWrap")?.classList.add("is-invalid");
-            invalidInputs.push(passIds[x][0]);
+            updateOutput(passIds[x][0]);
         }
     });
+
+    console.log(formIsValid, invalidInputs, validInputs, values)
 
     if (formIsValid) {
         callBack({
