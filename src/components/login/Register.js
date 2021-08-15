@@ -6,12 +6,12 @@ import LoginLink from "./loginComponents/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-
+import "@gouch/to-title-case";
 
 const Register = props => {
     const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
     const [organisations, setOrganisations] = useState([]);
-    const [organisation, setOrganisation] = useState([]);
+    const [organisation, setOrganisation] = useState({});
     const registerForm = useRef();
 
     useEffect(() => {
@@ -81,10 +81,14 @@ const Register = props => {
                                                 "data-statename": "organisation"
                                             },
                                         allowNew: true,
-                                        onChange: (e) => {
-                                            setOrganisation(e[0] || [])
+                                        onChange: (e) => setOrganisation(e[0] ? {
+                                            ...e[0],
+                                            organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
+                                        } : {}),
+                                        onInputChange: (x, e) => {
+                                            //TODO set input value to toTitleCase?
+                                            setOrganisation([]);
                                         },
-                                        onInputChange: () => setOrganisation([]),
                                         labelKey: "organisation",
                                         options: organisations
                                     }}
