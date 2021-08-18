@@ -90,6 +90,22 @@ input[type="checkbox"].is-invalid ~ div.inputFeedbackTooltip {
     height: 100px;
 }
 
+.smallIcon{
+    height: 2rem;
+    width: 2rem;
+}
+
+ul.dropdown-menu.userDropdown {
+    right: 0;
+    left: unset;
+}
+
+.dropdown-toggle.dropdown-icon:after{
+    vertical-align: unset;
+    position: relative;
+    top: 0.1rem;
+}
+
 .spinner {
     animation: spin infinite 3s linear;
 }
