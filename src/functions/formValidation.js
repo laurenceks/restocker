@@ -11,7 +11,6 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
     const formInputs = formRef.current.querySelectorAll("input:not(.rbt-input-hint), textarea");
 
     const updateOutput = (element, invalidate = true) => {
-            console.log(element.id, formIsValid, invalidate);
         if (invalidate) {
             element.classList.add("is-invalid");
             element.closest("div.loginInputWrap")?.classList.add("is-invalid");
