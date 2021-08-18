@@ -23,12 +23,12 @@ try {
     });
     try {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $role = "user";
+        $admin = 0;
+        $superAdmin = 0;
         $approved = 0;
         if (isset($input["organisation"]["customOption"])) {
             //new organisation - add to DB list and mark user as an admin
-            $role = "admin";
+            $superAdmin = 1;
             $approved = 1;
             $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation) VALUES (:organisation)");
             $addOrganisation->bindParam(":organisation", $input["inputRegisterOrganisation"]);
@@ -40,11 +40,12 @@ try {
             $organisationId = $input["organisation"]["id"];
         }
 
-        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, role, approved, organisationId) VALUES (:userId, :firstname, :lastname, :role, :approved, :organisationId)");
+        $addUserInfo = $db->prepare("INSERT INTO users_info (userId, firstName, lastName, admin, superAdmin, approved, organisationId) VALUES (:userId, :firstname, :lastname, :admin, :superAdmin, :approved, :organisationId)");
         $addUserInfo->bindParam(':userId', $userId);
         $addUserInfo->bindParam(':firstname', $input['inputRegisterFirstName']);
         $addUserInfo->bindParam(':lastname', $input['inputRegisterLastName']);
-        $addUserInfo->bindParam(':role', $role);
+        $addUserInfo->bindParam(':admin', $admin);
+        $addUserInfo->bindParam(':superAdmin', $superAdmin);
         $addUserInfo->bindParam(':approved', $approved);
         $addUserInfo->bindParam(':organisationId', $organisationId);
 
@@ -55,9 +56,9 @@ try {
 
     if (!isset($input["organisationId"])) {
         try {
-            $auth->admin()->addRoleForUserById($userId, \Delight\Auth\Role::ADMIN);
+            $auth->admin()->addRoleForUserById($userId, \Delight\Auth\Role::SUPER_ADMIN);
         } catch (\Delight\Auth\UnknownIdException $e) {
-            $output["feedback"] = "Unable to assign user admin role, please contact the support team";
+            $output["feedback"] = "Unable to assign user super admin role, please contact the support team";
         }
     }
 
