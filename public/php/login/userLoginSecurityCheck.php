@@ -1,0 +1,13 @@
+<?php
+require '../vendor/autoload.php';
+
+use Delight\Auth\Auth;
+
+require_once "../common/db.php";
+$auth = new Auth($db);
+
+if (!$auth->isLoggedIn()) {
+    //user not logged in - proceed no further
+    echo json_encode(array("failLoginCheck" => true, "errorMessage" => "User not logged in"));
+    die("Not logged in");
+}
