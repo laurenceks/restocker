@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@700&display=swap');
 
+/*Main*/
+
 div#Root {
     width: 100%;
     height: 100%;
@@ -11,6 +13,12 @@ div.App {
     width: 100%;
     height: 100%;
 }
+
+div.main{
+    max-width: 960px;
+}
+
+/*Login forms*/
 
 form.loginForm, div.loginForm {
     width: 100%;
@@ -30,12 +38,12 @@ div.loginFormInputGroup > div.loginInputWrap:not(:last-of-type) div.inputFeedbac
 }
 
 div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) input,
-div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) div.inputFeedbackTooltip{
+div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) div.inputFeedbackTooltip {
     margin-top: -1px;
 }
 
 div.loginFormInputGroup > div.loginInputWrap:last-of-type:not(:only-child) input,
-div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip{
+div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
@@ -81,29 +89,26 @@ div.loginInputWrap.is-invalid > div.inputFeedbackTooltip {
     padding-top: 1rem;
     padding-bottom: 1rem;
 }
+
 input[type="checkbox"].is-invalid ~ div.inputFeedbackTooltip {
     margin-top: 1rem;
 }
 
-.largeIcon{
-    width: 100px;
-    height: 100px;
+/*Icons*/
+
+.largeIcon {
+    width: 5rem;
+    height: 5rem;
 }
 
-.smallIcon{
-    height: 2rem;
+.smallIcon {
     width: 2rem;
+    height: 2rem;
 }
 
-ul.dropdown-menu.userDropdown {
-    right: 0;
-    left: unset;
-}
-
-.dropdown-toggle.dropdown-icon:after{
-    vertical-align: unset;
-    position: relative;
-    top: 0.1rem;
+span.tableIcon > svg {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .spinner {
@@ -117,4 +122,17 @@ ul.dropdown-menu.userDropdown {
     to {
         transform: rotate(360deg);
     }
+}
+
+/*Nav*/
+
+ul.dropdown-menu.userDropdown {
+    right: 0;
+    left: unset;
+}
+
+.dropdown-toggle.dropdown-icon:after {
+    vertical-align: unset;
+    position: relative;
+    top: 0.1rem;
 }
