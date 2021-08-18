@@ -28,7 +28,7 @@ const TopNav = ({user}) => {
                         <li className="nav-item">
                             <NavLink to={"/stock"} className="nav-link">Restock</NavLink>
                         </li>
-                        {user?.roles?.indexOf("ADMIN") > -1 || user?.roles?.indexOf("SUPER_ADMIN") > -1 &&
+                        {user?.admin || user.superAdmin &&
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
