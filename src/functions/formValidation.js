@@ -38,7 +38,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
         } else if (x.type === "checkbox" && x.dataset.checkrequired === "true" && !x.checked) {
             updateOutput(x)
         } else {
-            updateOutput(x,false);
+            updateOutput(x, false);
         }
 
         if (x.dataset.passwordid) {
@@ -64,8 +64,6 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
             updateOutput(passIds[x][0]);
         }
     });
-
-    console.log(formIsValid, invalidInputs, validInputs, values)
 
     if (formIsValid) {
         callBack({
