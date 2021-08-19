@@ -25,35 +25,6 @@ const renderCellContent = (x) => {
 }
 
 const UsersTable = ({title, headers, rows}) => {
-    const testHeaders = ["Name", "Email", "Level", {text: "Verified", className: "text-center"}, "", {
-        text: "Approved",
-        className: "text-center"
-    }, ""]
-    const testData = [["Laurence Summers", "lks@live.co.uk", "SuperAdmin", {
-        type: "tick",
-        value: true,
-        className: "text-center"
-    }, {
-        type: "button",
-        buttonClass: "btn-primary btn-sm",
-        text: "Verify",
-        id: 1,
-        handler: (e) => {
-            console.log(`Verify user id ${e.target.dataset.id}!`)
-        }
-    }, {
-        type: "tick",
-        value: false,
-        className: "text-center"
-    }, {
-        type: "button",
-        buttonClass: "btn-primary btn-sm",
-        text: "Make admin",
-        id: 1,
-        handler: (e) => {
-            console.log(`Make user id ${e.target.dataset.id} an admin!`)
-        }
-    }]]
     return (
         <>{(rows && rows.length > 0) ?
             <table className="table table-responsive">
