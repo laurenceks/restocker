@@ -8,6 +8,6 @@ $auth = new Auth($db);
 
 if (!$auth->isLoggedIn()) {
     //user not logged in - proceed no further
-    echo json_encode(array("failLoginCheck" => true, "errorMessage" => "User not logged in"));
-    die("Not logged in");
+    echo json_encode(array("failedLoginCheck" => true, "errorMessage" => "User not logged in"));
+    die();
 }
