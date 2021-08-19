@@ -17,7 +17,7 @@ try {
     require_once "../common/getUserInfo.php";
     try {
         $output["user"] = getUserInfo($auth->getUserId(), $auth);
-        if ($output["user"]->approved === "1") {
+        if ($output["user"]->approved) {
             $output["success"] = true;
             $output["feedback"] = "User is logged in";
         } else {
