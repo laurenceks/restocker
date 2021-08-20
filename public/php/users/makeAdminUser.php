@@ -14,10 +14,11 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
-    $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
-    $makeUserSuperAdmin = $db->prepare("UPDATE users_info SET superAdmin = 1 WHERE userId = :userId");
-    $makeUserSuperAdmin->bindParam(':userId', $input["userId"]);
-    $output = simpleExecuteOutput($makeUserSuperAdmin->execute());
+    $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::ADMIN);
+    $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
+    $makeAdminUser = $db->prepare("UPDATE users_info SET admin = 0, superAdmin = 0 WHERE userId = :userId");
+    $makeAdminUser->bindParam(':userId', $input["userId"]);
+    $output = simpleExecuteOutput($makeAdminUser->execute());
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output["feedback"] = "Unknown user ID passed";
 }
