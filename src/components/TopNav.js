@@ -6,7 +6,7 @@ import {IoPersonCircle} from "react-icons/all";
 
 const TopNav = ({user}) => {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark vw-100">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
                 <NavLink to={"/"} className="navbar-brand">Restocker logo</NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -28,7 +28,7 @@ const TopNav = ({user}) => {
                         <li className="nav-item">
                             <NavLink to={"/stock"} className="nav-link">Restock</NavLink>
                         </li>
-                        {user?.admin || user.superAdmin &&
+                        {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
