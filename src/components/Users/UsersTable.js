@@ -4,12 +4,14 @@ import {IoCheckmarkCircleSharp, IoCloseCircle, IoCloseCircleSharp} from "react-i
 
 const renderCellContent = (x) => {
     if (!x.type) {
-        return x;
+        return typeof x === "string" ? x : "";
     } else {
         switch (x.type) {
             case "tick":
+            case "tick-invert":
                 return (
-                    <span className={`tableIcon ${x.value ? "text-success" : "text-danger"}`}>
+                    <span
+                        className={`tableIcon ${x.type !== "tick-invert" ? (x.value ? "text-success" : "text-danger") : !x.value ? "text-success" : "text-danger"}`}>
                         {x.value ? <IoCheckmarkCircleSharp/> :
                             <IoCloseCircleSharp/>}
                     </span>
@@ -26,9 +28,9 @@ const renderCellContent = (x) => {
 
 const UsersTable = ({title, headers, rows}) => {
     return (
-        <>{(rows && rows.length > 0) ?
-            <table className="table table-responsive">
-                <tbody>
+        <div className="table-responsive">{(rows && rows.length > 0) ?
+            <table className="table table-hover">
+                <thead>
                 <tr>
                     {headers.map((x, i) => {
                         return (<th key={`${title}-th-${i}`}
@@ -37,6 +39,8 @@ const UsersTable = ({title, headers, rows}) => {
                             {x.text || x}</th>);
                     })}
                 </tr>
+                </thead>
+                <tbody>
                 {rows.map((x, i) => {
                     return (
                         <tr key={`${title}-tr-${i}`}>
@@ -50,7 +54,7 @@ const UsersTable = ({title, headers, rows}) => {
                 </tbody>
             </table>
             :
-            <p className="p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}</>
+            <p className="p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}</div>
     );
 };
 
