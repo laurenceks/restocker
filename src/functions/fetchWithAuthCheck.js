@@ -1,10 +1,10 @@
 const fetchWithAuthCheck = (url, options, responseType = "json") => {
-    const logoutDueToResponse = (msg = "User not logged in on the server") => {
+    const logoutDueToResponse = () => {
         window.location = `${(window.location.hostname.startsWith("localhost") || window.location.hostname.startsWith("127") || window.location.hostname.startsWith("192")) && "/#"}/logout`;
     }
     return fetch(url, options).then(async response => {
         if (response.status === 401) {
-            logoutDueToResponse("401 - permission denied");
+            logoutDueToResponse();
             return;
         }
         if (response.ok) {
@@ -14,8 +14,8 @@ const fetchWithAuthCheck = (url, options, responseType = "json") => {
                 if (!responseJson.failedLoginCheck) {
                     return responseType === "json" ? responseJson : responseType === "text" ? responseText : response
                 } else {
-                    logoutDueToResponse("401 - permission denied");
-                    return Promise.reject("401 - permission denied");
+                    logoutDueToResponse();
+                    return Promise.reject(`401 - permission denied (${responseJson.errorMessage || responseJson.text || responseJson.feedback})`);
                 }
             } catch (e) {
                 return Promise.reject({error: e, text: responseText});
