@@ -17,12 +17,18 @@ try {
     require_once "../common/getUserInfo.php";
     try {
         $output["user"] = getUserInfo($auth->getUserId(), $auth);
-        if ($output["user"]->approved) {
+        if ($output["user"]->approved && !$output["user"]->suspended) {
             $output["success"] = true;
             $output["feedback"] = "User is logged in";
-        } else {
+        } else if (!$output["user"]->approved) {
             $output["success"] = false;
             $output["feedback"] = "Your account is pending approval by an organisation admin";
+        }else if ($output["user"]->suspended) {
+            $output["success"] = false;
+            $output["feedback"] = "Your account has been suspended by an organisational admin";
+        }else{
+            $output["success"] = false;
+            $output["feedback"] = "Your account credentials are invalid - please contact an organisational admin";
         }
     } catch (exception $e) {
         $output["feedback"] = $e->getMessage();
