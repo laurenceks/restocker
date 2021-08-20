@@ -34,3 +34,9 @@ public/php/common/dbCredentials.php
 #smtp passwords
 /public/php/common/smtpCredentials.php
 public/php/common/smtpCredentials.php
+
+#archive bin
+archiveBin
+/archiveBin
+/archiveBin/
+archiveBin/

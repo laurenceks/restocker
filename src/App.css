@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@700&display=swap');
 
+
+
 /*Main*/
 
 div#Root {
@@ -14,8 +16,8 @@ div.App {
     height: 100%;
 }
 
-div.main{
-    max-width: 960px;
+div.main {
+    max-width: 980px;
 }
 
 /*Login forms*/
@@ -135,4 +137,10 @@ ul.dropdown-menu.userDropdown {
     vertical-align: unset;
     position: relative;
     top: 0.1rem;
+}
+
+/*Tables*/
+
+td.buttonCell {
+    min-width: 7.5rem;
 }
