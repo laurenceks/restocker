@@ -12,12 +12,23 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
+$targetIsSuperAdmin = false;
 
 try {
-    $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::ADMIN);
-    $makeUserAdmin = $db->prepare("UPDATE users_info SET admin = 1 WHERE userId = :userId");
-    $makeUserAdmin->bindParam(':userId', $input["userId"]);
-    $output = simpleExecuteOutput($makeUserAdmin->execute());
+    $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
+} catch (\Delight\Auth\UnknownIdException $e) {
+    $output["feedback"] = "Unknown user ID passed";
+}
+try {
+    if (!$targetIsSuperAdmin || ($targetIsSuperAdmin && (int)$input["userId"] === $auth->getUserId())) {
+        $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::ADMIN);
+        $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
+        $makeUserAdmin = $db->prepare("UPDATE users_info SET admin = 1, superAdmin = 0 WHERE userId = :userId");
+        $makeUserAdmin->bindParam(':userId', $input["userId"]);
+        $output = simpleExecuteOutput($makeUserAdmin->execute());
+    } else {
+        $output["feedback"] = "A super admin can only renounce their own super admin rights";
+    }
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output["feedback"] = "Unknown user ID passed";
 }
