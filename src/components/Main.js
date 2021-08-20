@@ -14,7 +14,7 @@ const Main = props => {
         });
     }
     return (
-        <div className="contentContainer">
+        <div className="contentContainer w-100">
             <TopNav user={globalAppContext.user}/>
             <div className="main my-5 mx-auto">
 
