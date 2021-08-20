@@ -1,5 +1,6 @@
 <?php
-require "../login/userLoginSecurityCheck.php";
+require "../security/userLoginSecurityCheck.php";
+require "../security/userSuperAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
 

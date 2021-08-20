@@ -1,5 +1,6 @@
 <?php
-require "../login/userLoginSecurityCheck.php";
+require "../security/userLoginSecurityCheck.php";
+require "../security/userAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
