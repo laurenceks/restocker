@@ -18,7 +18,7 @@ const Users = ({userId}) => {
                 }, {text: "Suspended", className: "text-center"}], rows: []
             };
             this.active = {headers: ["Name", "Email", {colspan: 4, text: "Permissions"}], rows: []};
-            this.unapproved = {headers: ["Name", "Email", ""], rows: []};
+            this.unapproved = {headers: ["Name", {colspan: 3, text: "Email"}], rows: []};
             this.unverified = {headers: ["Name", "Email", ""], rows: []}
             this.suspended = {headers: ["Name", "Email", ""], rows: []}
         }
@@ -39,6 +39,8 @@ const Users = ({userId}) => {
             makeUser: "./php/users/makeAdminUser.php",
             suspendUser: "./php/users/suspendUser.php",
             unsuspendUser: "./php/users/unsuspendUser.php",
+            denyUser: "./php/users/denyUser.php",
+            deleteUser: "./php/users/deleteUser.php",
         }
         fetchJson(urls[type], {
             method: "POST",
@@ -181,6 +183,20 @@ const Users = ({userId}) => {
                                             e: e,
                                             type: "manuallyApproveUser",
                                             text: "This user will have system access"
+                                        });
+                                        setModalShow(true);
+                                    }
+                                }, {
+                                    type: "button",
+                                    text: "Deny and delete",
+                                    buttonClass: "btn-danger btn-sm",
+                                    id: user.userId,
+                                    className: "text-center buttonCell",
+                                    handler: (e) => {
+                                        setChangeUserStatusArgs({
+                                            e: e,
+                                            type: "denyUser",
+                                            text: "This will deny the user's request and delete their account"
                                         });
                                         setModalShow(true);
                                     }
