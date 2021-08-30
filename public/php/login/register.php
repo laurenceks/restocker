@@ -26,7 +26,7 @@ try {
         $admin = 0;
         $superAdmin = 0;
         $approved = 0;
-        if (isset($input["organisation"]["customOption"])) {
+        if (isset($input["organisation"]["customOption"]) && $input["organisation"]["customOption"]) {
             //new organisation - add to DB list and mark user as an admin
             $superAdmin = 1;
             $approved = 1;
@@ -54,8 +54,9 @@ try {
         echo $output["feedback"] = $e->getMessage();
     }
 
-    if (!isset($input["organisationId"])) {
+    if (isset($input["organisation"]["customOption"]) && $input["organisation"]["customOption"]) {
         try {
+            //new organisation - make super admin
             $auth->admin()->addRoleForUserById($userId, \Delight\Auth\Role::SUPER_ADMIN);
         } catch (\Delight\Auth\UnknownIdException $e) {
             $output["feedback"] = "Unable to assign user super admin role, please contact the support team";
