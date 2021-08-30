@@ -16,7 +16,7 @@ $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
     $auth->admin()->deleteUserById($input["userId"]);
-    $denyUser = $db->prepare("    DELETE FROM users_info WHERE userId = :userId;");
+    $denyUser = $db->prepare("DELETE FROM users_info WHERE userId = :userId;");
     $denyUser->bindParam(':userId', $input["userId"]);
     if ($denyUser->execute()) {
         $denyUser = $db->prepare('UPDATE users_confirmations SET email = CONCAT(SUBSTRING(email, 1, 1), REGEXP_REPLACE(SUBSTRING(email, 2, POSITION("@" IN email)-3), "[A-z]", "*"),SUBSTRING(email, POSITION("@" IN email)-1, 1), "@", SUBSTRING(email, POSITION("@" IN email)+1, 1), REGEXP_REPLACE(SUBSTRING(email, POSITION("@" IN email)+2, LENGTH(email) - POSITION("@" IN email)-2), "[A-z]", "*"), SUBSTRING(email, LENGTH(email), 1)) WHERE user_id = :userId');
