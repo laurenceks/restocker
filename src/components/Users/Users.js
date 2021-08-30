@@ -20,7 +20,7 @@ const Users = ({userId}) => {
             this.active = {headers: ["Name", "Email", {colspan: 4, text: "Permissions"}], rows: []};
             this.unapproved = {headers: ["Name", {colspan: 3, text: "Email"}], rows: []};
             this.unverified = {headers: ["Name", "Email", ""], rows: []}
-            this.suspended = {headers: ["Name", "Email", ""], rows: []}
+            this.suspended = {headers: ["Name", {colspan: 3, text: "Email"}], rows: []}
         }
     }
 
@@ -70,7 +70,7 @@ const Users = ({userId}) => {
                             (user.superAdmin ? "Super admin" : user.admin ? "Admin" : "User"),
                             {
                                 type: "tick",
-                                value: user.verified && user.approved,
+                                value: user.verified && user.approved && !user.suspended,
                                 className: "text-center"
                             },
                             {
@@ -222,7 +222,23 @@ const Users = ({userId}) => {
                                         });
                                         setModalShow(true);
                                     }
-                                }
+                                },
+                                ((globalAppContext.user.admin && !user.admin) || (globalAppContext.user.superAdmin && !user.superAdmin)) ?
+                                    {
+                                        type: "button",
+                                        buttonClass: "btn-danger btn-sm",
+                                        text: `Delete user`,
+                                        id: user.userId,
+                                        className: "text-center buttonCell",
+                                        handler: (e) => {
+                                            setChangeUserStatusArgs({
+                                                e: e,
+                                                type: "deleteUser",
+                                                text: "This user's account will be deleted and they will have to register again to regain access to the system"
+                                            });
+                                            setModalShow(true);
+                                        }
+                                    } : {className: "buttonCell"}
                             ]
                         )
                     }
