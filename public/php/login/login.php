@@ -17,6 +17,7 @@ try {
     require_once "../common/getUserInfo.php";
     try {
         $output["user"] = getUserInfo($auth->getUserId(), $auth);
+        $_SESSION["user"] = $output["user"];
         if ($output["user"]->approved && !$output["user"]->suspended) {
             $output["success"] = true;
             $output["feedback"] = "User is logged in";
