@@ -3,6 +3,7 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userSuperAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
+require "../security/userSameOrganisationAsTargetCheck.php";
 
 use Delight\Auth\Auth;
 
@@ -11,6 +12,7 @@ require_once "../common/db.php";
 $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
+targetHasSameOrganisationAsCurrentUser($input["userId"]);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {

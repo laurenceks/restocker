@@ -41,10 +41,12 @@ try {
         //- an admin but the current user is a super admin
         //- is the one being deleted
         try {
+            require "../security/userSameOrganisationAsTargetCheck.php";
+            targetHasSameOrganisationAsCurrentUser($input["userId"]);
             //TODO move delete operation into separate func file for consistency
             $auth->admin()->deleteUserById($input["userId"]);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-            $deleteUserFromDb = $db->prepare("UPDATE `users_confirmations` SET email = CONCAT(SUBSTRING(email, 1, 1), REGEXP_REPLACE(SUBSTRING(email, 2, POSITION('@' IN email)-3), '[A-z]', '*'),SUBSTRING(email, POSITION('@' IN email)-1, 1), '@', SUBSTRING(email, POSITION('@' IN email)+1, 1), REGEXP_REPLACE(SUBSTRING(email, POSITION('@' IN email)+2, LENGTH(email) - POSITION('@' IN email)-2), '[A-z]', '*'), SUBSTRING(email, LENGTH(email), 1)) WHERE user_id =  :userId; DELETE FROM `users_info` WHERE userId =  :userId; DELETE FROM `users_resets` WHERE user =  :userId; ");
+            $deleteUserFromDb = $db->prepare("UPDATE `users_confirmations` SET email = CONCAT(SUBSTRING(email, 1, 1), REGEXP_REPLACE(SUBSTRING(email, 2, POSITION('@' IN email)-3), '[A-z]', '*'),SUBSTRING(email, POSITION('@' IN email)-1, 1), '@', SUBSTRING(email, POSITION('@' IN email)+1, 1), REGEXP_REPLACE(SUBSTRING(email, POSITION('@' IN email)+2, LENGTH(email) - POSITION('@' IN email)-2), '[A-z]', '*'), SUBSTRING(email, LENGTH(email), 1)) WHERE user_id = :userId; DELETE FROM `users_info` WHERE userId =  :userId; DELETE FROM `users_resets` WHERE user = :userId; ");
             $deleteUserFromDb->bindValue(':userId', $input["userId"]);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $output = simpleExecuteOutput($deleteUserFromDb->execute());
