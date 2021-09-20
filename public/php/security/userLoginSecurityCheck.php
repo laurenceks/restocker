@@ -1,5 +1,6 @@
 <?php
 require '../vendor/autoload.php';
+require 'endProcessDueToInvalidLogin.php';
 
 use Delight\Auth\Auth;
 
@@ -27,11 +28,4 @@ if (!$auth->isLoggedIn()) {
         }
         endProcessDueToInvalidLogin($msg);;
     }
-}
-
-function endProcessDueToInvalidLogin($msg)
-{
-    //user not logged in or login status invalid - proceed no further
-    echo json_encode(array("failedLoginCheck" => true, "errorMessage" => $msg));
-    die();
 }
