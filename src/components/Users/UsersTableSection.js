@@ -12,7 +12,13 @@ const UsersTableSection = ({title, data}) => {
 };
 
 UsersTableSection.propTypes = {
+    title: PropTypes.string,
+    data: PropTypes.object
+};
 
+UsersTableSection.defaultProps = {
+    title: "Table",
+    data: null
 };
 
 export default UsersTableSection;
