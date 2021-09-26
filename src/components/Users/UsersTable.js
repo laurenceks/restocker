@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {IoCheckmarkCircleSharp, IoCloseCircle, IoCloseCircleSharp} from "react-icons/all";
+import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 
 const renderCellContent = (x) => {
     if (!x.type) {
