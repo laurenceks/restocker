@@ -1,11 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react';
-import PropTypes from 'prop-types';
 import UsersTableSection from "./UsersTableSection";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
 import fetchJson from "../../functions/fetchJson";
 import {GlobalAppContext} from "../../App";
 
-const Users = ({userId}) => {
+const Users = () => {
     class usersTableTemplate {
         constructor() {
             this.all = {
@@ -187,20 +186,20 @@ const Users = ({userId}) => {
                                         setModalShow(true);
                                     }
                                 }, {
-                                    type: "button",
-                                    text: "Deny and delete",
-                                    buttonClass: "btn-danger btn-sm",
-                                    id: user.userId,
-                                    className: "text-center buttonCell",
-                                    handler: (e) => {
-                                        setChangeUserStatusArgs({
-                                            e: e,
-                                            type: "denyUser",
-                                            text: "This will deny the user's request and delete their account"
-                                        });
-                                        setModalShow(true);
-                                    }
+                                type: "button",
+                                text: "Deny and delete",
+                                buttonClass: "btn-danger btn-sm",
+                                id: user.userId,
+                                className: "text-center buttonCell",
+                                handler: (e) => {
+                                    setChangeUserStatusArgs({
+                                        e: e,
+                                        type: "denyUser",
+                                        text: "This will deny the user's request and delete their account"
+                                    });
+                                    setModalShow(true);
                                 }
+                            }
                             ]
                         )
                     } else if (user.suspended) {
@@ -293,7 +292,5 @@ const Users = ({userId}) => {
         </div>
     );
 };
-
-Users.propTypes = {};
 
 export default Users;

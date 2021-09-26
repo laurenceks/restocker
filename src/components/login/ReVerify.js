@@ -3,10 +3,8 @@ import LoginInput from "./loginComponents/LoginInput";
 import LoginLink from "./loginComponents/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
-import {useHistory} from "react-router-dom";
 
-
-const ReVerify = props => {
+const ReVerify = () => {
     const [reVerifyFeedback, setReverifyFeedback] = useState({inProgress: false});
     const reVerifyForm = useRef();
     const reVerify = formOutput => {
@@ -53,7 +51,5 @@ const ReVerify = props => {
         </form>
     );
 };
-
-ReVerify.propTypes = {};
 
 export default ReVerify;

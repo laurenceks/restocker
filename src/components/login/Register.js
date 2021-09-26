@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import PropTypes from 'prop-types';
 import LoginInput from "./loginComponents/LoginInput";
 import LoginCheckbox from "./loginComponents/LoginCheckbox";
 import LoginLink from "./loginComponents/LoginLink";
@@ -8,7 +7,7 @@ import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "@gouch/to-title-case";
 
-const Register = props => {
+const Register = () => {
     const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
     const [organisations, setOrganisations] = useState([]);
     const [organisation, setOrganisation] = useState({});
@@ -87,7 +86,7 @@ const Register = props => {
                                         } : {}),
                                         onInputChange: (x, e) => {
                                             //TODO set input value to toTitleCase?
-                                            setOrganisation([]);
+                                            //setOrganisation([]);
                                         },
                                         labelKey: "organisation",
                                         options: organisations
@@ -116,7 +115,5 @@ const Register = props => {
         </form>
     );
 };
-
-Register.propTypes = {};
 
 export default Register;

@@ -1,6 +1,3 @@
-import React, {createContext, useContext} from 'react';
-import PropTypes from 'prop-types';
-import {GlobalAppContext} from "../App";
 import {Redirect, Route, Switch} from "react-router-dom";
 import Login from "./login/Login";
 import Register from "./login/Register";
@@ -8,7 +5,7 @@ import ForgotPassword from "./login/ForgotPassword";
 import Verify from "./login/Verify";
 import ReVerify from "./login/ReVerify";
 
-const NotAuthorised = props => {
+const NotAuthorised = () => {
 
     return (
         <Switch>
@@ -39,7 +36,5 @@ const NotAuthorised = props => {
         </Switch>
     );
 };
-
-NotAuthorised.propTypes = {};
 
 export default NotAuthorised;

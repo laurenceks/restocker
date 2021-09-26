@@ -3,10 +3,8 @@ import LoginInput from "./loginComponents/LoginInput";
 import LoginLink from "./loginComponents/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
-import {useHistory} from "react-router-dom";
 
-
-const Forgot = props => {
+const Forgot = () => {
     const [forgotFeedback, setForgotFeedback] = useState({inProgress: false});
     const forgotForm = useRef();
     const forgot = formOutput => {
@@ -51,7 +49,5 @@ const Forgot = props => {
         </form>
     );
 };
-
-Forgot.propTypes = {};
 
 export default Forgot;

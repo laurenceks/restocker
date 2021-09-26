@@ -1,6 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import LoginLink from "./loginComponents/LoginLink";
-import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
+import {useRef, useState} from 'react';
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import validateForm from "../../functions/formValidation";
