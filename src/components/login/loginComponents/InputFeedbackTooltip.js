@@ -10,7 +10,10 @@ const InputFeedbackTooltip = ({text}) => {
 };
 
 InputFeedbackTooltip.propTypes = {
-
+    text: PropTypes.string
+};
+InputFeedbackTooltip.defaultProps = {
+    text: "Please enter a valid value"
 };
 
 export default InputFeedbackTooltip;
