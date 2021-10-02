@@ -23,7 +23,7 @@ const TopNav = ({user}) => {
                             <NavLink to={"/stock"} className="nav-link">Stock</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/stock"} className="nav-link">Withdraw</NavLink>
+                            <NavLink to={"/withdraw"} className="nav-link">Withdraw</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to={"/stock"} className="nav-link">Restock</NavLink>
