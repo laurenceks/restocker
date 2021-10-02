@@ -12,6 +12,9 @@ const LoginInput = ({
                         invalidFeedback,
                         passwordId,
                         onChange,
+                        min,
+                        max,
+                        step,
                         typeaheadProps
                     }) => {
     return (
@@ -19,14 +22,18 @@ const LoginInput = ({
             {type === "typeahead" ?
                 <Typeahead
                     id={id}
+                    placeholder={placeholder || label}
                     {...typeaheadProps}
                 />
                 :
                 <div className="form-floating">
                     <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`}
                            id={id}
-                           placeholder={placeholder}
+                           placeholder={placeholder || label}
                            data-passwordid={passwordId}
+                           min={min}
+                           max={max}
+                           step={step}
                            onChange={(e) => {
                                if (onChange) {
                                    onChange(id, e.target.value)
@@ -46,17 +53,23 @@ LoginInput.propTypes = {
     id: PropTypes.string,
     label: PropTypes.string,
     inputClass: PropTypes.string,
-    passwordId: PropTypes.number
+    passwordId: PropTypes.number,
+    min: PropTypes.number,
+    max: PropTypes.number,
+    step: PropTypes.number,
 };
 LoginInput.defaultProps = {
     type: "text",
-    placeholder: null,
+    placeholder: "Input",
     id: "input-" + Math.random(),
     label: "Input",
     inputClass: null,
     invalidFeedback: null,
     passwordId: null,
-    onChange: null
+    onChange: null,
+    min: null,
+    max: null,
+    step: 1,
 };
 
 export default LoginInput;
