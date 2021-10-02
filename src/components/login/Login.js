@@ -45,7 +45,7 @@ const Login = props => {
                                 id={"inputLoginPassword"}
                                 invalidFeedback={"Please enter your password"}/>
                 </div>
-                <LoginCheckbox id={"inputLoginRemember"} label={"Remember me"}/>
+                <LoginCheckbox id={"inputLoginRemember"} label={"Remember me"} className={"my-3"}/>
                 <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
                 {(loginFeedback && !loginFeedback.inProgress) &&
                 <LoginFeedback feedbackText={loginFeedback.feedback} feedbackClass={loginFeedback.feedbackClass}/>}
