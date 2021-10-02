@@ -3,6 +3,8 @@ import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
 import Users from "./Users/Users";
+import Dashboard from "./Dashboard/Dashboard";
+import Withdraw from "./withdraw/Withdraw";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -23,13 +25,13 @@ const Main = props => {
                         return (
                             <div>
                                 <h1>Restocker</h1>
-                                <p>You are logged in as {globalAppContext.user.firstName}, part
-                                    of {globalAppContext.user.organisation}</p>
-                                <p>The main app will go here</p>
-                                <p><a onClick={logout}>Logout</a></p>
+                                <Dashboard/>
                             </div>
                         )
                     }}/>
+                    <Route path={"/withdraw"}>
+                        <Withdraw/>
+                    </Route>
                     <Route path={"/logout"} render={logout}/>
                     <Route path={"/users"}>
                         <Users userId={globalAppContext.user.id}/>
