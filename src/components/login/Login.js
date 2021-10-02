@@ -51,7 +51,8 @@ const Login = props => {
                 <LoginFeedback feedbackText={loginFeedback.feedback} feedbackClass={loginFeedback.feedbackClass}/>}
                 <LoginLink to={"/forgotPassword"} label={"Forgot password"}/>
                 <LoginLink to={"/register"} label={"Register"}/>
-                <p className="my-3 text-muted">&copy; Laurence Summers 2021</p></fieldset>
+                <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
+            </fieldset>
         </form>
     );
 };
