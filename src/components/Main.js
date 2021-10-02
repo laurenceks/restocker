@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
-import Users from "./Users/Users";
+import Users from "./users/Users";
 import Dashboard from "./dashboard/Dashboard";
 import Withdraw from "./withdraw/Withdraw";
 
