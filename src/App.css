@@ -1,6 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Source+Sans+Pro:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&family=Source+Sans+Pro&display=swap');
 
+/*Colours (B5)*/
 
+body {
+    --bs-teal-200: #a6e9d5;
+    --bs-green-200: #a3cfbb;
+    --bs-green-300: #75b798;
+    --bs-green-600: #146c43;
+    --bs-green-700: #0f5132;
+    --bs-green-800: #0a3622;
+    --bs-yellow-200: #ffe69c;
+    --bs-yellow-300: #ffda6a;
+    --bs-yellow-600: #cc9a06;
+    --bs-yellow-700: #997404;
+    --bs-yellow-800: #664d03;
+    --bs-red-200: #f1aeb5;
+    --bs-red-300: #ea868f;
+    --bs-red-600: #b02a37;
+    --bs-red-700: #842029;
+    --bs-red-800: #58151c;
+}
+
+/*Fonts*/
+
+body {
+    --bs-font-sans-serif: "Source Sans Pro";
+}
+
+input.form-control:-webkit-autofill.form-control:first-line,
+textarea.form-control:-webkit-autofill.form-control:first-line,
+select.form-control:-webkit-autofill.form-control:first-line,
+option.form-control:-webkit-autofill.form-control:first-line {
+    font-family: var(--bs-font-sans-serif);
+    font-size: 1rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Open Sans";
+    font-weight: 500;
+}
 
 /*Main*/
 
@@ -143,4 +181,113 @@ ul.dropdown-menu.userDropdown {
 
 td.buttonCell {
     min-width: 7.5rem;
+}
+
+/*Dashboard*/
+
+div.dashboardStatTileContainer {
+    min-height: 6rem;
+    z-index: 0;
+}
+
+div.dashboardStatTileTitleWrap {
+    width: min-content;
+    /*line-height: calc(100% + 0.5rem);*/
+}
+
+p.dashboardStatTileNumber {
+    font-size: 4rem;
+    /*line-height: 100%;*/
+}
+
+div.dashboardStatTileContainer-good {
+    background-color: var(--bs-green-300);
+}
+
+div.dashboardStatTileContainer-good p.dashboardStatTileTitle {
+    color: var(--bs-green-700);
+}
+
+div.dashboardStatTileContainer-good p.dashboardStatTileNumber {
+    color: var(--bs-green-700);
+}
+
+div.dashboardStatTileContainer-ok {
+    background-color: var(--bs-yellow-300);
+}
+
+div.dashboardStatTileContainer-ok p.dashboardStatTileTitle {
+    color: var(--bs-yellow-700);
+}
+
+div.dashboardStatTileContainer-ok p.dashboardStatTileNumber {
+    color: var(--bs-yellow-700);
+}
+
+div.dashboardStatTileContainer-bad {
+    background-color: var(--bs-red-300);
+}
+
+div.dashboardStatTileContainer-bad p.dashboardStatTileTitle {
+    color: var(--bs-red-700);
+}
+
+div.dashboardStatTileContainer-bad p.dashboardStatTileNumber {
+    color: var(--bs-red-700);
+}
+
+div.dashboardStatTileIconContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    position: absolute;
+    padding: inherit;
+    left: 0;
+    top: 0;
+    z-index: -1;
+}
+
+div.dashboardStatTileIconContainer > svg {
+    color: white;
+    width: auto;
+    height: 100%;
+    opacity: 0.5;
+    mix-blend-mode: lighten;
+}
+
+button.dashboardActionButton > div > svg {
+    width: auto;
+    height: 1.25rem;
+    margin-right: .25rem;
+    transition: margin-right 0.25s ease;
+}
+
+button.dashboardActionButton:hover > div > svg {
+    margin-right: 1rem;
+}
+
+button.dashboardActionButton:focus {
+    box-shadow: none;
+}
+
+button.dashboardActionButton.btn-outline-teal {
+    color: var(--bs-teal);
+    border-color: var(--bs-teal);
+}
+
+button.dashboardActionButton.btn-outline-teal:hover {
+    background-color: var(--bs-teal);
+    color: var(--bs-dark);
+}
+
+button.dashboardActionButton.btn-outline-orange {
+    color: var(--bs-orange);
+    border-color: var(--bs-orange);
+}
+
+button.dashboardActionButton.btn-outline-orange:hover {
+    background-color: var(--bs-orange);
+    color: var(--bs-dark);
 }
