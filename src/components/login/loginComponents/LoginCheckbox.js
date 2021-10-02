@@ -2,12 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 
-const LoginCheckbox = ({placeholder, id, label, inputClass, invalidFeedback, checkRequired}) => {
+const LoginCheckbox = ({id, label, inputClass, invalidFeedback, checkRequired, type, onChange, name, className}) => {
     return (
-        <div className="checkbox my-3 d-flex align-items-center flex-wrap">
-            <input type="checkbox" id={id} className={`ms-2${inputClass && ` ${inputClass}`}`}
-                   data-checkrequired={checkRequired}/>
-            <label htmlFor={id} className={"ms-2"}>
+        <div className={`form-check checkbox ${className && `${className}`}`}>
+            <input type={type} id={id} className={`form-check-input ${inputClass && ` ${inputClass}`}`}
+                   data-checkrequired={checkRequired}
+                   name={name}
+                   onChange={(e) => {
+                       if (onChange) {
+                           onChange(id, e.target.value)
+                       }
+                   }}/>
+            <label htmlFor={id} className={"form-check-label"}>
                 {label}
             </label>
             {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
@@ -21,7 +27,11 @@ LoginCheckbox.propTypes = {
     id: PropTypes.string,
     label: PropTypes.string,
     inputClass: PropTypes.string,
-    invalidFeedback: PropTypes.string
+    className: PropTypes.string,
+    invalidFeedback: PropTypes.string,
+    type: PropTypes.string,
+    name: PropTypes.string,
+    onChange: PropTypes.func
 };
 LoginCheckbox.defaultProps = {
     placeholder: false,
@@ -29,7 +39,11 @@ LoginCheckbox.defaultProps = {
     id: "inputCheckbox-" + Math.random(),
     label: "Checkbox",
     inputClass: null,
+    className: null,
     invalidFeedback: null,
+    type: "checkbox",
+    name: null,
+    onChange: null
 };
 
 export default LoginCheckbox;
