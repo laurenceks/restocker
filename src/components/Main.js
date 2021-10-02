@@ -3,7 +3,7 @@ import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
 import Users from "./Users/Users";
-import Dashboard from "./Dashboard/Dashboard";
+import Dashboard from "./dashboard/Dashboard";
 import Withdraw from "./withdraw/Withdraw";
 
 const Main = props => {
