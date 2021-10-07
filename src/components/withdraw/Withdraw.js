@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import LoginInput from "../login/loginComponents/LoginInput";
 import {useState} from "react"
 
-import {dummyItems, dummyLists} from "../Common/dummyData";
+import {dummyItems, dummyLists} from "../common/dummyData";
 import LoginCheckbox from "../login/loginComponents/LoginCheckbox";
 
 const Withdraw = props => {

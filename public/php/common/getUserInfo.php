@@ -11,7 +11,8 @@ function getUserInfo($userId, $auth = null)
         ");
     $getUserInfo->bindParam(':userId', $userId);
     $getUserInfo->execute();
-
+    
+    //TODO if user deleted whilst logged in handle
     $output = $getUserInfo->fetch(PDO::FETCH_OBJ);
     $output->roles = $auth ? array_values($auth->getRoles()) : null;
     return $output;
