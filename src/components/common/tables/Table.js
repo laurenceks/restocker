@@ -26,7 +26,7 @@ const renderCellContent = (x) => {
     }
 }
 
-const UsersTable = ({title, headers, rows}) => {
+const Table = ({title, headers, rows}) => {
     return (
         <div className="table-responsive">{(rows && rows.length > 0) ?
             <table className="table table-hover">
@@ -58,16 +58,16 @@ const UsersTable = ({title, headers, rows}) => {
     );
 };
 
-UsersTable.propTypes = {
+Table.propTypes = {
     title: PropTypes.string,
     headers: PropTypes.array,
     rows: PropTypes.array
 };
 
-UsersTable.defaultProps = {
+Table.defaultProps = {
     title: "Users",
     headers: [],
     rows: []
 }
 
-export default UsersTable;
+export default Table;

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import UsersTableSection from "./UsersTableSection";
+import TableSection from "../common/tables/TableSection";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
 import fetchJson from "../../functions/fetchJson";
 import {GlobalAppContext} from "../../App";
@@ -255,11 +255,11 @@ const Users = () => {
     return (
         <div>
             <h1 className="mb-5">Restocker users for {globalAppContext.user.organisation}</h1>
-            <UsersTableSection title={"All users"} data={usersTableData.all}/>
-            <UsersTableSection title={"Active users"} data={usersTableData.active}/>
-            <UsersTableSection title={"Unapproved users"} data={usersTableData.unapproved}/>
-            <UsersTableSection title={"Unverified users"} data={usersTableData.unverified}/>
-            <UsersTableSection title={"Suspended users"} data={usersTableData.suspended}/>
+            <TableSection title={"All users"} data={usersTableData.all}/>
+            <TableSection title={"Active users"} data={usersTableData.active}/>
+            <TableSection title={"Unapproved users"} data={usersTableData.unapproved}/>
+            <TableSection title={"Unverified users"} data={usersTableData.unverified}/>
+            <TableSection title={"Suspended users"} data={usersTableData.suspended}/>
             {isOneOfManySuperAdmins && <div>
                 <h1>Renounce super admin rights</h1>
                 <p>Click below to renounce your super admin rights. You will no longer be able to promote admins to
