@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import {Typeahead} from "react-bootstrap-typeahead";
@@ -15,8 +15,10 @@ const LoginInput = ({
                         min,
                         max,
                         step,
-                        typeaheadProps
+                        typeaheadProps,
+                        defaultValue
                     }) => {
+    const [inputState, setInputState] = useState(defaultValue || "");
     return (
         <div className={"loginInputWrap"}>
             {type === "typeahead" ?
@@ -35,10 +37,13 @@ const LoginInput = ({
                            max={max}
                            step={step}
                            onChange={(e) => {
+                               setInputState(type === "number" ? parseInt(e.target.value) : e.target.value);
                                if (onChange) {
                                    onChange(id, e.target.value)
                                }
-                           }}/>
+                           }}
+                           value={inputState}
+                    />
                     <label htmlFor={id}>{label}</label>
                 </div>
             }
