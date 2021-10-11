@@ -5,6 +5,7 @@ import {Route, Switch} from "react-router-dom";
 import Users from "./users/Users";
 import Dashboard from "./dashboard/Dashboard";
 import Withdraw from "./withdraw/Withdraw";
+import Items from "./items/Items";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -31,6 +32,9 @@ const Main = props => {
                     }}/>
                     <Route path={"/withdraw"}>
                         <Withdraw/>
+                    </Route>
+                    <Route path={"/items"}>
+                        <Items/>
                     </Route>
                     <Route path={"/logout"} render={logout}/>
                     <Route path={"/users"}>
