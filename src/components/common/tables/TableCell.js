@@ -1,0 +1,51 @@
+import PropTypes from 'prop-types';
+import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
+import LoginInput from "../../login/loginComponents/LoginInput";
+
+const renderCellContent = (x) => {
+    if (!x.type) {
+        return typeof x === "string" || typeof x === "number" ? x : "";
+    } else {
+        switch (x.type) {
+            case "tick":
+            case "tick-invert":
+                return (
+                    <span
+                        className={`tableIcon ${x.type !== "tick-invert" ? (x.value ? "text-success" : "text-danger") : !x.value ? "text-success" : "text-danger"}`}>
+                        {x.value ? <IoCheckmarkCircleSharp/> :
+                            <IoCloseCircleSharp/>}
+                    </span>
+                )
+            case "button":
+                return (
+                    <button className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler}
+                            data-userid={x.id}>{x.text}</button>
+                )
+            case "input":
+                return (
+                    <LoginInput {...x.props}/>
+                )
+            default:
+                return x.text || "";
+        }
+    }
+}
+
+const TableCell = ({className, content, align}) => {
+    return (
+        <td className={`${align && align + " "} ${className || ""}`}>{renderCellContent(content)}</td>);
+};
+
+TableCell.propTypes = {
+    title: PropTypes.string,
+    className: PropTypes.string,
+    align: PropTypes.string,
+};
+
+TableCell.defaultProps = {
+    title: "Users",
+    className: "",
+    align: "align-middle"
+}
+
+export default TableCell;

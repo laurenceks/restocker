@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
+import LoginInput from "../../login/loginComponents/LoginInput";
+import TableCell from "./TableCell";
 
 const renderCellContent = (x) => {
     if (!x.type) {
@@ -19,6 +21,10 @@ const renderCellContent = (x) => {
             case "button":
                 return (
                     <button className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler} data-userid={x.id}>{x.text}</button>
+                )
+            case "input":
+                return (
+                    <LoginInput {...x.props}/>
                 )
             default:
                 return x.text || "";
@@ -45,8 +51,7 @@ const Table = ({title, headers, rows}) => {
                     return (
                         <tr key={`${title}-tr-${i}`}>
                             {x.map((y, j) => {
-                                return (<td key={`${title}-tr-${i}-td-${j}`}
-                                            className={y.className || ""}>{renderCellContent(y)}</td>)
+                                return (<TableCell key={`${title}-tr-${i}-td-${j}`} className={y.className} content={y}/>)
                             })}
                         </tr>
                     )
