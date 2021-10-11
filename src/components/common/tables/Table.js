@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 
 const renderCellContent = (x) => {
+    console.log(x)
     if (!x.type) {
-        return typeof x === "string" ? x : "";
+        return typeof x === "string" || typeof x === "number" ? x : "";
     } else {
         switch (x.type) {
             case "tick":
@@ -18,7 +19,7 @@ const renderCellContent = (x) => {
                 )
             case "button":
                 return (
-                    <button className={`btn ${x.buttonClass}`} onClick={x.handler} data-userid={x.id}>{x.text}</button>
+                    <button className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler} data-userid={x.id}>{x.text}</button>
                 )
             default:
                 return x.text || "";
