@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 
 const renderCellContent = (x) => {
-    console.log(x)
     if (!x.type) {
         return typeof x === "string" || typeof x === "number" ? x : "";
     } else {
