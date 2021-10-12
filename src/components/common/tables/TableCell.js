@@ -3,7 +3,6 @@ import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 import LoginInput from "../../login/loginComponents/LoginInput";
 
 const renderCellContent = (x) => {
-    console.log(x);
     if (!x.type) {
         return typeof x === "string" || typeof x === "number" ? x : "";
     } else {
