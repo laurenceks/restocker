@@ -3,6 +3,7 @@ import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 import LoginInput from "../../login/loginComponents/LoginInput";
 
 const renderCellContent = (x) => {
+    console.log(x);
     if (!x.type) {
         return typeof x === "string" || typeof x === "number" ? x : "";
     } else {
@@ -17,8 +18,11 @@ const renderCellContent = (x) => {
                     </span>
                 )
             case "button":
+            case "submit":
                 return (
-                    <button className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler}
+                    <button type={x.type === "submit" ? "submit" : "button"}
+                            form={x.type === "submit" && x.form ? x.form : ""}
+                            className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler}
                             data-userid={x.id}>{x.text}</button>
                 )
             case "input":
@@ -33,7 +37,8 @@ const renderCellContent = (x) => {
 
 const TableCell = ({className, content, align}) => {
     return (
-        <td className={`${align && align + " "} ${className || ""}`}>{renderCellContent(content)}</td>);
+        <td className={`${align && align + " "} ${className || ""}`}>{renderCellContent(content)}</td>
+    );
 };
 
 TableCell.propTypes = {
