@@ -5,11 +5,13 @@ import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 
 const Items = () => {
-    const [editItem, setEditItem] = useState({});
+    const [editId, setEditId] = useState(null);
     const [itemList, setItemList] = useState([[0, "Initial", "0 initial units", "", ""]]);
 
     const addItemForm = useRef();
-    const editItemForm = useRef();
+    const itemListRef = useRef([]);
+
+    itemListRef.current = itemList;
 
     const getItems = () => {
         fetchJson("./php/items/getAllItems.php", {
@@ -27,18 +29,19 @@ const Items = () => {
                                 id: 1,
                                 text: "Edit",
                                 buttonClass: "btn-warning btn-sm",
-                                handler: (e) => {
+                                handler: () => {
                                     showEditRow(index);
                                 }
-                            }, {
-                            type: "button",
-                            id: 1,
-                            text: "Delete",
-                            buttonClass: "btn-danger btn-sm",
-                            handler: (e) => {
-                                deleteItem(item.id);
+                            },
+                            {
+                                type: "button",
+                                id: 1,
+                                text: "Delete",
+                                buttonClass: "btn-danger btn-sm",
+                                handler: () => {
+                                    deleteItem(item.id);
+                                }
                             }
-                        }
                         ]
                     )
                 }
@@ -48,7 +51,6 @@ const Items = () => {
     }
 
     const addItem = (x) => {
-        console.log(x.values);
         fetchJson("./php/items/addItem.php", {
             method: "POST",
             body: JSON.stringify(x.values),
@@ -60,27 +62,43 @@ const Items = () => {
     const deleteItem = (id) => {
         fetchJson("./php/items/deleteItem.php", {
             method: "POST",
-            body: JSON.stringify({id:id}),
+            body: JSON.stringify({id: id}),
+        }, (x) => {
+            getItems();
+        });
+    }
+    const editItem = (x) => {
+        console.log(x)
+        fetchJson("./php/items/editItem.php", {
+            method: "POST",
+            body: JSON.stringify(x),
         }, (x) => {
             getItems();
         });
     }
 
     const showEditRow = (x) => {
-        if (itemList[x]) {
-            const newItemList = [...itemList];
-            const unitText = itemList[x][2].match(/\d+ (.*)/)
+        if (itemListRef.current[x]) {
+            const newItemList = [...itemListRef.current];
+            const unitText = itemListRef.current[x][2].match(/\d+ (.*)/)
+            const itemId = itemListRef.current[x][0];
+            const inputIds = {name:`editItemRow-${editId}-name`,unit:`editItemRow-${editId}-unit`}
             newItemList[x] = [
-                itemList[x][0],
+                itemId,
                 {
                     type: "input",
-                    props: {type: "text", id: `addItemRow-name-${x}`, label: "Item name", defaultValue: itemList[x][1]},
+                    props: {
+                        type: "text",
+                        id: inputIds.name,
+                        label: "Item name",
+                        defaultValue: itemListRef.current[x][1]
+                    },
                     invalidFeedback: "You must specify a name"
                 }, {
                     type: "input",
                     props: {
                         type: "text",
-                        id: `addItemRow-units-${x}`,
+                        id: inputIds.unit,
                         label: "Unit name",
                         defaultValue: unitText && unitText[1] ? unitText[1].trim() : "",
                         form: "editItemForm",
@@ -90,21 +108,28 @@ const Items = () => {
                     type: "submit",
                     buttonClass: "btn-success",
                     text: "Save",
-                    id: itemList[x][0],
+                    id: itemId,
                     className: "text-center buttonCell",
-                    form: "editItemForm"
+                    form: "editItemForm",
+                    handler: (e) => {
+                        setEditId(itemId);
+                        validateForm(e, [inputIds.name, inputIds.unit], (x) => {
+                            editItem({
+                                name: x.values[inputIds.name],
+                                unit: x.values[inputIds.unit],
+                                id: itemId
+                            })
+                        })
+                    }
                 }, {
                     type: "button",
                     buttonClass: "btn-danger",
                     text: "Cancel",
-                    id: itemList[x][0],
+                    id: itemId,
                     className: "text-center buttonCell",
                     handler: getItems
                 }];
             setItemList(newItemList);
-        } else {
-            //list error - get them again
-            getItems();
         }
     }
 
@@ -115,9 +140,7 @@ const Items = () => {
 
     useEffect(() => {
         //get user list
-        console.log("Updated item list");
-        console.log(itemList);
-    }, []);
+    }, [itemList]);
 
     return (
         <div className="container">
@@ -145,17 +168,13 @@ const Items = () => {
             </form>
             <div className="row my-3">
                 <h2>All items</h2>
-                <form ref={editItemForm} onSubmit={(e) => {
-                    validateForm(e, editItemForm, (e) => {
-                        console.log("Edit form validated!")
-                    });
-                    console.log("Edit form submitted!")
+                console.log("Here")
+                validateForm(e, editItemForm, editItem);
                 }}>
-                    <Table
-                        headers={["ID", "Name", {text: "Current stock", colspan: 3}]}
-                        rows={itemList}
-                    />
-                </form>
+                <Table
+                    headers={["ID", "Name", {text: "Current stock", colspan: 3}]}
+                    rows={itemList}
+                />
             </div>
         </div>
     );
