@@ -8,10 +8,11 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
-    $addItem = $db->prepare("UPDATE items SET deleted = 1 WHERE id = :id AND organisationId = :organisationId");
-    $addItem->bindValue(":organisationId", $_SESSION["user"]->organisationId);
-    $addItem->bindParam(":id", $input["id"]);
-    $addItem->execute();
+    $deleteItem = $db->prepare("UPDATE items SET deleted = 1, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
+    $deleteItem->bindValue(":organisationId", $_SESSION["user"]->organisationId);
+    $deleteItem->bindParam(":id", $input["id"]);
+    $deleteItem->bindValue(":uid", $_SESSION["user"]->userId);
+    $deleteItem->execute();
     $output["success"] = true;
     $output["feedback"] = "Item deleted";
 } catch
