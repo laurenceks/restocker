@@ -16,7 +16,8 @@ const LoginInput = ({
                         max,
                         step,
                         typeaheadProps,
-                        defaultValue
+                        defaultValue,
+                        form
                     }) => {
     const [inputState, setInputState] = useState(defaultValue || "");
     return (
@@ -25,6 +26,7 @@ const LoginInput = ({
                 <Typeahead
                     id={id}
                     placeholder={placeholder || label}
+                    form={form}
                     {...typeaheadProps}
                 />
                 :
@@ -42,6 +44,7 @@ const LoginInput = ({
                                    onChange(id, e.target.value)
                                }
                            }}
+                           form={form}
                            value={inputState}
                     />
                     <label htmlFor={id}>{label}</label>
@@ -56,6 +59,7 @@ LoginInput.propTypes = {
     type: PropTypes.string,
     placeholder: PropTypes.string,
     id: PropTypes.string,
+    form: PropTypes.string,
     label: PropTypes.string,
     inputClass: PropTypes.string,
     passwordId: PropTypes.number,
@@ -75,6 +79,7 @@ LoginInput.defaultProps = {
     min: null,
     max: null,
     step: 1,
+    form: ""
 };
 
 export default LoginInput;
