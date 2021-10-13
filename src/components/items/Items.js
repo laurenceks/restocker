@@ -82,7 +82,7 @@ const Items = () => {
             const newItemList = [...itemListRef.current];
             const unitText = itemListRef.current[x][2].match(/\d+ (.*)/)
             const itemId = itemListRef.current[x][0];
-            const inputIds = {name:`editItemRow-${editId}-name`,unit:`editItemRow-${editId}-unit`}
+            const inputIds = {name: `editItemRow-${editId}-name`, unit: `editItemRow-${editId}-unit`}
             newItemList[x] = [
                 itemId,
                 {
@@ -91,7 +91,9 @@ const Items = () => {
                         type: "text",
                         id: inputIds.name,
                         label: "Item name",
-                        defaultValue: itemListRef.current[x][1]
+                        defaultValue: itemListRef.current[x][1],
+                        form: "editItemForm",
+                        forceCase: "title"
                     },
                     invalidFeedback: "You must specify a name"
                 }, {
@@ -102,6 +104,7 @@ const Items = () => {
                         label: "Unit name",
                         defaultValue: unitText && unitText[1] ? unitText[1].trim() : "",
                         form: "editItemForm",
+                        forceCase: "lower"
                     },
                     invalidFeedback: "You must specify a unit type"
                 }, {
@@ -151,14 +154,18 @@ const Items = () => {
                     <h2>Add new item</h2>
                     <div className="col">
                         <div className="loginFormInputGroup">
-                            <LoginInput type={"text"} id={"inputAddItemName"} label={"Name"}
-                                        invalidFeedback={"You must name your item"}/>
+                            <LoginInput type={"text"} id={"inputAddItemName"}
+                                        label={"Name"}
+                                        invalidFeedback={"You must name your item"}
+                                        forceCase={"title"}/>
                         </div>
                     </div>
                     <div className="col">
                         <div className="loginFormInputGroup">
-                            <LoginInput type={"text"} id={"inputAddItemUnit"} label={"Base unit"}
-                                        invalidFeedback={"You must specify a unit type"}/>
+                            <LoginInput type={"text"} id={"inputAddItemUnit"}
+                                        label={"Base unit"}
+                                        invalidFeedback={"You must specify a unit type"}
+                                        forceCase={"lower"}/>
                         </div>
                     </div>
                     <div className="col d-flex align-items-center">
@@ -168,9 +175,6 @@ const Items = () => {
             </form>
             <div className="row my-3">
                 <h2>All items</h2>
-                console.log("Here")
-                validateForm(e, editItemForm, editItem);
-                }}>
                 <Table
                     headers={["ID", "Name", {text: "Current stock", colspan: 3}]}
                     rows={itemList}
