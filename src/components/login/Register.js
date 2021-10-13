@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import LoginInput from "./forms/LoginInput";
-import LoginCheckbox from "./forms/LoginCheckbox";
-import LoginLink from "./forms/LoginLink";
+import LoginInput from "../common/forms/LoginInput";
+import LoginCheckbox from "../common/forms/LoginCheckbox";
+import LoginLink from "../common/forms/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';

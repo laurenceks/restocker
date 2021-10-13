@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import LoginInput from "../login/forms/LoginInput";
+import LoginInput from "../common/forms/LoginInput";
 import {useState} from "react"
 
 import {dummyItems, dummyLists} from "../common/dummyData";
-import LoginCheckbox from "../login/forms/LoginCheckbox";
+import LoginCheckbox from "../common/forms/LoginCheckbox";
 
 const Withdraw = props => {
     const [withdrawData, setWithdrawData] = useState({});

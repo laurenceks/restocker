@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
-import LoginInput from "../../login/forms/LoginInput";
+import LoginInput from "../forms/LoginInput";
 import TableCell from "./TableCell";
 
 const renderCellContent = (x) => {

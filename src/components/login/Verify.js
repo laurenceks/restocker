@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import LoginLink from "./forms/LoginLink";
+import LoginLink from "../common/forms/LoginLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
 import PropTypes from "prop-types";

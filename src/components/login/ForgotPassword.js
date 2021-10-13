@@ -1,6 +1,6 @@
 import {useRef, useState} from 'react';
-import LoginInput from "./forms/LoginInput";
-import LoginLink from "./forms/LoginLink";
+import LoginInput from "../common/forms/LoginInput";
+import LoginLink from "../common/forms/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 

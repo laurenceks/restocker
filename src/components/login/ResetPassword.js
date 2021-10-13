@@ -2,7 +2,7 @@ import {useRef, useState} from 'react';
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import validateForm from "../../functions/formValidation";
-import LoginInput from "./forms/LoginInput";
+import LoginInput from "../common/forms/LoginInput";
 
 const ResetPassword = ({token, selector}) => {
     const [resetPasswordFeedback, setResetPasswordFeedback] = useState({icon: null, success: false, inProgress: false});
