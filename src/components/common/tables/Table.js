@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
-import LoginInput from "../forms/LoginInput";
+import FormInput from "../forms/FormInput";
 import TableCell from "./TableCell";
 
 const renderCellContent = (x) => {
@@ -25,7 +25,7 @@ const renderCellContent = (x) => {
                 )
             case "input":
                 return (
-                    <LoginInput {...x.props}/>
+                    <FormInput {...x.props}/>
                 )
             default:
                 return x.text || "";

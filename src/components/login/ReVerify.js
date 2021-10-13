@@ -1,6 +1,6 @@
 import {useRef, useState} from 'react';
-import LoginInput from "../common/forms/LoginInput";
-import LoginLink from "../common/forms/LoginLink";
+import FormInput from "../common/forms/FormInput";
+import FormLink from "../common/forms/FormLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 
@@ -32,10 +32,10 @@ const ReVerify = () => {
                 <h1 className="h3 mb-3 fw-normal">Resend verification email</h1>
                 {(!reVerifyFeedback.feedback || reVerifyFeedback.keepFormActive) && <>
                     <div className="reVerifyFormInputGroup mb-3">
-                        <LoginInput type={"email"} placeholder={"you@example.com"}
-                                    label={"Email address"}
-                                    id={"inputReVerifyEmail"}
-                                    invalidFeedback={"Please enter your email address"}/>
+                        <FormInput type={"email"} placeholder={"you@example.com"}
+                                   label={"Email address"}
+                                   id={"inputReVerifyEmail"}
+                                   invalidFeedback={"Please enter your email address"}/>
                     </div>
                     <button className="w-100 btn btn-lg btn-primary" type="submit">Re-send verification email</button>
                 </>
@@ -44,8 +44,8 @@ const ReVerify = () => {
                 <LoginFeedback feedbackText={reVerifyFeedback.feedback}
                                feedbackClass={reVerifyFeedback.feedbackClass}/>}
                 {!reVerifyFeedback.feedback &&
-                <LoginLink to={"/forgotPassword"} label={"Forgot password"}/>}
-                <LoginLink to={"/login"} label={"Back to login"}/>
+                <FormLink to={"/forgotPassword"} label={"Forgot password"}/>}
+                <FormLink to={"/login"} label={"Back to login"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
             </fieldset>
         </form>

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {NavLink} from "react-router-dom";
 
-const LoginLink = ({to, label}) => {
+const FormLink = ({to, label}) => {
     return (
         <div className={"my-3"}>
             <p className={"small"}><NavLink className={"text-muted"} to={to}>{label}</NavLink></p>
@@ -10,14 +10,14 @@ const LoginLink = ({to, label}) => {
     );
 };
 
-LoginLink.propTypes = {
+FormLink.propTypes = {
     to: PropTypes.string,
     label: PropTypes.string
 };
 
-LoginLink.defaultProps = {
+FormLink.defaultProps = {
     to: "/",
     label: "Home"
 }
 
-export default LoginLink;
+export default FormLink;

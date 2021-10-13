@@ -1,7 +1,7 @@
 import {useContext, useRef, useState} from 'react';
-import LoginInput from "../common/forms/LoginInput";
-import LoginCheckbox from "../common/forms/LoginCheckbox";
-import LoginLink from "../common/forms/LoginLink";
+import FormInput from "../common/forms/FormInput";
+import InputCheckbox from "../common/forms/InputCheckbox";
+import FormLink from "../common/forms/FormLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import {GlobalAppContext} from "../../App";
@@ -37,20 +37,20 @@ const Login = props => {
             <fieldset disabled={loginFeedback?.inProgress && "disabled"}>
                 <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
                 <div className="loginFormInputGroup mb-3">
-                    <LoginInput type={"email"} placeholder={"you@example.com"}
-                                label={"Email address"}
-                                id={"inputLoginEmail"}
-                                invalidFeedback={"Please enter your email address"}/>
-                    <LoginInput type={"password"} placeholder={"Password"} label={"Password"}
-                                id={"inputLoginPassword"}
-                                invalidFeedback={"Please enter your password"}/>
+                    <FormInput type={"email"} placeholder={"you@example.com"}
+                               label={"Email address"}
+                               id={"inputLoginEmail"}
+                               invalidFeedback={"Please enter your email address"}/>
+                    <FormInput type={"password"} placeholder={"Password"} label={"Password"}
+                               id={"inputLoginPassword"}
+                               invalidFeedback={"Please enter your password"}/>
                 </div>
-                <LoginCheckbox id={"inputLoginRemember"} label={"Remember me"} className={"my-3"}/>
+                <InputCheckbox id={"inputLoginRemember"} label={"Remember me"} className={"my-3"}/>
                 <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
                 {(loginFeedback && !loginFeedback.inProgress) &&
                 <LoginFeedback feedbackText={loginFeedback.feedback} feedbackClass={loginFeedback.feedbackClass}/>}
-                <LoginLink to={"/forgotPassword"} label={"Forgot password"}/>
-                <LoginLink to={"/register"} label={"Register"}/>
+                <FormLink to={"/forgotPassword"} label={"Forgot password"}/>
+                <FormLink to={"/register"} label={"Register"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
             </fieldset>
         </form>

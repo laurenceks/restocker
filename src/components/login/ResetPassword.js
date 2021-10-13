@@ -2,7 +2,7 @@ import {useRef, useState} from 'react';
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import validateForm from "../../functions/formValidation";
-import LoginInput from "../common/forms/LoginInput";
+import FormInput from "../common/forms/FormInput";
 
 const ResetPassword = ({token, selector}) => {
     const [resetPasswordFeedback, setResetPasswordFeedback] = useState({icon: null, success: false, inProgress: false});
@@ -36,15 +36,15 @@ const ResetPassword = ({token, selector}) => {
                     {(!resetPasswordFeedback.success) &&
                     <div>
                         <div className="mb-3 loginFormInputGroup">
-                            <LoginInput type={"password"} placeholder={"New password"} label={"New password"}
-                                        id={"inputPasswordResetPassword"}
-                                        inputClass={""}
-                                        invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
-                                        passwordId={1}/>
-                            <LoginInput type={"password"} placeholder={"Confirm new password"}
-                                        label={"Confirm new password"}
-                                        id={"inputPasswordResetConfirmPassword"}
-                                        inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
+                            <FormInput type={"password"} placeholder={"New password"} label={"New password"}
+                                       id={"inputPasswordResetPassword"}
+                                       inputClass={""}
+                                       invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
+                                       passwordId={1}/>
+                            <FormInput type={"password"} placeholder={"Confirm new password"}
+                                       label={"Confirm new password"}
+                                       id={"inputPasswordResetConfirmPassword"}
+                                       inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                         </div>
                         <button className="w-100 btn btn-lg btn-primary" type="submit">Reset password</button>
                     </div>

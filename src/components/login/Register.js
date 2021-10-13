@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import LoginInput from "../common/forms/LoginInput";
-import LoginCheckbox from "../common/forms/LoginCheckbox";
-import LoginLink from "../common/forms/LoginLink";
+import FormInput from "../common/forms/FormInput";
+import InputCheckbox from "../common/forms/InputCheckbox";
+import FormLink from "../common/forms/FormLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -47,30 +47,30 @@ const Register = () => {
                 {!registerFeedback.success &&
                 <><h1 className="h3 mb-3 fw-normal">Register</h1>
                     <div className="mb-3 loginFormInputGroup">
-                        <LoginInput type={"text"} placeholder={"John"} label={"First name"}
-                                    id={"inputRegisterFirstName"}
-                                    inputClass={""} invalidFeedback={"Please enter your first name"}/>
-                        <LoginInput type={"text"} placeholder={"Smith"} label={"Last name"}
-                                    id={"inputRegisterLastName"}
-                                    inputClass={""} invalidFeedback={"Please enter your last name"}/>
+                        <FormInput type={"text"} placeholder={"John"} label={"First name"}
+                                   id={"inputRegisterFirstName"}
+                                   inputClass={""} invalidFeedback={"Please enter your first name"}/>
+                        <FormInput type={"text"} placeholder={"Smith"} label={"Last name"}
+                                   id={"inputRegisterLastName"}
+                                   inputClass={""} invalidFeedback={"Please enter your last name"}/>
                     </div>
                     <div className="mb-3 loginFormInputGroup">
-                        <LoginInput type={"email"} placeholder={"you@example.com"} label={"Email address"}
-                                    id={"inputRegisterEmail"}
-                                    inputClass={""} invalidFeedback={"Please enter a valid email address"}/>
-                        <LoginInput type={"password"} placeholder={"Password"} label={"Password"}
-                                    id={"inputRegisterPassword"}
-                                    inputClass={""}
-                                    invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
-                                    passwordId={1}/>
-                        <LoginInput type={"password"} placeholder={"Confirm password"} label={"Confirm password"}
-                                    id={"inputRegisterConfirmPassword"}
-                                    inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
+                        <FormInput type={"email"} placeholder={"you@example.com"} label={"Email address"}
+                                   id={"inputRegisterEmail"}
+                                   inputClass={""} invalidFeedback={"Please enter a valid email address"}/>
+                        <FormInput type={"password"} placeholder={"Password"} label={"Password"}
+                                   id={"inputRegisterPassword"}
+                                   inputClass={""}
+                                   invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
+                                   passwordId={1}/>
+                        <FormInput type={"password"} placeholder={"Confirm password"} label={"Confirm password"}
+                                   id={"inputRegisterConfirmPassword"}
+                                   inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                     </div>
                     <div className="mb-3 loginFormInputGroup">
-                        <LoginInput type={"typeahead"}
-                                    id={"inputRegisterOrganisationWrap"}
-                                    typeaheadProps={{
+                        <FormInput type={"typeahead"}
+                                   id={"inputRegisterOrganisationWrap"}
+                                   typeaheadProps={{
                                         inputProps:
                                             {
                                                 id: "inputRegisterOrganisation",
@@ -91,13 +91,13 @@ const Register = () => {
                                         labelKey: "organisation",
                                         options: organisations
                                     }}
-                                    invalidFeedback={"Please select your organisation, or add a new one"}
+                                   invalidFeedback={"Please select your organisation, or add a new one"}
                         />
                         {organisation && organisation.customOption &&
                         <p className="my-3 text-muted small">{organisation.organisation} will be saved as a new
                             organisation with you as the admin</p>}
                     </div>
-                    <LoginCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
+                    <InputCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
                                    invalidFeedback={"You must agree to the terms and conditions"}
                                    checkRequired={true}/>
                     <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>
@@ -108,8 +108,8 @@ const Register = () => {
                     <LoginFeedback feedbackText={registerFeedback.feedback}
                                    feedbackClass={registerFeedback.feedbackClass}/>
                 }
-                <LoginLink to={"/login"}
-                           label={registerFeedback.success ? "Back to login" : "Login with an existing account"}/>
+                <FormLink to={"/login"}
+                          label={registerFeedback.success ? "Back to login" : "Login with an existing account"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
             </fieldset>
         </form>

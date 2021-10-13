@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import LoginInput from "../common/forms/LoginInput";
+import FormInput from "../common/forms/FormInput";
 import {useState} from "react"
 
 import {dummyItems, dummyLists} from "../common/dummyData";
-import LoginCheckbox from "../common/forms/LoginCheckbox";
+import InputCheckbox from "../common/forms/InputCheckbox";
 
 const Withdraw = props => {
     const [withdrawData, setWithdrawData] = useState({});
@@ -14,15 +14,15 @@ const Withdraw = props => {
             <form>
                 <div className="row">
                     <h5>Type</h5>
-                        <LoginCheckbox className="my-3" type="radio" name="inputWithdrawType" id="inputWithdrawTypeItem" label="Item" onChange={ (id, e) => {setWithdrawType(id)}}/>
-                        <LoginCheckbox type="radio" name="inputWithdrawType" id="inputWithdrawTypeList" label="List" onChange={ (id, e) => {setWithdrawType(id)}}/>
+                        <InputCheckbox className="my-3" type="radio" name="inputWithdrawType" id="inputWithdrawTypeItem" label="Item" onChange={ (id, e) => {setWithdrawType(id)}}/>
+                        <InputCheckbox type="radio" name="inputWithdrawType" id="inputWithdrawTypeList" label="List" onChange={ (id, e) => {setWithdrawType(id)}}/>
                 </div>
                 <div className="row">
                     <div className="col-1 d-flex justify-content-end align-items-center">
                         <p className="m-0">ID {withdrawData.id}</p>
                     </div>
                     <div className="col">
-                        <LoginInput type={"typeahead"} id={"inputWithdrawName"} typeaheadProps={{
+                        <FormInput type={"typeahead"} id={"inputWithdrawName"} typeaheadProps={{
                             inputProps:
                                 {
                                     id: "inputRegisterOrganisation",
@@ -39,7 +39,7 @@ const Withdraw = props => {
                         }}/>
                     </div>
                     <div className="col">
-                        <LoginInput type={"number"} id={"inputWithdrawQuantity"} label={"Quantity"} max={maxQty}/>
+                        <FormInput type={"number"} id={"inputWithdrawQuantity"} label={"Quantity"} max={maxQty}/>
                     </div>
                 </div>
             </form>

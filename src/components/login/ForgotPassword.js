@@ -1,6 +1,6 @@
 import {useRef, useState} from 'react';
-import LoginInput from "../common/forms/LoginInput";
-import LoginLink from "../common/forms/LoginLink";
+import FormInput from "../common/forms/FormInput";
+import FormLink from "../common/forms/FormLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 
@@ -32,10 +32,10 @@ const Forgot = () => {
                 password</h1>
                 {(!forgotFeedback.feedback || forgotFeedback.keepFormActive) && <>
                     <div className="loginFormInputGroup mb-3">
-                        <LoginInput type={"email"} placeholder={"you@example.com"}
-                                    label={"Email address"}
-                                    id={"inputForgotEmail"}
-                                    invalidFeedback={"Please enter your email address"}/>
+                        <FormInput type={"email"} placeholder={"you@example.com"}
+                                   label={"Email address"}
+                                   id={"inputForgotEmail"}
+                                   invalidFeedback={"Please enter your email address"}/>
                     </div>
                     <button className="w-100 btn btn-lg btn-primary" type="submit">Send password reset</button>
                 </>
@@ -43,8 +43,8 @@ const Forgot = () => {
                 {(forgotFeedback?.feedback && !forgotFeedback?.inProgress) &&
                 <LoginFeedback feedbackText={forgotFeedback.feedback} feedbackClass={forgotFeedback.feedbackClass}/>}
                 {forgotFeedback?.feedback === "Email not verified" &&
-                <LoginLink to={"/reVerify"} label={"Re-send verification email"}/>}
-                <LoginLink to={"/login"} label={"Back to login"}/>
+                <FormLink to={"/reVerify"} label={"Re-send verification email"}/>}
+                <FormLink to={"/login"} label={"Back to login"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p></fieldset>
         </form>
     );

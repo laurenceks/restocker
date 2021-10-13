@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import LoginLink from "../common/forms/LoginLink";
+import FormLink from "../common/forms/FormLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
 import PropTypes from "prop-types";
@@ -67,7 +67,7 @@ const Verify = ({type}) => {
                                    feedbackText={paramsState.feedback}/>}
                 {(!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify") &&
                 <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
-                {paramsState.success && <LoginLink to={"/login"} label="Login"/>}
+                {paramsState.success && <FormLink to={"/login"} label="Login"/>}
             </div>
         );
     }

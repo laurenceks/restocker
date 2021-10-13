@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 
-const LoginCheckbox = ({id, label, inputClass, invalidFeedback, checkRequired, type, onChange, name, className}) => {
+const InputCheckbox = ({id, label, inputClass, invalidFeedback, checkRequired, type, onChange, name, className}) => {
     return (
         <div className={`form-check checkbox ${className && `${className}`}`}>
             <input type={type} id={id} className={`form-check-input ${inputClass && ` ${inputClass}`}`}
@@ -21,7 +21,7 @@ const LoginCheckbox = ({id, label, inputClass, invalidFeedback, checkRequired, t
     );
 };
 
-LoginCheckbox.propTypes = {
+InputCheckbox.propTypes = {
     placeholder: PropTypes.bool,
     checkRequired: PropTypes.bool,
     id: PropTypes.string,
@@ -33,7 +33,7 @@ LoginCheckbox.propTypes = {
     name: PropTypes.string,
     onChange: PropTypes.func
 };
-LoginCheckbox.defaultProps = {
+InputCheckbox.defaultProps = {
     placeholder: false,
     checkRequired: false,
     id: "inputCheckbox-" + Math.random(),
@@ -46,4 +46,4 @@ LoginCheckbox.defaultProps = {
     onChange: null
 };
 
-export default LoginCheckbox;
+export default InputCheckbox;

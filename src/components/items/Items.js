@@ -1,4 +1,4 @@
-import LoginInput from "../common/forms/LoginInput";
+import FormInput from "../common/forms/FormInput";
 import {useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
@@ -154,18 +154,18 @@ const Items = () => {
                     <h2>Add new item</h2>
                     <div className="col-12 col-md-5 mb-3  mb-md-0">
                         <div className="loginFormInputGroup">
-                            <LoginInput type={"text"} id={"inputAddItemName"}
-                                        label={"Name"}
-                                        invalidFeedback={"You must name your item"}
-                                        forceCase={"title"}/>
+                            <FormInput type={"text"} id={"inputAddItemName"}
+                                       label={"Name"}
+                                       invalidFeedback={"You must name your item"}
+                                       forceCase={"title"}/>
                         </div>
                     </div>
                     <div className="col-12 col-md-5 mb-3  mb-md-0">
                         <div className="loginFormInputGroup">
-                            <LoginInput type={"text"} id={"inputAddItemUnit"}
-                                        label={"Base unit"}
-                                        invalidFeedback={"You must specify a unit type"}
-                                        forceCase={"lower"}/>
+                            <FormInput type={"text"} id={"inputAddItemUnit"}
+                                       label={"Base unit"}
+                                       invalidFeedback={"You must specify a unit type"}
+                                       forceCase={"lower"}/>
                         </div>
                     </div>
                     <div className="col-12 col-md-2 d-flex align-items-center">

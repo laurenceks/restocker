@@ -4,7 +4,7 @@ import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import {Typeahead} from "react-bootstrap-typeahead";
 import setCase from "../../../functions/setCase";
 
-const LoginInput = ({
+const FormInput = ({
                         defaultValue,
                         forceCase,
                         form,
@@ -60,7 +60,7 @@ const LoginInput = ({
     );
 };
 
-LoginInput.propTypes = {
+FormInput.propTypes = {
     forceCase: PropTypes.string,
     form: PropTypes.string,
     id: PropTypes.string,
@@ -73,7 +73,7 @@ LoginInput.propTypes = {
     passwordId: PropTypes.number,
     step: PropTypes.number,
 };
-LoginInput.defaultProps = {
+FormInput.defaultProps = {
     form: "",
     id: "input-" + Math.random(),
     label: "Input",
@@ -89,4 +89,4 @@ LoginInput.defaultProps = {
     step: 1,
 };
 
-export default LoginInput;
+export default FormInput;
