@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
+import fetchAllItems from "../../functions/fetchAllItems";
 
 const Items = () => {
     const [editId, setEditId] = useState(null);
@@ -14,40 +15,40 @@ const Items = () => {
     itemListRef.current = itemList;
 
     const getItems = () => {
-        fetchJson("./php/items/getAllItems.php", {
-            method: "GET"
-        }, (x) => {
-            const newItemsList = []
-            x.items.forEach((item, index) => {
-                    newItemsList.push(
-                        [
-                            item.id,
-                            item.name,
-                            `${item.currentStock} ${item.unit}`,
-                            {
-                                type: "button",
-                                id: 1,
-                                text: "Edit",
-                                buttonClass: "btn-warning btn-sm",
-                                handler: () => {
-                                    showEditRow(index);
-                                }
-                            },
-                            {
-                                type: "button",
-                                id: 1,
-                                text: "Delete",
-                                buttonClass: "btn-danger btn-sm",
-                                handler: () => {
-                                    deleteItem(item.id);
-                                }
+        fetchAllItems(processItems)
+    }
+
+    const processItems = (x) => {
+        const newItemsList = []
+        x.items.forEach((item, index) => {
+                newItemsList.push(
+                    [
+                        item.id,
+                        item.name,
+                        `${item.currentStock} ${item.unit}`,
+                        {
+                            type: "button",
+                            id: 1,
+                            text: "Edit",
+                            buttonClass: "btn-warning btn-sm",
+                            handler: () => {
+                                showEditRow(index);
                             }
-                        ]
-                    )
-                }
-            )
-            setItemList(newItemsList);
-        });
+                        },
+                        {
+                            type: "button",
+                            id: 1,
+                            text: "Delete",
+                            buttonClass: "btn-danger btn-sm",
+                            handler: () => {
+                                deleteItem(item.id);
+                            }
+                        }
+                    ]
+                )
+            }
+        )
+        setItemList(newItemsList);
     }
 
     const addItem = (x) => {
@@ -152,7 +153,7 @@ const Items = () => {
             }}>
                 <div className="row my-3">
                     <h2>Add new item</h2>
-                    <div className="col-12 col-md-5 mb-3  mb-md-0">
+                    <div className="col-12 col-md-5 mb-3 mb-md-0">
                         <div className="loginFormInputGroup">
                             <FormInput type={"text"} id={"inputAddItemName"}
                                        label={"Name"}
