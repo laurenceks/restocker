@@ -1,4 +1,4 @@
-import LoginInput from "../login/loginComponents/LoginInput";
+import LoginInput from "../login/forms/LoginInput";
 import {useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";

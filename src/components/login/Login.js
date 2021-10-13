@@ -1,7 +1,7 @@
 import {useContext, useRef, useState} from 'react';
-import LoginInput from "./loginComponents/LoginInput";
-import LoginCheckbox from "./loginComponents/LoginCheckbox";
-import LoginLink from "./loginComponents/LoginLink";
+import LoginInput from "./forms/LoginInput";
+import LoginCheckbox from "./forms/LoginCheckbox";
+import LoginLink from "./forms/LoginLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import {GlobalAppContext} from "../../App";

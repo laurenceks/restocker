@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
-import LoginInput from "../../login/loginComponents/LoginInput";
+import LoginInput from "../../login/forms/LoginInput";
 
 const renderCellContent = (x) => {
     if (!x.type) {
