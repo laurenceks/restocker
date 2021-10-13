@@ -2,22 +2,24 @@ import {useState} from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import {Typeahead} from "react-bootstrap-typeahead";
+import setCase from "../../../functions/setCase";
 
 const LoginInput = ({
-                        type,
-                        placeholder,
+                        defaultValue,
+                        forceCase,
+                        form,
                         id,
-                        label,
                         inputClass,
                         invalidFeedback,
-                        passwordId,
-                        onChange,
-                        min,
+                        label,
                         max,
+                        min,
+                        onChange,
+                        passwordId,
+                        placeholder,
                         step,
+                        type,
                         typeaheadProps,
-                        defaultValue,
-                        form
                     }) => {
     const [inputState, setInputState] = useState(defaultValue || "");
     return (
@@ -40,8 +42,11 @@ const LoginInput = ({
                            step={step}
                            onChange={(e) => {
                                setInputState(type === "number" ? parseInt(e.target.value) : e.target.value);
+                               if (forceCase && forceCase !== "") {
+                                   setInputState(setCase(e.target.value, forceCase));
+                               }
                                if (onChange) {
-                                   onChange(id, e.target.value)
+                                   onChange(id, e.target.value);
                                }
                            }}
                            form={form}
@@ -56,30 +61,32 @@ const LoginInput = ({
 };
 
 LoginInput.propTypes = {
-    type: PropTypes.string,
-    placeholder: PropTypes.string,
-    id: PropTypes.string,
+    forceCase: PropTypes.string,
     form: PropTypes.string,
-    label: PropTypes.string,
+    id: PropTypes.string,
     inputClass: PropTypes.string,
-    passwordId: PropTypes.number,
-    min: PropTypes.number,
+    label: PropTypes.string,
+    placeholder: PropTypes.string,
+    type: PropTypes.string,
     max: PropTypes.number,
+    min: PropTypes.number,
+    passwordId: PropTypes.number,
     step: PropTypes.number,
 };
 LoginInput.defaultProps = {
-    type: "text",
-    placeholder: "Input",
+    form: "",
     id: "input-" + Math.random(),
     label: "Input",
+    placeholder: "Input",
+    type: "text",
+    forceCase: null,
     inputClass: null,
     invalidFeedback: null,
-    passwordId: null,
-    onChange: null,
-    min: null,
     max: null,
+    min: null,
+    onChange: null,
+    passwordId: null,
     step: 1,
-    form: ""
 };
 
 export default LoginInput;
