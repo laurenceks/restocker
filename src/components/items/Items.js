@@ -152,7 +152,7 @@ const Items = () => {
             }}>
                 <div className="row my-3">
                     <h2>Add new item</h2>
-                    <div className="col">
+                    <div className="col-12 col-md-5 mb-3  mb-md-0">
                         <div className="loginFormInputGroup">
                             <LoginInput type={"text"} id={"inputAddItemName"}
                                         label={"Name"}
@@ -160,7 +160,7 @@ const Items = () => {
                                         forceCase={"title"}/>
                         </div>
                     </div>
-                    <div className="col">
+                    <div className="col-12 col-md-5 mb-3  mb-md-0">
                         <div className="loginFormInputGroup">
                             <LoginInput type={"text"} id={"inputAddItemUnit"}
                                         label={"Base unit"}
@@ -168,7 +168,7 @@ const Items = () => {
                                         forceCase={"lower"}/>
                         </div>
                     </div>
-                    <div className="col d-flex align-items-center">
+                    <div className="col-12 col-md-2 d-flex align-items-center">
                         <button type={"submit"} className={"btn btn-success"}>Add</button>
                     </div>
                 </div>
