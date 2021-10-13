@@ -1,7 +1,7 @@
 const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequirements = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/) => {
     e.preventDefault();
 
-    const inputsNotCheckedByRegex = ["text", "textarea", "password", "checkbox"]
+    const inputsNotCheckedByRegex = ["text", "textarea", "password", "checkbox", "number", "radio"]
 
     let formIsValid = true;
     const invalidInputs = [];
@@ -37,7 +37,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
                 exp = /^(((\+44\s?\d{4}|\(?0\d{4}\)?)\s?\d{3}\s?\d{3})|((\+44\s?\d{3}|\(?0\d{3}\)?)\s?\d{3}\s?\d{4})|((\+44\s?\d{2}|\(?0\d{2}\)?)\s?\d{4}\s?\d{4}))(\s?#(\d{4}|\d{3}))?$|\+[0-9]{1,3} ?[0-9 ]{1,15}/;
             }
             updateOutput(x, !exp.test(x.value))
-        } else if (x.type === "checkbox" && x.dataset.checkrequired === "true" && !x.checked) {
+        } else if ((x.type === "checkbox" || x.type === "radio") && x.dataset.checkrequired === "true" && !x.checked) {
             updateOutput(x)
         } else {
             updateOutput(x, false);
