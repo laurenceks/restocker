@@ -4,8 +4,9 @@ import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
 import Users from "./users/Users";
 import Dashboard from "./dashboard/Dashboard";
-import TransactionForm from "./withdraw/TransactionForm";
+import TransactionForm from "./transactions/TransactionForm";
 import Items from "./items/Items";
+import Stock from "./stock/Stock";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -30,8 +31,14 @@ const Main = props => {
                             </div>
                         )
                     }}/>
+                    <Route path={"/stock"}>
+                        <Stock/>
+                    </Route>
                     <Route path={"/withdraw"}>
-                        <TransactionForm/>
+                        <TransactionForm formType={"withdraw"}/>
+                    </Route>
+                    <Route path={"/restock"}>
+                        <TransactionForm formType={"restock"}/>
                     </Route>
                     <Route path={"/items"}>
                         <Items/>

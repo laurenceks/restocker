@@ -26,7 +26,7 @@ const TopNav = ({user}) => {
                             <NavLink to={"/withdraw"} className="nav-link">Withdraw</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/stock"} className="nav-link">Restock</NavLink>
+                            <NavLink to={"/restock"} className="nav-link">Restock</NavLink>
                         </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
