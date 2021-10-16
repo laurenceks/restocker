@@ -4,6 +4,7 @@ import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import fetchAllItems from "../../functions/fetchAllItems";
+import naturalSort from "../../functions/naturalSort";
 
 const Items = () => {
     class addDataTemplate {
@@ -15,6 +16,8 @@ const Items = () => {
 
     const [addData, setAddData] = useState(new addDataTemplate());
     const [editId, setEditId] = useState(null);
+    //TODO add sort key to table headers on click
+    const [sortKey, setSortKey] = useState("name");
     const [itemList, setItemList] = useState([[0, "Initial", "0 initial units", "", ""]]);
 
     const addItemForm = useRef();
@@ -28,7 +31,7 @@ const Items = () => {
 
     const processItems = (x) => {
         const newItemsList = []
-        x.items.forEach((item, index) => {
+        x.items.map( (x) => {return{...x, sortKey: x[sortKey]}}).sort(naturalSort).forEach((item, index) => {
                 newItemsList.push(
                     [
                         item.id,
