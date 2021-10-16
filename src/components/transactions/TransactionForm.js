@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
 import {useEffect, useRef, useState} from "react"
 
-import {dummyItems, mockLists} from "../common/mockData";
+import {mockLists} from "../common/mockData";
 import InputCheckbox from "../common/forms/InputCheckbox";
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
@@ -18,12 +18,13 @@ const TransactionForm = ({formType}) => {
             this.selected = [];
             this.quantity = 0;
             this.displayQuantity = "";
+            this.unit = "";
         }
     }
 
     const [withdrawItemType, setWithdrawItemType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
-    const [maxQty, setMaxQty] = useState(0);
+    const [maxQty, setMaxQty] = useState(null);
     const [itemList, setItemList] = useState([]);
     const [listList, setlistList] = useState(mockLists);
 
@@ -46,7 +47,7 @@ const TransactionForm = ({formType}) => {
             body: JSON.stringify(transactionData),
         }, (x) => {
             setTransactionData(new transactionDataTemplate(withdrawItemType));
-            setMaxQty(0);
+            setMaxQty(null);
             getItems();
         });
     }
@@ -126,7 +127,7 @@ const TransactionForm = ({formType}) => {
                             <div className="col-12 col-md-2 mb-3">
                                 <p className="m-0">ID {transactionData.id}</p>
                             </div>
-                            <div className="col-12 col-md-5 mb-3">
+                            <div className="col-12 col-md-4 mb-3">
                                 <FormInput
                                     type={"typeahead"} id={"inputWithdrawName"}
                                     typeaheadProps={{
@@ -144,8 +145,9 @@ const TransactionForm = ({formType}) => {
                                                 id: e[0].id,
                                                 selected: e,
                                                 displayQuantity: Math.max(Math.abs(transactionData.quantity), Number(maxQty)),
-                                            } : {});
-                                            setMaxQty(formType === "withdraw" ? e[0]?.currentStock || null : Infinity);
+                                                unit: e[0].unit
+                                            } : new transactionDataTemplate());
+                                            setMaxQty(formType === "withdraw" ? e[0]?.currentStock || null : null);
                                         },
                                         labelKey: "name",
                                         options: withdrawItemType === "item" ? itemList : listList,
@@ -153,14 +155,14 @@ const TransactionForm = ({formType}) => {
                                     }}
                                 />
                             </div>
-                            <div className="col-md-5 mb-3">
+                            <div className="col-md-4 mb-3">
                                 <FormInput type={"number"}
                                            id={"inputWithdrawQuantity"}
                                            label={"Quantity"}
                                            min={0}
-                                           max={Math.max(0, maxQty)}
+                                           max={maxQty ? Math.max(0, maxQty) : null}
                                            onChange={(id, val) => {
-                                               const qty = Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1);
+                                               const qty = maxQty ? Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1) : Math.max(val, 0) * (formType === "withdraw" ? -1 : 1);
                                                setTransactionData({
                                                    ...transactionData,
                                                    displayQuantity: Math.abs(qty),
@@ -169,6 +171,9 @@ const TransactionForm = ({formType}) => {
                                            }}
                                            value={transactionData.displayQuantity}
                                 />
+                            </div>
+                            <div className="col-md-2 mb-3">
+                                <p className="m-0">{transactionData.unit}</p>
                             </div>
                         </div>
                     </div>
