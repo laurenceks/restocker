@@ -400,809 +400,272 @@ export const dummyItems = [{
     "currentStock": 15
 }]
 
-export const dummyLists =
-    [{
-        "id": 1,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 2,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 3,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 4,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 5,
-        "listName": "Indigo",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 6,
-        "listName": "Turquoise",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 7,
-        "listName": "Maroon",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 8,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 9,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 10,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 11,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 12,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 13,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 14,
-        "listName": "Indigo",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 15,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 16,
-        "listName": "Fuscia",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 17,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 18,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 19,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 20,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 21,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 22,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 23,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 24,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 25,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 26,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 27,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 28,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 29,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 30,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 31,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 32,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 33,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 34,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 35,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 36,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 37,
-        "listName": "Blue",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 38,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 39,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 40,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 41,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 42,
-        "listName": "Indigo",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 43,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 44,
-        "listName": "Blue",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 45,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 46,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 47,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 48,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 49,
-        "listName": "Puce",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 50,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 51,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 52,
-        "listName": "Puce",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 53,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 54,
-        "listName": "Goldenrod",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 55,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 56,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 57,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 58,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 59,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 60,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 61,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 62,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 63,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 64,
-        "listName": "Indigo",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 65,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 66,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 67,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 68,
-        "listName": "Turquoise",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 69,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 70,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 71,
-        "listName": "Violet",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 72,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 73,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 74,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 75,
-        "listName": "Goldenrod",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 76,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 77,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 78,
-        "listName": "Red",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 79,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 80,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 81,
-        "listName": "Pink",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 82,
-        "listName": "Maroon",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 83,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 84,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 85,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 86,
-        "listName": "Blue",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 87,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 88,
-        "listName": "Yellow",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 89,
-        "listName": "Orange",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 90,
-        "listName": "Purple",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 91,
-        "listName": "Teal",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 92,
-        "listName": "Blue",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 93,
-        "listName": "Puce",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 94,
-        "listName": "Fuscia",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 95,
-        "listName": "Mauv",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 96,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 97,
-        "listName": "Aquamarine",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 98,
-        "listName": "Fuscia",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 99,
-        "listName": "Khaki",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }, {
-        "id": 100,
-        "listName": "Green",
-        "contents": [
-            {},
-            {},
-            {}
-        ]
-    }]
-
+export const mockLists = [{
+    "id": 1,
+    "name": "Orange",
+    "currentStock": 20,
+    "items": [
+        {
+            "id": 10,
+            "quantity": 5,
+            "name": "Dove Men plus Care"
+        },
+        {
+            "id": 10,
+            "quantity": 5,
+            "name": "Testosterone Enanthate"
+        },
+        {
+            "id": 12,
+            "quantity": 3,
+            "name": "ACETAMINOPHEN"
+        }
+    ],
+    "createdBy": 5,
+    "editedBy": 7,
+    "lastUpdated": "2020-11-12 11:33:08"
+}, {
+    "id": 2,
+    "name": "Fuscia",
+    "currentStock": 16,
+    "items": [
+        {
+            "id": 2,
+            "quantity": 1,
+            "name": "butalbital, acetominophen and caffeine"
+        },
+        {
+            "id": 4,
+            "quantity": 1,
+            "name": "Raspberry Scented Hand Sanitizer"
+        },
+        {
+            "id": 13,
+            "quantity": 5,
+            "name": "Red Delicious Apple"
+        }
+    ],
+    "createdBy": 1,
+    "editedBy": 7,
+    "lastUpdated": "2021-01-07 19:56:39"
+}, {
+    "id": 3,
+    "name": "Indigo",
+    "currentStock": 10,
+    "items": [
+        {
+            "id": 17,
+            "quantity": 2,
+            "name": "Metformin Hydrochloride"
+        },
+        {
+            "id": 13,
+            "quantity": 5,
+            "name": "Dextroamphetamine Saccharate, Amphetamine Aspartate, Dextroamphetamine Sulfate, and Amphetamine Sulfate"
+        },
+        {
+            "id": 21,
+            "quantity": 4,
+            "name": "Hydrogen Peroxide"
+        }
+    ],
+    "createdBy": 10,
+    "editedBy": 6,
+    "lastUpdated": "2020-11-22 20:46:10"
+}, {
+    "id": 4,
+    "name": "Mauv",
+    "currentStock": 21,
+    "items": [
+        {
+            "id": 2,
+            "quantity": 4,
+            "name": "DR. BABOR DERMA CELLULAR Ultimate Firming Decollete Mask"
+        },
+        {
+            "id": 24,
+            "quantity": 4,
+            "name": "Ear Wax Remover"
+        },
+        {
+            "id": 24,
+            "quantity": 3,
+            "name": "JET LAG RELIEF"
+        },
+        {
+            "id": 11,
+            "quantity": 3,
+            "name": "LESCOL"
+        }
+    ],
+    "createdBy": 2,
+    "editedBy": 2,
+    "lastUpdated": "2020-12-22 00:01:44"
+}, {
+    "id": 5,
+    "name": "Mauv",
+    "currentStock": 12,
+    "items": [
+        {
+            "id": 22,
+            "quantity": 3,
+            "name": "Ketoprofen"
+        },
+        {
+            "id": 1,
+            "quantity": 2,
+            "name": "Paroxetine"
+        },
+        {
+            "id": 14,
+            "quantity": 3,
+            "name": "WHITE FLOWER ANALGESIC BALM FLORAL SCENTED"
+        },
+        {
+            "id": 14,
+            "quantity": 5,
+            "name": "Cisatracurium Besylate"
+        }
+    ],
+    "createdBy": 6,
+    "editedBy": 7,
+    "lastUpdated": "2021-05-17 06:51:53"
+}, {
+    "id": 6,
+    "name": "Goldenrod",
+    "currentStock": 4,
+    "items": [
+        {
+            "id": 1,
+            "quantity": 3,
+            "name": "MoodBrite"
+        },
+        {
+            "id": 9,
+            "quantity": 3,
+            "name": "Mistletoe and Mint Antibacterial Foaming Hand Wash"
+        },
+        {
+            "id": 21,
+            "quantity": 3,
+            "name": "Standardized Mite Mix, Dermatophagoides pteronyssinus and Dermatophagoides farinae, 30000 AU per mL"
+        },
+        {
+            "id": 15,
+            "quantity": 4,
+            "name": "Metformin Hydrochloride"
+        }
+    ],
+    "createdBy": 5,
+    "editedBy": 9,
+    "lastUpdated": "2021-04-09 13:27:57"
+}, {
+    "id": 7,
+    "name": "Pink",
+    "currentStock": 13,
+    "items": [
+        {
+            "id": 19,
+            "quantity": 4,
+            "name": "LAMICTAL"
+        },
+        {
+            "id": 1,
+            "quantity": 4,
+            "name": "Hypertenevide-12.5"
+        },
+        {
+            "id": 20,
+            "quantity": 3,
+            "name": "DIANEAL PD-2 with Dextrose"
+        },
+        {
+            "id": 22,
+            "quantity": 3,
+            "name": "Fungicure"
+        }
+    ],
+    "createdBy": 4,
+    "editedBy": 6,
+    "lastUpdated": "2021-04-24 22:08:21"
+}, {
+    "id": 8,
+    "name": "Pink",
+    "currentStock": 9,
+    "items": [
+        {
+            "id": 20,
+            "quantity": 5,
+            "name": "RAPAFLO"
+        },
+        {
+            "id": 15,
+            "quantity": 1,
+            "name": "Prochlorperazine Maleate"
+        }
+    ],
+    "createdBy": 1,
+    "editedBy": 6,
+    "lastUpdated": "2021-05-29 05:17:41"
+}, {
+    "id": 9,
+    "name": "Orange",
+    "currentStock": 6,
+    "items": [
+        {
+            "id": 19,
+            "quantity": 4,
+            "name": "Hydroxyzine Pamoate"
+        },
+        {
+            "id": 14,
+            "quantity": 5,
+            "name": "Asthma Therapy"
+        },
+        {
+            "id": 21,
+            "quantity": 2,
+            "name": "CPDA-1"
+        },
+        {
+            "id": 1,
+            "quantity": 3,
+            "name": "Olanzapine"
+        },
+        {
+            "id": 9,
+            "quantity": 5,
+            "name": "Escitalopram"
+        }
+    ],
+    "createdBy": 4,
+    "editedBy": 7,
+    "lastUpdated": "2021-03-01 19:15:03"
+}, {
+    "id": 10,
+    "name": "Crimson",
+    "currentStock": 15,
+    "items": [
+        {
+            "id": 1,
+            "quantity": 5,
+            "name": "Ferrum Metallicum"
+        },
+        {
+            "id": 18,
+            "quantity": 3,
+            "name": "Neutrogena Skin Clearing"
+        },
+        {
+            "id": 2,
+            "quantity": 5,
+            "name": "naproxen sodium"
+        }
+    ],
+    "createdBy": 4,
+    "editedBy": 6,
+    "lastUpdated": "2021-04-02 17:17:50"
+}]
 export const dummyTransactions = [{
     "id": 1,
     "itemId": 3,

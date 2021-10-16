@@ -4,7 +4,7 @@ import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
 import Users from "./users/Users";
 import Dashboard from "./dashboard/Dashboard";
-import Withdraw from "./withdraw/Withdraw";
+import TransactionForm from "./withdraw/TransactionForm";
 import Items from "./items/Items";
 
 const Main = props => {
@@ -31,7 +31,7 @@ const Main = props => {
                         )
                     }}/>
                     <Route path={"/withdraw"}>
-                        <Withdraw/>
+                        <TransactionForm/>
                     </Route>
                     <Route path={"/items"}>
                         <Items/>
