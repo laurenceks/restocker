@@ -9,19 +9,32 @@ import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 
 const Withdraw = ({formType}) => {
-    const [withdrawData, setWithdrawData] = useState({});
-    const [withdrawType, setWithdrawType] = useState("inputWithdrawTypeItem");
-    const [maxQty, setMaxQty] = useState(null);
+    class withdrawDataTemplate {
+        constructor() {
+            this.id = null;
+            this.name = "";
+            this.selected = [];
+            this.quantity = 0;
+            this.displayQuantity = "";
+        }
+    }
+
+    const [withdrawData, setWithdrawData] = useState(new withdrawDataTemplate());
+    const [withdrawType, setWithdrawType] = useState("item");
+    const [maxQty, setMaxQty] = useState(0);
     const [itemList, setItemList] = useState([]);
 
     const withdrawFormRef = useRef();
+
 
     const getItems = () => {
         fetchAllItems(processItems)
     }
 
     const processItems = (x) => {
-        setItemList(x.items);
+        setItemList(x.items.filter(x => {
+            return x.currentStock > 0
+        }));
     }
 
     const withdrawItems = (e) => {
@@ -29,8 +42,8 @@ const Withdraw = ({formType}) => {
             method: "POST",
             body: JSON.stringify(withdrawData),
         }, (x) => {
-            console.log(withdrawFormRef);
-            withdrawFormRef.current.reset();
+            setWithdrawData(new withdrawDataTemplate());
+            setMaxQty(0);
             getItems();
         });
     }
@@ -48,9 +61,11 @@ const Withdraw = ({formType}) => {
             <div className={"row align-items-center"}>
                 <h1>Withdraw stock</h1>
             </div>
-            <form ref={withdrawFormRef} onSubmit={(e) => {
-                validateForm(e, withdrawFormRef, withdrawType === "inputWithdrawTypeItem" ? withdrawItems : withdrawList);
-            }}>
+            <form ref={withdrawFormRef}
+                  id={"withdrawForm"}
+                  onSubmit={(e) => {
+                      validateForm(e, withdrawFormRef, withdrawType === "item" ? withdrawItems : withdrawList);
+                  }}>
                 <div className="row align-items-center">
                     <div className={"col-12 col-md-5 mb-3"}>
                         <div className={"row align-items-center"}>
@@ -58,32 +73,32 @@ const Withdraw = ({formType}) => {
                         </div>
                         <div className={"row align-items-center bg-light rounded p-2"}>
                             <div
-                                className={`col-6 ${withdrawType === "inputWithdrawTypeItem" && "bg-primary rounded text-light"}`}>
+                                className={`col-6 ${withdrawType === "item" && "bg-primary rounded text-light"}`}>
                                 <InputCheckbox className="my-3" type="radio"
                                                name="inputWithdrawType"
                                                id="inputWithdrawTypeItem"
                                                label="Item"
                                                onChange={(id, e) => {
-                                                   setWithdrawType(id)
+                                                   setWithdrawType("item")
                                                }}
-                                               defaultChecked={withdrawType === "inputWithdrawTypeItem"}
+                                               defaultChecked={withdrawType === "item"}
                                 />
                             </div>
                             <div
-                                className={`col-6 ${withdrawType === "inputWithdrawTypeList" && "bg-primary rounded text-light"}`}>
+                                className={`col-6 ${withdrawType === "list" && "bg-primary rounded text-light"}`}>
                                 <InputCheckbox className="my-3" type="radio"
                                                name="inputWithdrawType"
                                                id="inputWithdrawTypeList"
                                                label="List"
                                                onChange={(id, e) => {
-                                                   setWithdrawType(id)
+                                                   setWithdrawType("list")
                                                }}/>
                             </div>
                         </div>
                     </div>
                     <div className={"col"}>
                         <div className={"row align-items-center"}>
-                            <h5>{withdrawType === "inputWithdrawTypeItem" ? "Item" : "List"}</h5>
+                            <h5>{withdrawType === "item" ? "Item" : "List"}</h5>
                         </div>
                         <div className={"row align-items-center"}>
                             <div className="col-12 col-md-2 mb-3">
@@ -104,13 +119,17 @@ const Withdraw = ({formType}) => {
                                             setWithdrawData(e[0] ? {
                                                 ...withdrawData,
                                                 name: e[0].name,
-                                                id: e[0].id
+                                                id: e[0].id,
+                                                selected: e,
+                                                displayQuantity: Math.max(Math.abs(withdrawData.quantity), Number(maxQty)),
                                             } : {});
                                             setMaxQty(e[0]?.currentStock || null);
                                         },
-                                        labelKey: withdrawType === "inputWithdrawTypeItem" ? "name" : "listName",
-                                        options: withdrawType === "inputWithdrawTypeItem" ? itemList : dummyLists
-                                    }}/>
+                                        labelKey: withdrawType === "item" ? "name" : "listName",
+                                        options: withdrawType === "item" ? itemList : dummyLists,
+                                        selected: withdrawData.selected
+                                    }}
+                                />
                             </div>
                             <div className="col-md-5 mb-3">
                                 <FormInput type={"number"}
@@ -119,11 +138,14 @@ const Withdraw = ({formType}) => {
                                            min={0}
                                            max={Math.max(0, maxQty)}
                                            onChange={(id, val) => {
+                                               const qty = Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1);
                                                setWithdrawData({
                                                    ...withdrawData,
-                                                   quantity: Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1)
+                                                   displayQuantity: Math.abs(qty),
+                                                   quantity: qty
                                                });
                                            }}
+                                           value={withdrawData.displayQuantity}
                                 />
                             </div>
                         </div>
