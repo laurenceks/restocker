@@ -82,6 +82,7 @@ FormInput.defaultProps = {
     label: "Input",
     placeholder: "Input",
     type: "text",
+    defaultValue: null,
     forceCase: null,
     inputClass: null,
     invalidFeedback: null,

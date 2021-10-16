@@ -10,7 +10,7 @@ import fetchJson from "../../functions/fetchJson";
 
 const TransactionForm = ({formType}) => {
 
-    class withdrawDataTemplate {
+    class transactionDataTemplate {
         constructor(type = "item") {
             this.withdrawType = type;
             this.id = null;
@@ -22,7 +22,7 @@ const TransactionForm = ({formType}) => {
     }
 
     const [withdrawItemType, setWithdrawItemType] = useState("item");
-    const [withdrawData, setTransactionData] = useState(new withdrawDataTemplate());
+    const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(0);
     const [itemList, setItemList] = useState([]);
     const [listList, setlistList] = useState(mockLists);
@@ -35,17 +35,17 @@ const TransactionForm = ({formType}) => {
     }
 
     const processItems = (x) => {
-        setItemList(x.items.filter(x => {
-            return x.currentStock > 0
-        }));
+        setItemList(formType === "withdraw" ? x.items.filter(x => {
+            return x.currentStock > 0;
+        }) : x.items);
     }
 
     const withdrawItems = (e) => {
         fetchJson("./php/items/addTransaction.php", {
             method: "POST",
-            body: JSON.stringify(withdrawData),
+            body: JSON.stringify(transactionData),
         }, (x) => {
-            setTransactionData(new withdrawDataTemplate(withdrawItemType));
+            setTransactionData(new transactionDataTemplate(withdrawItemType));
             setMaxQty(0);
             getItems();
         });
@@ -55,14 +55,31 @@ const TransactionForm = ({formType}) => {
     }
 
     useEffect(() => {
+        //on initial load fetch item lists
         getItems();
     }, []);
 
+    useEffect(() => {
+        //if formtype changes reprocess items
+        getItems();
+    }, [formType]);
+
+    useEffect(() => {
+        //if lists change then check if current option is still available
+        const currentList = formType === "withdraw" ? itemList : listList;
+        if (transactionData && !currentList.some((x) => {
+            return x.id === transactionData?.id
+        })) {
+            //reset transaction data
+            setTransactionData(new transactionDataTemplate(withdrawItemType));
+        }
+        getItems();
+    }, [itemList, listList]);
 
     return (
         <div className="container">
             <div className={"row align-items-center"}>
-                <h1>{formType==="withdraw" ? `Withdraw ${withdrawItemType}` : "Restock item"}</h1>
+                <h1>{formType === "withdraw" ? `Withdraw ${withdrawItemType}` : "Restock item"}</h1>
             </div>
             <form ref={transactionFormRef}
                   id={"withdrawForm"}
@@ -70,7 +87,7 @@ const TransactionForm = ({formType}) => {
                       validateForm(e, transactionFormRef, withdrawItemType === "item" ? withdrawItems : withdrawList);
                   }}>
                 <div className="row align-items-center">
-                    <div className={"col-12 col-md-5 mb-3"}>
+                    {formType === "withdraw" && <div className={"col-12 col-md-5 mb-3"}>
                         <div className={"row align-items-center"}>
                             <h5>Type</h5>
                         </div>
@@ -83,7 +100,7 @@ const TransactionForm = ({formType}) => {
                                                label="Item"
                                                onChange={(id, e) => {
                                                    withdrawItemType("item")
-                                                   setTransactionData(new withdrawDataTemplate("item"));
+                                                   setTransactionData(new transactionDataTemplate("item"));
                                                }}
                                                defaultChecked={withdrawItemType === "item"}
                                 />
@@ -96,18 +113,18 @@ const TransactionForm = ({formType}) => {
                                                label="List"
                                                onChange={(id, e) => {
                                                    withdrawItemType("list")
-                                                   setTransactionData(new withdrawDataTemplate("list"));
+                                                   setTransactionData(new transactionDataTemplate("list"));
                                                }}/>
                             </div>
                         </div>
-                    </div>
+                    </div>}
                     <div className={"col"}>
                         <div className={"row align-items-center"}>
                             <h5>{withdrawItemType === "item" ? "Item" : "List"}</h5>
                         </div>
                         <div className={"row align-items-center"}>
                             <div className="col-12 col-md-2 mb-3">
-                                <p className="m-0">ID {withdrawData.id}</p>
+                                <p className="m-0">ID {transactionData.id}</p>
                             </div>
                             <div className="col-12 col-md-5 mb-3">
                                 <FormInput
@@ -122,17 +139,17 @@ const TransactionForm = ({formType}) => {
                                             },
                                         onChange: (e) => {
                                             setTransactionData(e[0] ? {
-                                                ...withdrawData,
+                                                ...transactionData,
                                                 name: e[0].name,
                                                 id: e[0].id,
                                                 selected: e,
-                                                displayQuantity: Math.max(Math.abs(withdrawData.quantity), Number(maxQty)),
+                                                displayQuantity: Math.max(Math.abs(transactionData.quantity), Number(maxQty)),
                                             } : {});
-                                            setMaxQty(e[0]?.currentStock || null);
+                                            setMaxQty(formType === "withdraw" ? e[0]?.currentStock || null : Infinity);
                                         },
                                         labelKey: "name",
                                         options: withdrawItemType === "item" ? itemList : listList,
-                                        selected: withdrawData.selected
+                                        selected: transactionData.selected
                                     }}
                                 />
                             </div>
@@ -145,12 +162,12 @@ const TransactionForm = ({formType}) => {
                                            onChange={(id, val) => {
                                                const qty = Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1);
                                                setTransactionData({
-                                                   ...withdrawData,
+                                                   ...transactionData,
                                                    displayQuantity: Math.abs(qty),
                                                    quantity: qty
                                                });
                                            }}
-                                           value={withdrawData.displayQuantity}
+                                           value={transactionData.displayQuantity}
                                 />
                             </div>
                         </div>
