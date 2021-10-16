@@ -5,22 +5,23 @@ import {Typeahead} from "react-bootstrap-typeahead";
 import setCase from "../../../functions/setCase";
 
 const FormInput = ({
-                        defaultValue,
-                        forceCase,
-                        form,
-                        id,
-                        inputClass,
-                        invalidFeedback,
-                        label,
-                        max,
-                        min,
-                        onChange,
-                        passwordId,
-                        placeholder,
-                        step,
-                        type,
-                        typeaheadProps,
-                    }) => {
+                       defaultValue,
+                       forceCase,
+                       form,
+                       id,
+                       inputClass,
+                       invalidFeedback,
+                       label,
+                       max,
+                       min,
+                       onChange,
+                       passwordId,
+                       placeholder,
+                       step,
+                       type,
+                       typeaheadProps,
+                       value
+                   }) => {
     const [inputState, setInputState] = useState(defaultValue || "");
     return (
         <div className={"loginInputWrap"}>
@@ -41,16 +42,18 @@ const FormInput = ({
                            max={max}
                            step={step}
                            onChange={(e) => {
-                               setInputState(type === "number" ? parseInt(e.target.value) : e.target.value);
-                               if (forceCase && forceCase !== "") {
-                                   setInputState(setCase(e.target.value, forceCase));
+                               const returnValue = type === "number" ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
+                               if (value === undefined || value === null) {
+                                   //uncontrolled input
+                                   setInputState(returnValue);
                                }
                                if (onChange) {
-                                   onChange(id, e.target.value);
+                                   onChange(id, returnValue);
                                }
                            }}
                            form={form}
-                           value={inputState}
+                           defaultValue={defaultValue}
+                           value={value === "" || value ? value : inputState}
                     />
                     <label htmlFor={id}>{label}</label>
                 </div>
