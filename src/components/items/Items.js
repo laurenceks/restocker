@@ -6,6 +6,14 @@ import validateForm from "../../functions/formValidation";
 import fetchAllItems from "../../functions/fetchAllItems";
 
 const Items = () => {
+    class addDataTemplate {
+        constructor() {
+            this.name = "";
+            this.unit = [];
+        }
+    }
+
+    const [addData, setAddData] = useState(new addDataTemplate());
     const [editId, setEditId] = useState(null);
     const [itemList, setItemList] = useState([[0, "Initial", "0 initial units", "", ""]]);
 
@@ -56,6 +64,7 @@ const Items = () => {
             method: "POST",
             body: JSON.stringify(x.values),
         }, (x) => {
+            setAddData(new addDataTemplate());
             getItems();
         });
     }
@@ -158,7 +167,11 @@ const Items = () => {
                             <FormInput type={"text"} id={"inputAddItemName"}
                                        label={"Name"}
                                        invalidFeedback={"You must name your item"}
-                                       forceCase={"title"}/>
+                                       forceCase={"title"}
+                                       value={addData.name}
+                                       onChange={(e, x) => {
+                                           setAddData({...addData, name: x})
+                                       }}/>
                         </div>
                     </div>
                     <div className="col-12 col-md-5 mb-3  mb-md-0">
@@ -166,7 +179,11 @@ const Items = () => {
                             <FormInput type={"text"} id={"inputAddItemUnit"}
                                        label={"Base unit"}
                                        invalidFeedback={"You must specify a unit type"}
-                                       forceCase={"lower"}/>
+                                       forceCase={"lower"}
+                                       value={addData.unit}
+                                       onChange={(e, x) => {
+                                           setAddData({...addData, unit: x})
+                                       }}/>
                         </div>
                     </div>
                     <div className="col-12 col-md-2 d-flex align-items-center">
