@@ -8,10 +8,11 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
-    $editItem = $db->prepare("UPDATE items SET name = :name, unit = :unit, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
+    $editItem = $db->prepare("UPDATE items SET name = :name, unit = :unit,warningLevel = :warningLevel, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
     $editItem->bindValue(":organisationId", $_SESSION["user"]->organisationId);
     $editItem->bindParam(":name", $input["name"]);
     $editItem->bindParam(":unit", $input["unit"]);
+    $editItem->bindParam(":warningLevel", $input["warningLevel"]);
     $editItem->bindParam(":id", $input["id"]);
     $editItem->bindValue(":uid", $_SESSION["user"]->userId);
     $editItem->execute();

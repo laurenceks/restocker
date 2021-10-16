@@ -11,6 +11,7 @@ const Items = () => {
         constructor() {
             this.name = "";
             this.unit = [];
+            this.wanringLevel = 5;
         }
     }
 
@@ -18,7 +19,7 @@ const Items = () => {
     const [editId, setEditId] = useState(null);
     //TODO add sort key to table headers on click
     const [sortKey, setSortKey] = useState("name");
-    const [itemList, setItemList] = useState([[0, "Initial", "0 initial units", "", ""]]);
+    const [itemList, setItemList] = useState([[0, "", "", "", "", ""]]);
 
     const addItemForm = useRef();
     const itemListRef = useRef([]);
@@ -31,12 +32,15 @@ const Items = () => {
 
     const processItems = (x) => {
         const newItemsList = []
-        x.items.map( (x) => {return{...x, sortKey: x[sortKey]}}).sort(naturalSort).forEach((item, index) => {
+        x.items.map((x) => {
+            return {...x, sortKey: x[sortKey]}
+        }).sort(naturalSort).forEach((item, index) => {
                 newItemsList.push(
                     [
                         item.id,
                         item.name,
                         `${item.currentStock} ${item.unit}`,
+                        `${item.warningLevel} ${item.unit}`,
                         {
                             type: "button",
                             id: 1,
@@ -81,7 +85,6 @@ const Items = () => {
         });
     }
     const editItem = (x) => {
-        console.log(x)
         fetchJson("./php/items/editItem.php", {
             method: "POST",
             body: JSON.stringify(x),
@@ -95,7 +98,7 @@ const Items = () => {
             const newItemList = [...itemListRef.current];
             const unitText = itemListRef.current[x][2].match(/\d+ (.*)/)
             const itemId = itemListRef.current[x][0];
-            const inputIds = {name: `editItemRow-${editId}-name`, unit: `editItemRow-${editId}-unit`}
+            const inputIds = {name: `editItemRow-${editId}-name`, unit: `editItemRow-${editId}-unit`, warningLevel: `editItemRow-${editId}-wanringLevel`}
             newItemList[x] = [
                 itemId,
                 {
@@ -121,6 +124,16 @@ const Items = () => {
                     },
                     invalidFeedback: "You must specify a unit type"
                 }, {
+                    type: "input",
+                    props: {
+                        type: "number",
+                        id: inputIds.warningLevel,
+                        label: "Warning level",
+                        defaultValue: 5,
+                        form: "editItemForm",
+                    },
+                    invalidFeedback: "You must specify a warning level"
+                }, {
                     type: "submit",
                     buttonClass: "btn-success",
                     text: "Save",
@@ -129,10 +142,11 @@ const Items = () => {
                     form: "editItemForm",
                     handler: (e) => {
                         setEditId(itemId);
-                        validateForm(e, [inputIds.name, inputIds.unit], (x) => {
+                        validateForm(e, [inputIds.name, inputIds.unit, inputIds.warningLevel], (x) => {
                             editItem({
                                 name: x.values[inputIds.name],
                                 unit: x.values[inputIds.unit],
+                                warningLevel: x.values[inputIds.warningLevel],
                                 id: itemId
                             })
                         })
@@ -165,9 +179,10 @@ const Items = () => {
             }}>
                 <div className="row my-3">
                     <h2>Add new item</h2>
-                    <div className="col-12 col-md-5 mb-3 mb-md-0">
+                    <div className="col-12 col-md-4 mb-3 mb-md-0">
                         <div className="loginFormInputGroup">
-                            <FormInput type={"text"} id={"inputAddItemName"}
+                            <FormInput type={"text"}
+                                       id={"inputAddItemName"}
                                        label={"Name"}
                                        invalidFeedback={"You must name your item"}
                                        forceCase={"title"}
@@ -177,15 +192,29 @@ const Items = () => {
                                        }}/>
                         </div>
                     </div>
-                    <div className="col-12 col-md-5 mb-3  mb-md-0">
+                    <div className="col-12 col-md-4 mb-3  mb-md-0">
                         <div className="loginFormInputGroup">
-                            <FormInput type={"text"} id={"inputAddItemUnit"}
+                            <FormInput type={"text"}
+                                       id={"inputAddItemUnit"}
                                        label={"Base unit"}
                                        invalidFeedback={"You must specify a unit type"}
                                        forceCase={"lower"}
                                        value={addData.unit}
                                        onChange={(e, x) => {
                                            setAddData({...addData, unit: x})
+                                       }}/>
+                        </div>
+                    </div>
+                    <div className="col-12 col-md-2 mb-3  mb-md-0">
+                        <div className="loginFormInputGroup">
+                            <FormInput type={"number"}
+                                       id={"inputAddItemWarningLevel"}
+                                       label={"Warning level"}
+                                       invalidFeedback={"You must specify a warning level"}
+                                       min={0}
+                                       value={addData.warningLevel}
+                                       onChange={(e, x) => {
+                                           setAddData({...addData, warningLevel: x})
                                        }}/>
                         </div>
                     </div>
@@ -197,7 +226,7 @@ const Items = () => {
             <div className="row my-3">
                 <h2>All items</h2>
                 <Table
-                    headers={["ID", "Name", {text: "Current stock", colspan: 3}]}
+                    headers={["ID", "Name", "Current stock", {text: "Warning level", colspan: 3}]}
                     rows={itemList}
                 />
             </div>

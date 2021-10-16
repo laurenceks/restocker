@@ -8,10 +8,11 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred");
 
 try {
-    $addItem = $db->prepare("INSERT INTO items (organisationId, name, unit, createdBy, editedBy) VALUES (:organisationId,:name, :unit, :uid1, :uid2)");
+    $addItem = $db->prepare("INSERT INTO items (organisationId, name, unit, warningLevel, createdBy, editedBy) VALUES (:organisationId,:name, :unit, :warningLevel, :uid1, :uid2)");
     $addItem->bindValue(":organisationId", $_SESSION["user"]->organisationId);
     $addItem->bindParam(":name", $input["inputAddItemName"]);
     $addItem->bindParam(":unit", $input["inputAddItemUnit"]);
+    $addItem->bindParam(":warningLevel", $input["inputAddItemWarningLevel"]);
     $addItem->bindValue(":uid1", $_SESSION["user"]->userId);
     $addItem->bindValue(":uid2", $_SESSION["user"]->userId);
     $addItem->execute();
