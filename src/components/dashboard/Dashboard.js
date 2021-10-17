@@ -12,6 +12,7 @@ import DashboardActionButton from "./DashboardActionButton";
 import fetchAllItems from "../../functions/fetchAllItems";
 import fetchJson from "../../functions/fetchJson";
 import Table from "../common/tables/Table";
+import naturalSort from "../../functions/naturalSort";
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -146,7 +147,7 @@ const Dashboard = () => {
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
                         <Table headers={["Name", "Current stock", "Burn rate", "Douse rate"]}
-                               rows={dashboardData.itemsRows} fullWidth/>
+                               rows={dashboardData.itemsRows.sort(naturalSort)} fullWidth/>
                     </div>
                 </div>
             </div>
