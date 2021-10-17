@@ -13,8 +13,8 @@ const naturalSort = (a, b, sortIndex = null) => {
             return (naturalSort.insensitive && ('' + s).toLowerCase() || '' + s).replace(sre, '');
         },
         // convert all to strings strip whitespace
-        x = i(a.sortKey || Array.isArray(a) ? a[sortIndex || 0] : a), //.sortKey for sorting array of objects - set key to whatever native key to compare, sortIndex for sorting array of arrays by index
-        y = i(b.sortKey || Array.isArray(b) ? b[sortIndex || 0] : b),
+        x = i(Array.isArray(a) ? a[sortIndex || 0] : (a.sortKey || a)), //.sortKey for sorting array of objects - set key to whatever native key to compare, sortIndex for sorting array of arrays by index
+        y = i(Array.isArray(b) ? b[sortIndex || 0] : (b.sortKey || b)),
         // chunk/tokenize
         xN = x.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0'),
         yN = y.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0'),
