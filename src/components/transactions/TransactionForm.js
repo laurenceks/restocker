@@ -7,6 +7,7 @@ import InputCheckbox from "../common/forms/InputCheckbox";
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
+import naturalSort from "../../functions/naturalSort";
 
 const TransactionForm = ({formType}) => {
 
@@ -36,9 +37,10 @@ const TransactionForm = ({formType}) => {
     }
 
     const processItems = (x) => {
-        setItemList(formType === "withdraw" ? x.items.filter(x => {
+        x.items.forEach(x => x.sortKey = x.name);
+        setItemList((formType === "withdraw" ? x.items.filter(x => {
             return x.currentStock > 0;
-        }) : x.items);
+        }) : x.items).sort(naturalSort));
     }
 
     const withdrawItems = (e) => {
