@@ -92,7 +92,9 @@ const Dashboard = () => {
                 newDashboardData.itemsRows.push([newItemData.name, newItemData.currentStock === 0 ? {
                     text: newItemData.currentStock.toString(),
                     className: "table-danger"
-                } : newItemData.currentStock, newItemData.burnRate, newItemData.douseRate])
+                } : newItemData.currentStock, newItemData.burnRate || {
+                    className: "table-light"
+                }, newItemData.douseRate || {className: "table-light"}])
             })
             rateCategories.forEach((x) => {
                 newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays.withdraw.reduce((a, b) => {
