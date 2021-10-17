@@ -2,7 +2,7 @@
  * Natural Sort algorithm for Javascript - Version 0.8.1 - Released under MIT license
  * Author: Jim Palmer (based on chunking idea from Dave Koelle)
  */
-const naturalSort = (a, b) => {
+const naturalSort = (a, b, sortIndex = null) => {
     const re = /(^([+\-]?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?(?=\D|\s|$))|^0x[\da-fA-F]+$|\d+)/g,
         sre = /^\s+|\s+$/g,   // trim pre-post whitespace
         snre = /\s+/g,        // normalize all whitespace to single ' ' character
@@ -13,8 +13,8 @@ const naturalSort = (a, b) => {
             return (naturalSort.insensitive && ('' + s).toLowerCase() || '' + s).replace(sre, '');
         },
         // convert all to strings strip whitespace
-        x = i(a.sortKey || a), //.sortKey for sorting array of objects - set key to whatever native key to compare
-        y = i(b.sortKey || b),
+        x = i(a.sortKey || Array.isArray(a) ? a[sortIndex || 0] : a), //.sortKey for sorting array of objects - set key to whatever native key to compare, sortIndex for sorting array of arrays by index
+        y = i(b.sortKey || Array.isArray(b) ? b[sortIndex || 0] : b),
         // chunk/tokenize
         xN = x.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0'),
         yN = y.replace(re, '\0$1\0').replace(/\0$/, '').replace(/^\0/, '').split('\0'),
@@ -28,13 +28,16 @@ const naturalSort = (a, b) => {
     let oFxNcL, oFyNcL;
     // first try and sort Hex codes or Dates
     if (yD) {
-        if (xD < yD) { return -1; }
-        else if (xD > yD) { return 1; }
+        if (xD < yD) {
+            return -1;
+        } else if (xD > yD) {
+            return 1;
+        }
     }
     // natural sorting through split numeric strings and default strings
     let cLoc = 0;
     const xNl = xN.length, yNl = yN.length, numS = Math.max(xNl, yNl);
-    for(; cLoc < numS; cLoc++) {
+    for (; cLoc < numS; cLoc++) {
         oFxNcL = normChunk(xN[cLoc] || '', xNl);
         oFyNcL = normChunk(yN[cLoc] || '', yNl);
         // handle numeric vs string comparison - number < string - (Kyle Adams)
@@ -46,8 +49,11 @@ const naturalSort = (a, b) => {
             const comp = oFxNcL.localeCompare(oFyNcL);
             return comp / Math.abs(comp);
         }
-        if (oFxNcL < oFyNcL) { return -1; }
-        else if (oFxNcL > oFyNcL) { return 1; }
+        if (oFxNcL < oFyNcL) {
+            return -1;
+        } else if (oFxNcL > oFyNcL) {
+            return 1;
+        }
     }
 }
 
