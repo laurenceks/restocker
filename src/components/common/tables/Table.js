@@ -5,7 +5,9 @@ import FormInput from "../forms/FormInput";
 import TableCell from "./TableCell";
 
 const renderCellContent = (x) => {
-    if (!x.type) {
+    if (!x) {
+        return "";
+    } else if (!x.type) {
         return typeof x === "string" || typeof x === "number" ? x : "";
     } else {
         switch (x.type) {
@@ -21,7 +23,8 @@ const renderCellContent = (x) => {
             case "button":
             case "submit":
                 return (
-                    <button type={x.type==="submit" && "submit"} className={`btn ${x.buttonClass || "btn-primary"}`} onClick={x.handler} data-userid={x.id}>{x.text}</button>
+                    <button type={x.type === "submit" && "submit"} className={`btn ${x.buttonClass || "btn-primary"}`}
+                            onClick={x.handler} data-userid={x.id}>{x.text}</button>
                 )
             case "input":
                 return (
@@ -33,10 +36,10 @@ const renderCellContent = (x) => {
     }
 }
 
-const Table = ({title, headers, rows}) => {
+const Table = ({title, headers, rows, tableClassName, fullWidth}) => {
     return (
-        <div className="table-responsive">{(rows && rows.length > 0) ?
-            <table className="table table-hover">
+        <div className={`table-responsive ${fullWidth && "w-100"}`}>{(rows && rows.length > 0) ?
+            <table className={`table table-hover ${tableClassName}`}>
                 <thead>
                 <tr>
                     {headers.map((x, i) => {
@@ -52,7 +55,8 @@ const Table = ({title, headers, rows}) => {
                     return (
                         <tr key={`${title}-tr-${i}`}>
                             {x.map((y, j) => {
-                                return <TableCell key={`${title}-tr-${i}-td-${j}`} content={y} className={y.className}/>
+                                return <TableCell key={`${title}-tr-${i}-td-${j}`} content={y}
+                                                  className={y?.className}/>
                             })}
                         </tr>
                     )
@@ -66,14 +70,18 @@ const Table = ({title, headers, rows}) => {
 
 Table.propTypes = {
     title: PropTypes.string,
+    tableClassName: PropTypes.string,
     headers: PropTypes.array,
-    rows: PropTypes.array
+    rows: PropTypes.array,
+    fullWidth: PropTypes.bool
 };
 
 Table.defaultProps = {
     title: "Users",
+    tableClassName: null,
     headers: [],
-    rows: []
+    rows: [],
+    fullWidth: false
 }
 
 export default Table;

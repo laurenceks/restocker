@@ -36,7 +36,7 @@ const renderCellContent = (x) => {
 
 const TableCell = ({className, content, align}) => {
     return (
-        <td className={`${align && align + " "} ${className || ""}`}>{renderCellContent(content)}</td>
+        <td className={`${align && align + " "} ${className || ""}`}>{content || content === 0 ? renderCellContent(content) : ""}</td>
     );
 };
 
