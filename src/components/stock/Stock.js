@@ -84,7 +84,7 @@ const Stock = () => {
     return (
         <>
             <TableSection title={"All stock"} data={stockList.all}/>
-            <TableSection title={"In stock"} data={stockList.inStock}/>
+            <TableSection title={"Fully in stock"} data={stockList.inStock}/>
             <TableSection title={"Below warning level"} data={stockList.belowWarningLevel}/>
             <TableSection title={"Out of stock"} data={stockList.outOfStock}/>
             {/*<TableSection title={"Load lists"} data={stockList.list}/>*/}
