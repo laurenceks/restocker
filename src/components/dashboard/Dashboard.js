@@ -126,6 +126,7 @@ const Dashboard = () => {
                     name: x.name,
                     unit: x.unit,
                     currentStock: x.currentStock,
+                    stockString: `${x.currentStock} ${x.unit}`,
                     warningLevel: x.warningLevel,
                     outOfStock: x.currentStock === 0,
                     belowWarningLevel: x.currentStock <= x.warningLevel,
@@ -139,13 +140,10 @@ const Dashboard = () => {
                 newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
                 newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
                 newDashboardData.itemsList.push(newItemData);
-                newDashboardData.itemsRows.push([newItemData.name, newItemData.currentStock === 0 ? {
-                    text: newItemData.currentStock.toString(),
-                    className: "table-danger"
-                } : newItemData.belowWarningLevel ? {
-                    text: newItemData.currentStock,
-                    className: "table-warning"
-                } : newItemData.currentStocknewItemData.currentStock,
+                newDashboardData.itemsRows.push([newItemData.name, {
+                    text: newItemData.stockString,
+                    className: newItemData.currentStock === 0 ? "table-danger" : newItemData.belowWarningLevel ? "table-warning" : null
+                },
                     newItemData.burnRate ?
                         {
                             text: newItemData.burnRate.toFixed(3),
