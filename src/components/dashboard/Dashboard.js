@@ -55,44 +55,45 @@ const Dashboard = () => {
 
     const dashboardRanges = {
         burn: [
-            {lower: 0.8, colourClass: "bad"},
-            {lower: 0.8, upper: 0.95, colourClass: "ok"},
-            {lower: 0.95, upper: 1, colourClass: "good"},
-            {lower: 1, upper: 1.05, colourClass: "ok"},
-            {lower: 1.05, colourClass: "bad"},
+            {upper: 0.8, colourClass: "bad", tableClass: "table-danger"},
+            {lower: 0.8, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 0.95, upper: 1, colourClass: "good", tableClass: "table-success"},
+            {lower: 1, upper: 1.05, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 1.05, colourClass: "bad", tableClass: "table-danger"},
         ],
         douse: [
-            {upper: 0.9, colourClass: "bad"},
-            {lower: 0.9, upper: 1, colourClass: "ok"},
-            {lower: 1, upper: 1.1, colourClass: "good"},
-            {lower: 1.1, upper: 1.5, colourClass: "ok"},
-            {lower: 1.5, colourClass: "bad"},
+            {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
+            {lower: 0.9, upper: 1, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 1, upper: 1.1, colourClass: "good", tableClass: "table-success"},
+            {lower: 1.1, upper: 1.25, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 1.25, colourClass: "bad", tableClass: "table-danger"},
         ],
         stockLevel: [
-            {lower: 0.9, colourClass: "bad"},
-            {lower: 0.9, upper: 0.95, colourClass: "ok"},
-            {upper: 1, colourClass: "good"},
+            {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
+            {lower: 0.9, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
+            {upper: 1, colourClass: "good", tableClass: "table-success"},
         ],
         outOfStock: [
-            {upper: 0.05, colourClass: "good"},
-            {lower: 0.05, upper: 0.1, colourClass: "ok"},
-            {lower: 0.1, colourClass: "bad"},
+            {upper: 0.05, colourClass: "good", tableClass: "table-success"},
+            {lower: 0.05, upper: 0.1, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 0.1, colourClass: "bad", tableClass: "table-danger"},
         ],
         belowWarningLevel: [
-            {upper: 0.15, colourClass: "good"},
-            {lower: 0.15, upper: 0.2, colourClass: "ok"},
-            {lower: 0.25, colourClass: "bad"},
+            {upper: 0.15, colourClass: "good", tableClass: "table-success"},
+            {lower: 0.15, upper: 0.2, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 0.25, colourClass: "bad", tableClass: "table-danger"},
         ]
     }
 
-    const getRange = (val, range) => {
-        return range.find((x, i) => {
+    const getRangeClass = (val, range, classType = "colourClass") => {
+        const result = range.find((x, i) => {
             if (i === 0) {
-                return val < (x.threshold || x.lower)
+                return val < (x.threshold || x.upper)
             } else {
-                return (val >= range[i - 1].lower && val < x.upper) || (val >= x.lower && i === range.length - 1)
+                return (val >= x.lower && val < x.upper) || (val >= x.lower && i === range.length - 1)
             }
-        })?.colourClass || "good";
+        })
+        return result && result[classType] ? result[classType] : null;
     }
 
     const getRateData = () => {
@@ -148,20 +149,27 @@ const Dashboard = () => {
                     newItemData.burnRate ?
                         {
                             text: newItemData.burnRate.toFixed(3),
-                            className: getRange(newItemData.burnRate, dashboardRanges.burn)
+                            className: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "tableClass")
                         } : {
                             className: "table-light"
-                        }, newItemData.douseRate.toFixed(3) || {className: "table-light"}])
+                        },
+                    newItemData.douseRate ?
+                        {
+                            text: newItemData.douseRate.toFixed(3),
+                            className: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "tableClass")
+                        } : {
+                            className: "table-light"
+                        }])
             })
             rateCategories.forEach((x) => {
                 newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
                     return (a || 0) + (b || 0);
                 }, 0) / newDashboardData.rates.figureArrays[x].length);
             });
-            newDashboardData.tileClasses.burnRate = getRange(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
-            newDashboardData.tileClasses.outOfStock = getRange(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
-            newDashboardData.tileClasses.belowWarningLevel = getRange(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
-            newDashboardData.tileClasses.stockLevel = getRange(newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
+            newDashboardData.tileClasses.burnRate = getRangeClass(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
+            newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
+            newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
+            newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
                 return a + b.warningLevel;
             }, 0), dashboardRanges.stockLevel);
             setDashboardData(newDashboardData)
