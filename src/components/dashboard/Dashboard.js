@@ -202,8 +202,20 @@ const Dashboard = () => {
                                    icon={<IoAlarmOutline/>}/>
             </div>
             <div className="row my-3 gy-3">
-                <DashboardActionButton text={"Withdraw"} icon={<BsBoxArrowLeft/>} colour={"btn-outline-orange"}/>
-                <DashboardActionButton text={"Restock"} icon={<BsBoxArrowInRight/>} colour={"btn-outline-teal"}/>
+                <DashboardActionButton
+                    text={"Withdraw"}
+                    icon={<BsBoxArrowLeft/>}
+                    colour={"btn-outline-orange"}
+                    type={"link"}
+                    link={"/withdraw"}
+                />
+                <DashboardActionButton
+                    text={"Restock"}
+                    icon={<BsBoxArrowInRight/>}
+                    colour={"btn-outline-teal"}
+                    type={"link"}
+                    link={"/restock"}
+                />
             </div>
             <div className="row my-3 gy-3">
                 <div className="col-12 col-md-6">
