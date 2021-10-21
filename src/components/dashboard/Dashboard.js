@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     BsBoxArrowInRight,
-    BsBoxArrowLeft,
+    BsBoxArrowLeft, HiCheck, HiChevronDoubleDown, HiChevronDoubleUp, HiChevronDown, HiChevronUp,
     HiFire,
     IoAlarmOutline,
     IoWarningOutline,
@@ -12,6 +12,9 @@ import DashboardActionButton from "./DashboardActionButton";
 import fetchJson from "../../functions/fetchJson";
 import Table from "../common/tables/Table";
 import naturalSort from "../../functions/naturalSort";
+import {Doughnut, Line} from "react-chartjs-2";
+import {bootstrapVariables, commonChartOptions} from "../common/styles";
+import deepmerge from "deepmerge";
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -34,10 +37,12 @@ const Dashboard = () => {
                 allRates: [],
                 ratesById: []
             };
+            this.items = {};
             this.itemsStats = {
                 outOfStock: 0,
                 belowWarningLevel: 0,
                 totalStock: 0,
+                inStock: 0,
                 totalItems: 0
             }
             this.itemsList = [];
@@ -47,6 +52,12 @@ const Dashboard = () => {
                 burnRate: "good",
                 outOfStock: "good",
                 belowWarningLevel: "good",
+            };
+            this.chartData = {
+                line: {
+                    data: {inStock: [], warningLevel: [], outOfStock: []},
+                    labels: []
+                },
             }
         }
     }
@@ -55,18 +66,84 @@ const Dashboard = () => {
 
     const dashboardRanges = {
         burn: [
-            {upper: 0.8, colourClass: "bad", tableClass: "table-danger"},
-            {lower: 0.8, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 0.95, upper: 1, colourClass: "good", tableClass: "table-success"},
-            {lower: 1, upper: 1.05, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 1.05, colourClass: "bad", tableClass: "table-danger"},
+            {
+                upper: 0.8,
+                colourClass: "bad",
+                tableClass: "table-danger",
+                textClass: "text-danger",
+                icon: <HiChevronDoubleDown/>
+            },
+            {
+                lower: 0.8,
+                upper: 0.95,
+                colourClass: "ok",
+                tableClass: "table-warning",
+                textClass: "text-warning",
+                icon: <HiChevronDown/>
+            },
+            {
+                lower: 0.95,
+                upper: 1,
+                colourClass: "good",
+                tableClass: "table-success",
+                textClass: "text-success",
+                icon: <HiCheck/>
+            },
+            {
+                lower: 1,
+                upper: 1.05,
+                colourClass: "ok",
+                tableClass: "table-warning",
+                textClass: "text-warning",
+                icon: <HiChevronUp/>
+            },
+            {
+                lower: 1.05,
+                colourClass: "bad",
+                tableClass: "table-danger",
+                textClass: "text-danger",
+                icon: <HiChevronDoubleUp/>
+            },
         ],
         douse: [
-            {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
-            {lower: 0.9, upper: 1, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 1, upper: 1.1, colourClass: "good", tableClass: "table-success"},
-            {lower: 1.1, upper: 1.25, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 1.25, colourClass: "bad", tableClass: "table-danger"},
+            {
+                upper: 0.9,
+                colourClass: "bad",
+                tableClass: "table-danger",
+                textClass: "text-danger",
+                icon: <HiChevronDoubleDown/>
+            },
+            {
+                lower: 0.9,
+                upper: 1,
+                colourClass: "ok",
+                tableClass: "table-warning",
+                textClass: "text-warning",
+                icon: <HiChevronDown/>
+            },
+            {
+                lower: 1,
+                upper: 1.1,
+                colourClass: "good",
+                tableClass: "table-success",
+                textClass: "text-success",
+                icon: <HiCheck/>
+            },
+            {
+                lower: 1.1,
+                upper: 1.25,
+                colourClass: "ok",
+                tableClass: "table-warning",
+                textClass: "text-warning",
+                icon: <HiChevronUp/>
+            },
+            {
+                lower: 1.25,
+                colourClass: "bad",
+                tableClass: "table-danger",
+                textClass: "text-danger",
+                icon: <HiChevronDoubleUp/>
+            },
         ],
         stockLevel: [
             {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
@@ -93,7 +170,7 @@ const Dashboard = () => {
                 return (val >= x.lower && val < x.upper) || (val >= x.lower && i === range.length - 1)
             }
         })
-        return result && result[classType] ? result[classType] : null;
+        return result && classType === "all" ? result : result[classType] ? result[classType] : null;
     }
 
     const getRateData = () => {
@@ -103,81 +180,103 @@ const Dashboard = () => {
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
             x.rateData.forEach((x) => {
-                const rateDataForId = {
-                    itemId: x.itemId,
-                    days: x.days || 0,
-                    unit: x.unit,
-                    totalRestocked: x.restocked || 0,
-                    totalWithdrawn: Math.abs(x.withdrawn) || 0,
-                    withdrawRate: (Math.abs(x.withdrawn) / x.days) || 0,
-                    restockRate: (x.restocked / x.days) || 0,
-                };
-                rateDataForId.burnRate = (rateDataForId.withdrawRate / (rateDataForId.restockRate || 1)) || null;
-                rateDataForId.douseRate = (rateDataForId.restockRate / (rateDataForId.withdrawRate || 1)) || null;
-                newDashboardData.rates.allRates.push(rateDataForId);
-                newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
-                rateCategories.forEach((x) => {
-                    if (rateDataForId[x + "Rate"]) {
-                        newDashboardData.rates.figureArrays[x].push(rateDataForId[x + "Rate"]);
+                    const rateDataForId = {
+                        itemId: x.itemId,
+                        days: x.days || 0,
+                        unit: x.unit,
+                        totalRestocked: x.restocked || 0,
+                        totalWithdrawn: Math.abs(x.withdrawn) || 0,
+                        withdrawRate: (Math.abs(x.withdrawn) / x.days) || 0,
+                        restockRate: (x.restocked / x.days) || 0,
+                    };
+                    rateDataForId.burnRate = (rateDataForId.withdrawRate / (rateDataForId.restockRate || 1)) || null;
+                    rateDataForId.douseRate = (rateDataForId.restockRate / (rateDataForId.withdrawRate || 1)) || null;
+                    newDashboardData.rates.allRates.push(rateDataForId);
+                    newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
+                    rateCategories.forEach((x) => {
+                        if (rateDataForId[x + "Rate"]) {
+                            newDashboardData.rates.figureArrays[x].push(rateDataForId[x + "Rate"]);
+                        }
+                    });
+                    const newItemData = {
+                        id: x.itemId,
+                        name: x.name,
+                        unit: x.unit,
+                        currentStock: x.currentStock,
+                        stockString: `${x.currentStock} ${x.unit}`,
+                        warningLevel: x.warningLevel,
+                        outOfStock: x.currentStock === 0,
+                        belowWarningLevel: x.currentStock <= x.warningLevel,
+                        burnRate: rateDataForId.burnRate,
+                        douseRate: rateDataForId.douseRate,
+                        withdrawRate: rateDataForId.withdrawRate,
+                        restockRate: rateDataForId.restockRate,
+                        lastTransaction: x.lastTransaction
+                    };
+                    newDashboardData.itemsStats.totalStock += newItemData.currentStock;
+                    newDashboardData.itemsStats.inStock += newItemData.outOfStock || newItemData.belowWarningLevel ? 0 : 1;
+                    newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
+                    newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
+                    newDashboardData.items[x.itemId] = newItemData;
+                    newDashboardData.itemsList.push(newItemData);
+                    const newItemDataClasses = {
+                        burn: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "all"),
+                        douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all")
                     }
-                });
-                const newItemData = {
-                    id: x.itemId,
-                    name: x.name,
-                    unit: x.unit,
-                    currentStock: x.currentStock,
-                    stockString: `${x.currentStock} ${x.unit}`,
-                    warningLevel: x.warningLevel,
-                    outOfStock: x.currentStock === 0,
-                    belowWarningLevel: x.currentStock <= x.warningLevel,
-                    burnRate: rateDataForId.burnRate,
-                    douseRate: rateDataForId.douseRate,
-                    withdrawRate: rateDataForId.withdrawRate,
-                    restockRate: rateDataForId.restockRate,
-                    lastTransaction: x.lastTransaction
-                };
-                newDashboardData.itemsStats.totalStock += newItemData.currentStock;
-                newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
-                newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
-                newDashboardData.itemsList.push(newItemData);
-                newDashboardData.itemsRows.push([newItemData.name, {
-                    text: newItemData.stockString,
-                    className: newItemData.currentStock === 0 ? "table-danger" : newItemData.belowWarningLevel ? "table-warning" : null
-                },
-                    newItemData.burnRate ?
-                        {
-                            text: newItemData.burnRate.toFixed(3),
-                            className: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "tableClass")
-                        } : {
-                            className: "table-light"
-                        },
-                    newItemData.douseRate ?
-                        {
-                            text: newItemData.douseRate.toFixed(3),
-                            className: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "tableClass")
-                        } : {
-                            className: "table-light"
-                        }])
-            })
+                    newDashboardData.itemsRows.push([newItemData.name, {
+                        text: newItemData.stockString,
+                        className: newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null
+                    },
+                        newItemData.burnRate ?
+                            {
+                                text: <><span
+                                    className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>
+                            } : {
+                                className: "table-light"
+                            },
+                        newItemData.douseRate ?
+                            {
+                                text: <><span
+                                    className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>
+                            } : {
+                                className: "table-light"
+                            }])
+                }
+            )
             rateCategories.forEach((x) => {
-                newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
-                    return (a || 0) + (b || 0);
-                }, 0) / newDashboardData.rates.figureArrays[x].length);
-            });
+                    newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
+                        return (a || 0) + (b || 0);
+                    }, 0) / newDashboardData.rates.figureArrays[x].length);
+                }
+            );
             newDashboardData.tileClasses.burnRate = getRangeClass(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
             newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
             newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
             newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
-                return a + b.warningLevel;
-            }, 0), dashboardRanges.stockLevel);
+                    return a + b.warningLevel;
+                }
+                , 0), dashboardRanges.stockLevel);
+            x.chartData.forEach((y) => {
+                    newDashboardData.chartData.line.data.inStock.push(y.stockOnDate);
+                    newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
+                    let outOfStockOnThisDate = 0;
+                    let belowWarningLevelOnThisDate = 0;
+                    x.chartItemData.filter(el => el.date === y.date).forEach((el) => {
+                        outOfStockOnThisDate += el.stockOnDate === 0 ? 1 : 0;
+                        belowWarningLevelOnThisDate += el.stockOnDate !== 0 && el.stockOnDate <= newDashboardData.items[el.itemId]?.warningLevel ? 1 : 0;
+                    })
+                    newDashboardData.chartData.line.data.outOfStock.push(outOfStockOnThisDate);
+                    newDashboardData.chartData.line.data.warningLevel.push(belowWarningLevelOnThisDate);
+                }
+            );
             setDashboardData(newDashboardData)
         });
     }
 
     useEffect(() => {
-        getRateData();
-    }, []);
-
+            getRateData();
+        }
+        , []);
 
     return (
         <div className="container">
@@ -217,15 +316,57 @@ const Dashboard = () => {
             </div>
             <div className="row my-3 gy-3">
                 <div className="col-12 col-md-6">
-                    <div className="d-flex align-items-center justify-content-center rounded bg-light"
+                    <div className="d-flex align-items-center justify-content-center rounded bg-light px-3 py-2"
                          style={{height: "15rem"}}>
-                        <p className="text-dark m-0">Chart 1 - burn rate?</p>
+                        <Line data={{
+                            datasets: [{
+                                label: "Fully in stock",
+                                data: dashboardData.chartData.line.data.inStock,
+                                backgroundColor: bootstrapVariables.green,
+                                borderColor: bootstrapVariables.green
+                            }, {
+                                label: "Below warning level",
+                                data: dashboardData.chartData.line.data.warningLevel,
+                                backgroundColor: bootstrapVariables.yellow,
+                                borderColor: bootstrapVariables.yellow
+                            }, {
+                                label: "Out of stock",
+                                data: dashboardData.chartData.line.data.outOfStock,
+                                backgroundColor: bootstrapVariables.red,
+                                borderColor: bootstrapVariables.red
+                            }],
+                            labels: dashboardData.chartData.line.labels
+                        }}
+                              options={deepmerge(commonChartOptions, {
+                                  elements: {
+                                      line: {tension: 0.35, capBezierPoints: false},
+                                      point: {radius: 1, hitRadius: 5, hoverRadius: 4}
+                                  },
+                                  scales: {
+                                      x: {grid: {display: false}}, y: {
+                                          afterDataLimits(scale) {
+                                              const grace = (scale.max - scale.min) * 0.05;
+                                              scale.max += grace;
+                                              scale.min -= grace;
+                                          }
+                                      }
+                                  }
+                              })}/>
                     </div>
                 </div>
                 <div className="col-12 col-md-6">
-                    <div className="d-flex align-items-center justify-content-center rounded bg-light"
+                    <div className="d-flex align-items-center justify-content-center rounded bg-light px-3 py-2"
                          style={{height: "15rem"}}>
-                        <p className="text-dark m-0">Chart 2 - stock levels?</p>
+                        <Doughnut data={{
+                            datasets: [{
+                                data: [dashboardData.itemsStats.inStock, dashboardData.itemsStats.belowWarningLevel, dashboardData.itemsStats.outOfStock],
+                                backgroundColor: [bootstrapVariables.green, bootstrapVariables.yellow, bootstrapVariables.red],
+                                borderColor:bootstrapVariables.light
+                            }],
+                            labels: ["Fully in stock",
+                                "Below warning level",
+                                "Out of stock"]
+                        }} options={{maintainAspectRatio: false, cutout: 75, plugins: {legend: {display: false}}}}/>
                     </div>
                 </div>
             </div>
@@ -234,8 +375,8 @@ const Dashboard = () => {
                     <div className="d-flex align-items-center justify-content-center">
                         <Table headers={["Name", "Current stock", "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
-                                   return a[2] > b[2] ? -1 : 1;
-                                   // naturalSort(a, b, 2)
+                                   // return a[2] > b[2] ? -1 : 1;
+                                   naturalSort(a, b, 2)
                                }).slice(0, 5)} fullWidth/>
                     </div>
                 </div>
@@ -244,6 +385,8 @@ const Dashboard = () => {
     );
 };
 
-Dashboard.propTypes = {};
+Dashboard.propTypes =
+    {}
+;
 
 export default Dashboard;
