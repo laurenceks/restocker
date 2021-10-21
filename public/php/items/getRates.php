@@ -17,6 +17,45 @@ $getRates->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getRates->execute();
 $output["rateData"] = $getRates->fetchAll(PDO::FETCH_ASSOC);
 
+$getChartData = $db->prepare("SELECT b.date, CAST(SUM(a.quantity) AS INTEGER) AS stockOnDate
+FROM (
+ SELECT DATE(ADDDATE(DATE_SUB(NOW(),INTERVAL 6 DAY), t3*1000 + t2*100 + t1*10 + t0)) AS `date` 
+       FROM (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
+            (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+            (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+            (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3
+) b 
+LEFT JOIN transactions a ON DATE(a.timestamp) <= b.date
+WHERE b.date BETWEEN DATE(NOW()) - INTERVAL 6 DAY AND DATE(NOW())
+AND a.organisationId = :organisationId
+GROUP BY b.date
+ORDER BY b.date ASC");
+
+$getChartData->bindValue(":organisationId", $_SESSION["user"]->organisationId);
+$getChartData->execute();
+$output["chartData"] = $getChartData->fetchAll(PDO::FETCH_ASSOC);
+
+$getChartItemData = $db->prepare("SELECT b.date, a.itemId, CAST(SUM(a.quantity) AS INTEGER) AS stockOnDate
+FROM (
+ SELECT DATE(ADDDATE(DATE_SUB(NOW(),INTERVAL 6 DAY), t3*1000 + t2*100 + t1*10 + t0)) AS `date` 
+       FROM (SELECT 0 t0 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t0,
+            (SELECT 0 t1 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t1,
+            (SELECT 0 t2 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t2,
+            (SELECT 0 t3 UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) t3
+) b 
+LEFT JOIN transactions a ON DATE(a.timestamp) <= b.date
+WHERE b.date BETWEEN DATE(NOW()) - INTERVAL 6 DAY AND DATE(NOW())
+AND a.organisationId = :organisationId
+GROUP BY a.itemID, b.date
+ORDER BY b.date ASC");
+
+$getChartItemData->bindValue(":organisationId", $_SESSION["user"]->organisationId);
+$getChartItemData->execute();
+$output["chartItemData"] = $getChartItemData->fetchAll(PDO::FETCH_ASSOC);
+
+
+//$getChartData = "SELECT id, itemId, date(timestamp) as date, quantity, (SELECT SUM(quantity) FROM transactions WHERE itemId = t.itemId AND id <= t.id) AS cumulativeTotal FROM transactions t WHERE t.timestamp > DATE_ADD(NOW(), INTERVAL -1 MONTH) AND organisationId = 1 ORDER BY t.itemid, t.timestamp";
+
 echo json_encode($output);
 
 //";
