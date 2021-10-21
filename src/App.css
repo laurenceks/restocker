@@ -2,7 +2,7 @@
 
 /*Colours (B5)*/
 
-body {
+:root {
     --bs-teal-200: #a6e9d5;
     --bs-green-200: #a3cfbb;
     --bs-green-300: #75b798;
@@ -23,7 +23,7 @@ body {
 
 /*Fonts*/
 
-body {
+:root {
     --bs-font-sans-serif: "Source Sans Pro";
 }
 
