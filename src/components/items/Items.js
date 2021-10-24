@@ -11,7 +11,7 @@ const Items = () => {
         constructor() {
             this.name = "";
             this.unit = [];
-            this.wanringLevel = 5;
+            this.warningLevel = 5;
         }
     }
 
