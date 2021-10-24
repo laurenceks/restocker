@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import {NavLink} from "react-router-dom";
 import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
@@ -30,10 +29,11 @@ const TopNav = ({user}) => {
                         </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                Admin
-                            </a>
+                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center"
+                                 id="adminDropdown" role="button"
+                                 data-bs-toggle="dropdown" aria-expanded="false">
+                                <p className="m-0">Admin</p>
+                            </div>
                             <ul className="dropdown-menu" aria-labelledby="adminDropdown">
                                 <li><NavLink className="dropdown-item" to={"/items"}>Items</NavLink></li>
                                 <li><NavLink className="dropdown-item" to={"/users"}>Users</NavLink></li>
