@@ -40,3 +40,6 @@ archiveBin
 /archiveBin
 /archiveBin/
 archiveBin/
+
+#mock data files
+/Rate calculator.xlsx
