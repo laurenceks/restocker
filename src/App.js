@@ -1,27 +1,35 @@
-import React, {createContext, useEffect, useState} from "react";
+import React, {createContext, useCallback, useEffect, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Main from "./components/Main";
 import NotAuthorised from "./components/NotAuthorised";
 
-export const GlobalAppContext = createContext();
+export const GlobalAppContext = createContext({loginCheckedOnce: false, isLoggedIn: false});
 
 function App() {
     const [globalAppContext, setGlobalAppContext] = useState({loginCheckedOnce: false, isLoggedIn: false});
+
+    const fetchGlobalAppContext = useCallback(
+        () => {
+            fetch("./php/login/checkUserLogin.php", {
+                method: "GET",
+            }).then((x) => {
+                x.json().then((x) => {
+                    setGlobalAppContext({
+                        ...globalAppContext,
+                        loginCheckedOnce: true,
+                        isLoggedIn: x.isLoggedIn,
+                        user: x.user
+                    });
+                })
+            });
+        },
+        [globalAppContext],
+    );
+
     useEffect(() => {
-        fetch("./php/login/checkUserLogin.php", {
-            method: "GET",
-        }).then((x) => {
-            x.json().then((x) => {
-                setGlobalAppContext({
-                    ...globalAppContext,
-                    loginCheckedOnce: true,
-                    isLoggedIn: x.isLoggedIn,
-                    user: x.user
-                });
-            })
-        });
-    }, []);
+        fetchGlobalAppContext();
+    }, [fetchGlobalAppContext]);
 
     return (
         <GlobalAppContext.Provider value={[globalAppContext, setGlobalAppContext]}>
