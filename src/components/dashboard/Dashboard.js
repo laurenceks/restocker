@@ -285,7 +285,7 @@ const Dashboard = () => {
     return (
         <div className="container">
             <div className="row my-3 gy-3">
-                <DashboardStatTile title={"Stock level"}
+                <DashboardStatTile title={"Safe stock"}
                                    number={dashboardData.itemsStats.stockPercentage === 0 ? 0 : dashboardData.itemsStats.stockPercentage.toFixed(2) * 100 + "%" || ""}
                                    colourClass={dashboardData.tileClasses.stockLevel}
                                    icon={<MdShowChart/>}/>
@@ -324,7 +324,7 @@ const Dashboard = () => {
                          style={{height: "15rem"}}>
                         <Line data={{
                             datasets: [{
-                                label: "Total stock",
+                                label: "Fully in stock",
                                 data: dashboardData.chartData.line.data.inStock,
                                 backgroundColor: bootstrapVariables.green,
                                 borderColor: bootstrapVariables.green
