@@ -8,20 +8,9 @@ import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
+import {transactionDataTemplate} from "../common/classes";
 
 const TransactionForm = ({formType}) => {
-
-    class transactionDataTemplate {
-        constructor(type = "item") {
-            this.withdrawType = type;
-            this.id = null;
-            this.name = "";
-            this.selected = [];
-            this.quantity = 0;
-            this.displayQuantity = "";
-            this.unit = "";
-        }
-    }
 
     const [withdrawItemType, setWithdrawItemType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
