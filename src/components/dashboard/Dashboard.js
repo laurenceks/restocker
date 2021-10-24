@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     BsBoxArrowInRight,
@@ -43,7 +43,8 @@ const Dashboard = () => {
                 belowWarningLevel: 0,
                 totalStock: 0,
                 inStock: 0,
-                totalItems: 0
+                totalItems: 0,
+                stockPercentage: 0
             }
             this.itemsList = [];
             this.itemsRows = [];
@@ -214,7 +215,7 @@ const Dashboard = () => {
                         lastTransaction: x.lastTransaction
                     };
                     newDashboardData.itemsStats.totalStock += newItemData.currentStock;
-                    newDashboardData.itemsStats.inStock += newItemData.outOfStock || newItemData.belowWarningLevel ? 0 : 1;
+                    newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
                     newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
                     newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
                     newDashboardData.items[x.itemId] = newItemData;
@@ -230,19 +231,25 @@ const Dashboard = () => {
                         newItemData.burnRate ?
                             {
                                 text: <><span
-                                    className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>
+                                    className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
+                                sortValue: newItemData.burnRate
                             } : {
                                 className: "table-light"
                             },
                         newItemData.douseRate ?
                             {
                                 text: <><span
-                                    className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>
+                                    className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>,
+                                sortValue: newItemData.douseRate
                             } : {
                                 className: "table-light"
                             }])
                 }
             )
+            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
+                    return a + b.warningLevel;
+                }
+                , 0);
             rateCategories.forEach((x) => {
                     newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
                         return (a || 0) + (b || 0);
@@ -252,12 +259,8 @@ const Dashboard = () => {
             newDashboardData.tileClasses.burnRate = getRangeClass(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
             newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
             newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
-            newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
-                    return a + b.warningLevel;
-                }
-                , 0), dashboardRanges.stockLevel);
+            newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.stockPercentage, dashboardRanges.stockLevel);
             x.chartData.forEach((y) => {
-                    newDashboardData.chartData.line.data.inStock.push(y.stockOnDate);
                     newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
                     let outOfStockOnThisDate = 0;
                     let belowWarningLevelOnThisDate = 0;
@@ -267,6 +270,7 @@ const Dashboard = () => {
                     })
                     newDashboardData.chartData.line.data.outOfStock.push(outOfStockOnThisDate);
                     newDashboardData.chartData.line.data.warningLevel.push(belowWarningLevelOnThisDate);
+                    newDashboardData.chartData.line.data.inStock.push(newDashboardData.itemsList.length - (outOfStockOnThisDate + belowWarningLevelOnThisDate));
                 }
             );
             setDashboardData(newDashboardData)
@@ -282,7 +286,7 @@ const Dashboard = () => {
         <div className="container">
             <div className="row my-3 gy-3">
                 <DashboardStatTile title={"Stock level"}
-                                   number={dashboardData.itemsStats.totalStock == 0 ? 0 : dashboardData.itemsStats.totalStock || ""}
+                                   number={dashboardData.itemsStats.stockPercentage === 0 ? 0 : dashboardData.itemsStats.stockPercentage.toFixed(2) * 100 + "%" || ""}
                                    colourClass={dashboardData.tileClasses.stockLevel}
                                    icon={<MdShowChart/>}/>
                 <DashboardStatTile title={"Burn rate"}
@@ -320,7 +324,7 @@ const Dashboard = () => {
                          style={{height: "15rem"}}>
                         <Line data={{
                             datasets: [{
-                                label: "Fully in stock",
+                                label: "Total stock",
                                 data: dashboardData.chartData.line.data.inStock,
                                 backgroundColor: bootstrapVariables.green,
                                 borderColor: bootstrapVariables.green
@@ -340,7 +344,7 @@ const Dashboard = () => {
                               options={deepmerge(commonChartOptions, {
                                   elements: {
                                       line: {tension: 0.35, capBezierPoints: false},
-                                      point: {radius: 1, hitRadius: 5, hoverRadius: 4}
+                                      point: {radius: 1, hitRadius: 10, hoverRadius: 4}
                                   },
                                   scales: {
                                       x: {grid: {display: false}}, y: {
@@ -361,7 +365,7 @@ const Dashboard = () => {
                             datasets: [{
                                 data: [dashboardData.itemsStats.inStock, dashboardData.itemsStats.belowWarningLevel, dashboardData.itemsStats.outOfStock],
                                 backgroundColor: [bootstrapVariables.green, bootstrapVariables.yellow, bootstrapVariables.red],
-                                borderColor:bootstrapVariables.light
+                                borderColor: bootstrapVariables.light
                             }],
                             labels: ["Fully in stock",
                                 "Below warning level",
@@ -375,9 +379,8 @@ const Dashboard = () => {
                     <div className="d-flex align-items-center justify-content-center">
                         <Table headers={["Name", "Current stock", "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
-                                   // return a[2] > b[2] ? -1 : 1;
-                                   naturalSort(a, b, 2)
-                               }).slice(0, 5)} fullWidth/>
+                                   return naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
+                               }).reverse().slice(0, 5)} fullWidth/>
                     </div>
                 </div>
             </div>
