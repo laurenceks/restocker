@@ -1,8 +1,13 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     BsBoxArrowInRight,
-    BsBoxArrowLeft, HiCheck, HiChevronDoubleDown, HiChevronDoubleUp, HiChevronDown, HiChevronUp,
+    BsBoxArrowLeft,
+    HiCheck,
+    HiChevronDoubleDown,
+    HiChevronDoubleUp,
+    HiChevronDown,
+    HiChevronUp,
     HiFire,
     IoAlarmOutline,
     IoWarningOutline,
@@ -15,153 +20,10 @@ import naturalSort from "../../functions/naturalSort";
 import {Doughnut, Line} from "react-chartjs-2";
 import {bootstrapVariables, commonChartOptions} from "../common/styles";
 import deepmerge from "deepmerge";
+import {dashboardDataTemplate} from "../common/classes";
 
 const Dashboard = () => {
-    class dashboardDataTemplate {
-        constructor() {
-            this.rates = {
-                averageRates: {
-                    withdraw: 0,
-                    restock: 0,
-                    burn: 0,
-                    douse: 0
-                },
-                medianWithdraw: 0,
-                medianRestock: 0,
-                figureArrays: {
-                    withdraw: [],
-                    restock: [],
-                    burn: [],
-                    douse: [],
-                },
-                allRates: [],
-                ratesById: []
-            };
-            this.items = {};
-            this.itemsStats = {
-                outOfStock: 0,
-                belowWarningLevel: 0,
-                totalStock: 0,
-                inStock: 0,
-                totalItems: 0,
-                stockPercentage: 0
-            }
-            this.itemsList = [];
-            this.itemsRows = [];
-            this.tileClasses = {
-                stockLevel: "good",
-                burnRate: "good",
-                outOfStock: "good",
-                belowWarningLevel: "good",
-            };
-            this.chartData = {
-                line: {
-                    data: {inStock: [], warningLevel: [], outOfStock: []},
-                    labels: []
-                },
-            }
-        }
-    }
-
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
-
-    const dashboardRanges = {
-        burn: [
-            {
-                upper: 0.8,
-                colourClass: "bad",
-                tableClass: "table-danger",
-                textClass: "text-danger",
-                icon: <HiChevronDoubleDown/>
-            },
-            {
-                lower: 0.8,
-                upper: 0.95,
-                colourClass: "ok",
-                tableClass: "table-warning",
-                textClass: "text-warning",
-                icon: <HiChevronDown/>
-            },
-            {
-                lower: 0.95,
-                upper: 1,
-                colourClass: "good",
-                tableClass: "table-success",
-                textClass: "text-success",
-                icon: <HiCheck/>
-            },
-            {
-                lower: 1,
-                upper: 1.05,
-                colourClass: "ok",
-                tableClass: "table-warning",
-                textClass: "text-warning",
-                icon: <HiChevronUp/>
-            },
-            {
-                lower: 1.05,
-                colourClass: "bad",
-                tableClass: "table-danger",
-                textClass: "text-danger",
-                icon: <HiChevronDoubleUp/>
-            },
-        ],
-        douse: [
-            {
-                upper: 0.9,
-                colourClass: "bad",
-                tableClass: "table-danger",
-                textClass: "text-danger",
-                icon: <HiChevronDoubleDown/>
-            },
-            {
-                lower: 0.9,
-                upper: 1,
-                colourClass: "ok",
-                tableClass: "table-warning",
-                textClass: "text-warning",
-                icon: <HiChevronDown/>
-            },
-            {
-                lower: 1,
-                upper: 1.1,
-                colourClass: "good",
-                tableClass: "table-success",
-                textClass: "text-success",
-                icon: <HiCheck/>
-            },
-            {
-                lower: 1.1,
-                upper: 1.25,
-                colourClass: "ok",
-                tableClass: "table-warning",
-                textClass: "text-warning",
-                icon: <HiChevronUp/>
-            },
-            {
-                lower: 1.25,
-                colourClass: "bad",
-                tableClass: "table-danger",
-                textClass: "text-danger",
-                icon: <HiChevronDoubleUp/>
-            },
-        ],
-        stockLevel: [
-            {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
-            {lower: 0.9, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
-            {upper: 1, colourClass: "good", tableClass: "table-success"},
-        ],
-        outOfStock: [
-            {upper: 0.05, colourClass: "good", tableClass: "table-success"},
-            {lower: 0.05, upper: 0.1, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 0.1, colourClass: "bad", tableClass: "table-danger"},
-        ],
-        belowWarningLevel: [
-            {upper: 0.15, colourClass: "good", tableClass: "table-success"},
-            {lower: 0.15, upper: 0.2, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 0.25, colourClass: "bad", tableClass: "table-danger"},
-        ]
-    }
 
     const getRangeClass = (val, range, classType = "colourClass") => {
         const result = range.find((x, i) => {
@@ -174,7 +36,105 @@ const Dashboard = () => {
         return result && classType === "all" ? result : result[classType] ? result[classType] : null;
     }
 
-    const getRateData = () => {
+    const getRateData = useCallback(() => {
+        const dashboardRanges = {
+            burn: [
+                {
+                    upper: 0.8,
+                    colourClass: "bad",
+                    tableClass: "table-danger",
+                    textClass: "text-danger",
+                    icon: <HiChevronDoubleDown/>
+                },
+                {
+                    lower: 0.8,
+                    upper: 0.95,
+                    colourClass: "ok",
+                    tableClass: "table-warning",
+                    textClass: "text-warning",
+                    icon: <HiChevronDown/>
+                },
+                {
+                    lower: 0.95,
+                    upper: 1,
+                    colourClass: "good",
+                    tableClass: "table-success",
+                    textClass: "text-success",
+                    icon: <HiCheck/>
+                },
+                {
+                    lower: 1,
+                    upper: 1.05,
+                    colourClass: "ok",
+                    tableClass: "table-warning",
+                    textClass: "text-warning",
+                    icon: <HiChevronUp/>
+                },
+                {
+                    lower: 1.05,
+                    colourClass: "bad",
+                    tableClass: "table-danger",
+                    textClass: "text-danger",
+                    icon: <HiChevronDoubleUp/>
+                },
+            ],
+            douse: [
+                {
+                    upper: 0.9,
+                    colourClass: "bad",
+                    tableClass: "table-danger",
+                    textClass: "text-danger",
+                    icon: <HiChevronDoubleDown/>
+                },
+                {
+                    lower: 0.9,
+                    upper: 1,
+                    colourClass: "ok",
+                    tableClass: "table-warning",
+                    textClass: "text-warning",
+                    icon: <HiChevronDown/>
+                },
+                {
+                    lower: 1,
+                    upper: 1.1,
+                    colourClass: "good",
+                    tableClass: "table-success",
+                    textClass: "text-success",
+                    icon: <HiCheck/>
+                },
+                {
+                    lower: 1.1,
+                    upper: 1.25,
+                    colourClass: "ok",
+                    tableClass: "table-warning",
+                    textClass: "text-warning",
+                    icon: <HiChevronUp/>
+                },
+                {
+                    lower: 1.25,
+                    colourClass: "bad",
+                    tableClass: "table-danger",
+                    textClass: "text-danger",
+                    icon: <HiChevronDoubleUp/>
+                },
+            ],
+            stockLevel: [
+                {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
+                {lower: 0.9, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
+                {upper: 1, colourClass: "good", tableClass: "table-success"},
+            ],
+            outOfStock: [
+                {upper: 0.05, colourClass: "good", tableClass: "table-success"},
+                {lower: 0.05, upper: 0.1, colourClass: "ok", tableClass: "table-warning"},
+                {lower: 0.1, colourClass: "bad", tableClass: "table-danger"},
+            ],
+            belowWarningLevel: [
+                {upper: 0.15, colourClass: "good", tableClass: "table-success"},
+                {lower: 0.15, upper: 0.2, colourClass: "ok", tableClass: "table-warning"},
+                {lower: 0.25, colourClass: "bad", tableClass: "table-danger"},
+            ]
+        }
+
         fetchJson("./php/items/getRates.php", {
             method: "GET"
         }, (x) => {
@@ -275,12 +235,11 @@ const Dashboard = () => {
             );
             setDashboardData(newDashboardData)
         });
-    }
+    }, []);
 
     useEffect(() => {
-            getRateData();
-        }
-        , []);
+        getRateData()
+    }, [getRateData]);
 
     return (
         <div className="container">
@@ -306,14 +265,14 @@ const Dashboard = () => {
                 <DashboardActionButton
                     text={"Withdraw"}
                     icon={<BsBoxArrowLeft/>}
-                    colour={"btn-outline-orange"}
+                    colour={"btn-outline-dark"}
                     type={"link"}
                     link={"/withdraw"}
                 />
                 <DashboardActionButton
                     text={"Restock"}
                     icon={<BsBoxArrowInRight/>}
-                    colour={"btn-outline-teal"}
+                    colour={"btn-outline-dark"}
                     type={"link"}
                     link={"/restock"}
                 />
