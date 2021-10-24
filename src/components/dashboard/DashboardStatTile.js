@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
 const DashboardStatTile = ({title, number, colourClass, isNotInBootstrapGrid, icon}) => {
@@ -35,10 +34,13 @@ const DashboardStatTile = ({title, number, colourClass, isNotInBootstrapGrid, ic
 
 DashboardStatTile.propTypes = {
     title: PropTypes.string,
-    number: PropTypes.string,
+    number: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+    ]),
     colourClass: PropTypes.string,
     isNotInBootstrapGrid: PropTypes.bool,
-    icon: PropTypes.elementType
+    icon: PropTypes.object
 };
 DashboardStatTile.defaultProps = {
     title: "",
