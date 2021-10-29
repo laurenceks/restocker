@@ -1,13 +1,19 @@
 import FormInput from "../common/forms/FormInput";
-import {useCallback, useEffect, useRef, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
-import {addDataTemplate} from "../common/classes";
 
 const Items = () => {
+    class addDataTemplate {
+        constructor() {
+            this.name = "";
+            this.unit = [];
+            this.warningLevel = 5;
+        }
+    }
 
     const [addData, setAddData] = useState(new addDataTemplate());
     const [editId, setEditId] = useState(null);
@@ -20,48 +26,45 @@ const Items = () => {
 
     itemListRef.current = itemList;
 
-    const getItems = useCallback(
-        () => {
-            const processItems = (x) => {
-                const newItemsList = []
-                x.items.map((x) => {
-                    return {...x, sortKey: x[sortKey]}
-                }).sort(naturalSort).forEach((item, index) => {
-                        newItemsList.push(
-                            [
-                                item.id,
-                                item.name,
-                                `${item.currentStock} ${item.unit}`,
-                                `${item.warningLevel} ${item.unit}`,
-                                {
-                                    type: "button",
-                                    id: 1,
-                                    text: "Edit",
-                                    buttonClass: "btn-warning btn-sm",
-                                    handler: () => {
-                                        showEditRow(index);
-                                    }
-                                },
-                                {
-                                    type: "button",
-                                    id: 1,
-                                    text: "Delete",
-                                    buttonClass: "btn-danger btn-sm",
-                                    handler: () => {
-                                        deleteItem(item.id);
-                                    }
-                                }
-                            ]
-                        )
-                    }
-                )
-                setItemList(newItemsList);
-            }
-            fetchAllItems(processItems)
-        },
-        [],
-    );
+    const getItems = () => {
+        fetchAllItems(processItems)
+    }
 
+    const processItems = (x) => {
+        const newItemsList = []
+        x.items.map((x) => {
+            return {...x, sortKey: x[sortKey]}
+        }).sort(naturalSort).forEach((item, index) => {
+                newItemsList.push(
+                    [
+                        item.id,
+                        item.name,
+                        `${item.currentStock} ${item.unit}`,
+                        `${item.warningLevel} ${item.unit}`,
+                        {
+                            type: "button",
+                            id: 1,
+                            text: "Edit",
+                            buttonClass: "btn-warning btn-sm",
+                            handler: () => {
+                                showEditRow(index);
+                            }
+                        },
+                        {
+                            type: "button",
+                            id: 1,
+                            text: "Delete",
+                            buttonClass: "btn-danger btn-sm",
+                            handler: () => {
+                                deleteItem(item.id);
+                            }
+                        }
+                    ]
+                )
+            }
+        )
+        setItemList(newItemsList);
+    }
 
     const addItem = (x) => {
         fetchJson("./php/items/addItem.php", {
@@ -95,11 +98,7 @@ const Items = () => {
             const newItemList = [...itemListRef.current];
             const unitText = itemListRef.current[x][2].match(/\d+ (.*)/)
             const itemId = itemListRef.current[x][0];
-            const inputIds = {
-                name: `editItemRow-${editId}-name`,
-                unit: `editItemRow-${editId}-unit`,
-                warningLevel: `editItemRow-${editId}-wanringLevel`
-            }
+            const inputIds = {name: `editItemRow-${editId}-name`, unit: `editItemRow-${editId}-unit`, warningLevel: `editItemRow-${editId}-wanringLevel`}
             newItemList[x] = [
                 itemId,
                 {
@@ -167,7 +166,7 @@ const Items = () => {
     useEffect(() => {
         //get user list
         getItems();
-    }, [getItems]);
+    }, []);
 
     useEffect(() => {
         //get user list
