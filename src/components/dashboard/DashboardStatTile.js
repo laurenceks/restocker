@@ -8,7 +8,7 @@ const DashboardStatTile = ({title, number, colourClass, isNotInBootstrapGrid, ic
         },
         "ok": {
             bg: "bg-warning",
-            text: "text-dark"
+            text: "text-primary"
         },
         "bad": {
             bg: "bg-danger",
