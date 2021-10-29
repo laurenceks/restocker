@@ -5,7 +5,7 @@ import {IoPersonCircle} from "react-icons/all";
 
 const TopNav = ({user}) => {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
             <div className="container-fluid">
                 <NavLink to={"/"} className="navbar-brand">Restocker logo</NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -16,22 +16,24 @@ const TopNav = ({user}) => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink to={"/"} className="nav-link">Home</NavLink>
+                            <NavLink to={"/"} className="nav-link rounded-3 mx-1">Home</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/stock"} className="nav-link">Stock</NavLink>
+                            <NavLink to={"/stock"} className="nav-link rounded-3 mx-1">Stock</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/withdraw"} className="nav-link">Withdraw</NavLink>
+                            <NavLink to={"/withdraw"} className="nav-link rounded-3 mx-1">Withdraw</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/restock"} className="nav-link">Restock</NavLink>
+                            <NavLink to={"/restock"} className="nav-link rounded-3 mx-1">Restock</NavLink>
                         </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
-                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center"
-                                 id="adminDropdown" role="button"
-                                 data-bs-toggle="dropdown" aria-expanded="false">
+                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
+                                 id="adminDropdown"
+                                 role="button"
+                                 data-bs-toggle="dropdown"
+                                 aria-expanded="false">
                                 <p className="m-0">Admin</p>
                             </div>
                             <ul className="dropdown-menu" aria-labelledby="adminDropdown">
@@ -48,9 +50,11 @@ const TopNav = ({user}) => {
                     </form>
                     <ul className="navbar-nav mb-2 mb-lg-0">
                         <li className="nav-item dropdown">
-                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center"
-                                 id="userDropdown" role="button"
-                                 data-bs-toggle="dropdown" aria-expanded="false">
+                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3 ms-1"
+                                 id="userDropdown"
+                                 role="button"
+                                 data-bs-toggle="dropdown"
+                                 aria-expanded="false">
                                 <IoPersonCircle className="smallIcon"/>
                                 <p className="m-0 mx-2 d-lg-none">{user.email}</p>
                             </div>
@@ -59,7 +63,7 @@ const TopNav = ({user}) => {
                                 <li className="d-none d-lg-block">
                                     <hr className="dropdown-divider"/>
                                 </li>
-                                <li><NavLink className="dropdown-item" to={`/profile:${user.email}`}>Profile</NavLink>
+                                <li><NavLink className="dropdown-item" to={`/profile`}>Profile</NavLink>
                                 </li>
                                 <li><NavLink className="dropdown-item" to={"/logout"}>Logout</NavLink></li>
                             </ul>
