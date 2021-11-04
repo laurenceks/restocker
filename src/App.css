@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /*Utilities*/
 
-.cursor-pointer{
+.cursor-pointer {
     cursor: pointer;
 }
 
@@ -172,8 +172,25 @@ span.tableIcon > svg {
 
 /*Nav*/
 
-.bg-primary .navbar-nav .nav-link.active, .bg-primary .navbar-nav .nav-link:focus, .bg-primary .navbar-nav .nav-link:hover, .bg-primary .navbar-nav .show>.nav-link {
-    color: var(--bs-primary)!important;
+div.nav-link a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+/*div.rbt-menu a {*/
+/*    transition: background-color 0.2s ease;*/
+/*}*/
+
+/*div.rbt-menu a p.searchMenuItemLabel {*/
+/*    transition: color 0.2s ease;*/
+/*}*/
+
+div.rbt-menu a:hover p.searchMenuItemLabel {
+    color: inherit !important;
+}
+
+.bg-primary .navbar-nav .nav-link.active, .bg-primary .navbar-nav .nav-link:focus, .bg-primary .navbar-nav .nav-link:hover, .bg-primary .navbar-nav .show > .nav-link {
+    color: var(--bs-primary) !important;
     background: var(--bs-light);
 }
 
@@ -192,6 +209,10 @@ ul.dropdown-menu.userDropdown {
 
 td.buttonCell {
     min-width: 7.5rem;
+}
+
+td.dashboardStockTableCell {
+    white-space: nowrap;
 }
 
 /*Dashboard*/
