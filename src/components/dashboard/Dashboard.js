@@ -2,7 +2,12 @@ import {useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     BsBoxArrowInRight,
-    BsBoxArrowLeft, HiCheck, HiChevronDoubleDown, HiChevronDoubleUp, HiChevronDown, HiChevronUp,
+    BsBoxArrowLeft,
+    HiCheck,
+    HiChevronDoubleDown,
+    HiChevronDoubleUp,
+    HiChevronDown,
+    HiChevronUp,
     HiFire,
     IoAlarmOutline,
     IoWarningOutline,
@@ -15,6 +20,9 @@ import naturalSort from "../../functions/naturalSort";
 import {Doughnut, Line} from "react-chartjs-2";
 import {bootstrapVariables, commonChartOptions} from "../common/styles";
 import deepmerge from "deepmerge";
+import FormInput from "../common/forms/FormInput";
+import {Collapse} from "react-bootstrap";
+import {mockLocations} from "../common/mockData"
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -64,18 +72,19 @@ const Dashboard = () => {
     }
 
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
+    const [dashBoardSettings, setDashBoardSettings] = useState({ratePeriod: null, location: null});
 
     const dashboardRanges = {
         burn: [
             {
-                upper: 0.8,
+                upper: 0.9,
                 colourClass: "bad",
                 tableClass: "table-danger",
                 textClass: "text-danger",
                 icon: <HiChevronDoubleDown/>
             },
             {
-                lower: 0.8,
+                lower: 0.9,
                 upper: 0.95,
                 colourClass: "ok",
                 tableClass: "table-warning",
@@ -84,22 +93,22 @@ const Dashboard = () => {
             },
             {
                 lower: 0.95,
-                upper: 1,
+                upper: 1.05,
                 colourClass: "good",
                 tableClass: "table-success",
                 textClass: "text-success",
                 icon: <HiCheck/>
             },
             {
-                lower: 1,
-                upper: 1.05,
+                lower: 1.05,
+                upper: 1.1,
                 colourClass: "ok",
                 tableClass: "table-warning",
                 textClass: "text-warning",
                 icon: <HiChevronUp/>
             },
             {
-                lower: 1.05,
+                lower: 1.1,
                 colourClass: "bad",
                 tableClass: "table-danger",
                 textClass: "text-danger",
@@ -116,30 +125,30 @@ const Dashboard = () => {
             },
             {
                 lower: 0.9,
-                upper: 1,
+                upper: 0.95,
                 colourClass: "ok",
                 tableClass: "table-warning",
                 textClass: "text-warning",
                 icon: <HiChevronDown/>
             },
             {
-                lower: 1,
-                upper: 1.1,
+                lower: 0.95,
+                upper: 1.05,
                 colourClass: "good",
                 tableClass: "table-success",
                 textClass: "text-success",
                 icon: <HiCheck/>
             },
             {
-                lower: 1.1,
-                upper: 1.25,
+                lower: 1.05,
+                upper: 1.1,
                 colourClass: "ok",
                 tableClass: "table-warning",
                 textClass: "text-warning",
                 icon: <HiChevronUp/>
             },
             {
-                lower: 1.25,
+                lower: 1.1,
                 colourClass: "bad",
                 tableClass: "table-danger",
                 textClass: "text-danger",
@@ -176,10 +185,12 @@ const Dashboard = () => {
 
     const getRateData = () => {
         fetchJson("./php/items/getRates.php", {
-            method: "GET"
+            method: "POST",
+            body: JSON.stringify(dashBoardSettings)
         }, (x) => {
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
+            console.log(x)
             x.rateData.forEach((x) => {
                     const rateDataForId = {
                         itemId: x.itemId,
@@ -187,11 +198,11 @@ const Dashboard = () => {
                         unit: x.unit,
                         totalRestocked: x.restocked || 0,
                         totalWithdrawn: Math.abs(x.withdrawn) || 0,
-                        withdrawRate: (Math.abs(x.withdrawn) / x.days) || 0,
-                        restockRate: (x.restocked / x.days) || 0,
+                        withdrawRate: x.withdrawRate || 0,
+                        restockRate: x.restockRate || 0,
+                        burnRate: x.burnRate || x.withdrawRate || 0,
+                        douseRate: x.douseRate || x.restockRate || 0
                     };
-                    rateDataForId.burnRate = (rateDataForId.withdrawRate / (rateDataForId.restockRate || 1)) || null;
-                    rateDataForId.douseRate = (rateDataForId.restockRate / (rateDataForId.withdrawRate || 1)) || null;
                     newDashboardData.rates.allRates.push(rateDataForId);
                     newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
                     rateCategories.forEach((x) => {
@@ -226,13 +237,14 @@ const Dashboard = () => {
                     }
                     newDashboardData.itemsRows.push([newItemData.name, {
                         text: newItemData.stockString,
-                        className: newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null
+                        className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
                     },
                         newItemData.burnRate ?
                             {
                                 text: <><span
                                     className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
-                                sortValue: newItemData.burnRate
+                                sortValue: newItemData.burnRate,
+                                className: "dashboardStockTableCell"
                             } : {
                                 className: "table-light"
                             },
@@ -240,7 +252,8 @@ const Dashboard = () => {
                             {
                                 text: <><span
                                     className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>,
-                                sortValue: newItemData.douseRate
+                                sortValue: newItemData.douseRate,
+                                className: "dashboardStockTableCell"
                             } : {
                                 className: "table-light"
                             }])
@@ -280,7 +293,7 @@ const Dashboard = () => {
     useEffect(() => {
             getRateData();
         }
-        , []);
+        , [dashBoardSettings]);
 
     return (
         <div className="container">
@@ -301,22 +314,6 @@ const Dashboard = () => {
                                    number={dashboardData.itemsStats.belowWarningLevel === 0 ? 0 : dashboardData.itemsStats.belowWarningLevel || ""}
                                    colourClass={dashboardData.tileClasses.belowWarningLevel}
                                    icon={<IoAlarmOutline/>}/>
-            </div>
-            <div className="row my-3 gy-3">
-                <DashboardActionButton
-                    text={"Withdraw"}
-                    icon={<BsBoxArrowLeft/>}
-                    colour={"btn-outline-primary"}
-                    type={"link"}
-                    link={"/withdraw"}
-                />
-                <DashboardActionButton
-                    text={"Restock"}
-                    icon={<BsBoxArrowInRight/>}
-                    colour={"btn-outline-primary"}
-                    type={"link"}
-                    link={"/restock"}
-                />
             </div>
             <div className="row my-3 gy-3">
                 <div className="col-12 col-md-6">
@@ -379,8 +376,59 @@ const Dashboard = () => {
                     <div className="d-flex align-items-center justify-content-center">
                         <Table headers={["Name", "Current stock", "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
-                                   return naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
+                                   return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
                                }).reverse().slice(0, 5)} fullWidth/>
+                    </div>
+                </div>
+            </div>
+            <div className={"row"}>
+                <div className="row my-3 gy-3 align-items-center">
+                    <div className={"col col-12 col-md-3"}>
+                        <DashboardActionButton
+                            text={"Withdraw"}
+                            icon={<BsBoxArrowLeft/>}
+                            colour={"btn-outline-primary"}
+                            type={"link"}
+                            link={"/withdraw"}
+                        />
+                    </div>
+                    <div className={"col col-12 col-md-3"}>
+
+                        <DashboardActionButton
+                            text={"Restock"}
+                            icon={<BsBoxArrowInRight/>}
+                            colour={"btn-outline-primary"}
+                            type={"link"}
+                            link={"/restock"}
+                        />
+                    </div>
+                    <div className={"col col-12 col-md-3"}>
+                        <FormInput type={"number"} label={"Period (days)"}
+                                   defaultValue={90}
+                                   value={dashBoardSettings.ratePeriod}
+                                   onChange={(id, val) => {
+                                       setDashBoardSettings({...dashBoardSettings, ratePeriod: val})
+                                   }}/>
+                    </div>
+                    <div className={"col col-12 col-md-3"}>
+                        <FormInput type={"typeahead"}
+                                   label={"Location"}
+                                   typeaheadProps={{
+                                       inputProps:
+                                           {
+                                               useFloatingLabel: true,
+                                               floatingLabelText: "Location",
+                                               "data-statename": "Location"
+                                           },
+                                       onChange: (e) => {
+                                           setDashBoardSettings({
+                                               ...dashBoardSettings,
+                                               location: e[0]?.id || null,
+                                           });
+                                       },
+                                       labelKey: "name",
+                                       options: mockLocations,
+                                   }}/>
                     </div>
                 </div>
             </div>
