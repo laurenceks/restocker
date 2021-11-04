@@ -3,21 +3,26 @@ require "../security/userLoginSecurityCheck.php";
 require "../common/db.php";
 
 $output = array("rateData" => array());
-if (property_exists($_SESSION["user"],"ratePeriod")) {
-    $output["ratePeriod"] = $_SESSION["user"]->ratePeriod;
-    $getRates = $db->prepare("SELECT t0.id AS `itemId`, t0.name, t0.unit, t0.currentStock, t0.warningLevel, t1.days, t1.lastTransaction, t2.withdrawn, t3.restocked, ABS(t2.withdrawn/:ratePeriod) AS `withdrawRate`, ABS(t3.restocked/:ratePeriod) AS `restockRate`, ABS(t2.withdrawn/t3.restocked) AS `burnRate`, ABS(t3.restocked/t2.withdrawn) AS `douseRate` FROM `items` t0
+$input = json_decode(file_get_contents('php://input'), true);
 
-LEFT JOIN (SELECT *, `itemId` AS id1, DATEDIFF(NOW(), (MIN(timestamp))) AS `days`, MAX(timestamp) AS `lastTransaction` FROM `transactions` WHERE `timestamp` >= (NOW() - INTERVAL :ratePeriod DAY) GROUP BY `itemId`) t1 ON t0.id = t1.id1
+if ($input && $input["ratePeriod"]) {
+    $getRates = $db->prepare("SELECT t0.id AS `itemId`, t0.name, t0.unit, t0.currentStock, t0.warningLevel, t1.days, t1.lastTransaction, t2.withdrawn, t3.restocked, CAST(ABS(t2.withdrawn/:ratePeriod1) AS DOUBLE) AS `withdrawRate`, CAST(ABS(t3.restocked/:ratePeriod2) AS DOUBLE) AS `restockRate`, CAST(ABS(t2.withdrawn/t3.restocked) AS DOUBLE) AS `burnRate`, CAST(ABS(t3.restocked/t2.withdrawn) AS DOUBLE) AS `douseRate` FROM `items` t0
 
-LEFT JOIN (SELECT `itemId` AS id2, CAST(SUM(quantity) AS INTEGER) AS `withdrawn` FROM `transactions` WHERE `quantity` < 0 AND `timestamp` >= (NOW() - INTERVAL :ratePeriod DAY) GROUP BY `itemId`) t2 ON t1.itemId = t2.id2
+LEFT JOIN (SELECT *, `itemId` AS id1, DATEDIFF(NOW(), (MIN(timestamp))) AS `days`, MAX(timestamp) AS `lastTransaction` FROM `transactions` WHERE `timestamp` >= (NOW() - INTERVAL :ratePeriod3 DAY) GROUP BY `itemId`) t1 ON t0.id = t1.id1
 
-LEFT JOIN (SELECT `itemId` AS id3, CAST(SUM(quantity) AS INTEGER) AS `restocked` FROM `transactions` WHERE `quantity` > 0 AND `timestamp` >= (NOW() - INTERVAL :ratePeriod DAY) GROUP BY `itemId`) t3 ON t1.itemId = t3.id3
+LEFT JOIN (SELECT `itemId` AS id2, CAST(SUM(quantity) AS INTEGER) AS `withdrawn` FROM `transactions` WHERE `quantity` < 0 AND `timestamp` >= (NOW() - INTERVAL :ratePeriod4 DAY) GROUP BY `itemId`) t2 ON t1.itemId = t2.id2
 
-WHERE t0.deleted = 0 AND t0.organisationId = 1;");
+LEFT JOIN (SELECT `itemId` AS id3, CAST(SUM(quantity) AS INTEGER) AS `restocked` FROM `transactions` WHERE `quantity` > 0 AND `timestamp` >= (NOW() - INTERVAL :ratePeriod5 DAY) GROUP BY `itemId`) t3 ON t1.itemId = t3.id3
 
-    $getRates->bindValue($_SESSION["user"]->ratePeriod);
+WHERE t0.deleted = 0 AND t0.organisationId = :organisationId");
+
+    $getRates->bindValue(":ratePeriod1",$input["ratePeriod"]);
+    $getRates->bindValue(":ratePeriod2",$input["ratePeriod"]);
+    $getRates->bindValue(":ratePeriod3",$input["ratePeriod"]);
+    $getRates->bindValue(":ratePeriod4",$input["ratePeriod"]);
+    $getRates->bindValue(":ratePeriod5",$input["ratePeriod"]);
 } else {
-    $getRates = $db->prepare("SELECT t0.id AS `itemId`, t0.name, t0.unit, t0.currentStock, t0.warningLevel, t1.days, t1.lastTransaction, t2.withdrawn, t3.restocked, ABS(t2.withdrawn/t1.days) AS `withdrawRate`, ABS(t3.restocked/t1.days) AS `restockRate`, ABS(t2.withdrawn/t3.restocked) AS `burnRate`, ABS(t3.restocked/t2.withdrawn) AS `douseRate` FROM `items` t0
+    $getRates = $db->prepare("SELECT t0.id AS `itemId`, t0.name, t0.unit, t0.currentStock, t0.warningLevel, t1.days, t1.lastTransaction, t2.withdrawn, t3.restocked, CAST(ABS(t2.withdrawn/t1.days) AS DOUBLE) AS `withdrawRate`, CAST(ABS(t3.restocked/t1.days) AS DOUBLE) AS `restockRate`, CAST(ABS(t2.withdrawn/t3.restocked) AS DOUBLE) AS `burnRate`, CAST(ABS(t3.restocked/t2.withdrawn) AS DOUBLE) AS `douseRate` FROM `items` t0
     
 LEFT JOIN (SELECT *, `itemId` AS id1, DATEDIFF(NOW(), MIN(timestamp)) AS `days`, MAX(timestamp) AS `lastTransaction` FROM `transactions` GROUP BY `itemId`) t1 ON t0.id = t1.id1
     
