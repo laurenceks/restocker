@@ -1,9 +1,15 @@
 import PropTypes from 'prop-types';
-import {NavLink} from "react-router-dom";
+import {NavLink, useHistory} from "react-router-dom";
 import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
+import FormInput from "./common/forms/FormInput";
+import {mockSearchOptions} from "./common/mockData";
+import {useRef} from "react";
+import naturalSort from "../functions/naturalSort";
 
 const TopNav = ({user}) => {
+    const history = useHistory()
+    const searchInput = useRef();
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
             <div className="container-fluid">
@@ -16,7 +22,7 @@ const TopNav = ({user}) => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink to={"/"} className="nav-link rounded-3 mx-1">Home</NavLink>
+                            <NavLink exact={true} to={"/"} className="nav-link rounded-3 mx-1">Home</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to={"/stock"} className="nav-link rounded-3 mx-1">Stock</NavLink>
@@ -29,11 +35,12 @@ const TopNav = ({user}) => {
                         </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
-                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
-                                 id="adminDropdown"
-                                 role="button"
-                                 data-bs-toggle="dropdown"
-                                 aria-expanded="false">
+                            <div
+                                className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
+                                id="adminDropdown"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 <p className="m-0">Admin</p>
                             </div>
                             <ul className="dropdown-menu" aria-labelledby="adminDropdown">
@@ -45,26 +52,53 @@ const TopNav = ({user}) => {
                         }
                     </ul>
                     <form className="d-flex">
-                        <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                        <button className="btn btn-light" type="submit">Search</button>
+                        <FormInput className="form-control me-2"
+                                   type="typeahead"
+                                   placeholder="Search"
+                                   aria-label="Search"
+                                   typeaheadProps={{
+                                       ref: searchInput,
+                                       options: mockSearchOptions.sort((a,b)=>{
+                                           return naturalSort(a.label, b.label);
+                                       }),
+                                       renderMenuItemChildren: (option) => {
+                                           return (
+                                               <>
+                                                   <p className="m-0 searchMenuItemLabel text-primary">{option.label}</p>
+                                                   {option.description && <p className="small"
+                                                                             style={{whiteSpace: "normal"}}>{option.description}</p>}
+                                               </>
+                                           );
+                                       },
+                                       onChange: (e) => {
+                                               if(e[0]){
+                                               history.push(e[0]?.link || "/");
+                                                   searchInput.current.clear();
+                                               }
+
+                                       },
+                                   }}
+                        />
                     </form>
                     <ul className="navbar-nav mb-2 mb-lg-0">
                         <li className="nav-item dropdown">
-                            <div className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3 ms-1"
-                                 id="userDropdown"
-                                 role="button"
-                                 data-bs-toggle="dropdown"
-                                 aria-expanded="false">
-                                <IoPersonCircle className="smallIcon"/>
-                                <p className="m-0 mx-2 d-lg-none">{user.email}</p>
+                            <div
+                                className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3 my-2 my-lg-0 ms-lg-1"
+                                id="userDropdown"
+                                role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <IoPersonCircle className="smallIcon mx-2 mx-lg-0"/>
+                                <NavLink className="m-0 mx-2 d-lg-none" to={"/profile"}>{user.email}</NavLink>
                             </div>
                             <ul className="dropdown-menu userDropdown" aria-labelledby="userDropdown">
-                                <li className="dropdown-item d-none d-lg-block">{user.email}</li>
+                                <li className="d-none d-lg-block"><NavLink className="dropdown-item"
+                                                                           to={`/profile`}>{user.email}</NavLink></li>
                                 <li className="d-none d-lg-block">
                                     <hr className="dropdown-divider"/>
                                 </li>
-                                <li><NavLink className="dropdown-item" to={`/profile`}>Profile</NavLink>
-                                </li>
+                                <li className="d-block d-lg-none"><NavLink className="dropdown-item"
+                                                                           to={"/profile"}>Profile</NavLink></li>
                                 <li><NavLink className="dropdown-item" to={"/logout"}>Logout</NavLink></li>
                             </ul>
                         </li>
