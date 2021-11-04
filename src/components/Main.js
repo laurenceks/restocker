@@ -7,6 +7,7 @@ import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
 import Items from "./items/Items";
 import Stock from "./stock/Stock";
+import Profile from "./profile/Profile";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -23,14 +24,10 @@ const Main = props => {
             <div className="main my-5 mx-auto px-1 px-md-0">
 
                 <Switch>
-                    <Route path={"/"} exact render={() => {
-                        return (
-                            <div>
-                                <h1>Restocker</h1>
-                                <Dashboard/>
-                            </div>
-                        )
                     }}/>
+                    <Route path={"/"} exact>
+                        <Dashboard/>
+                    </Route>
                     <Route path={"/stock"}>
                         <Stock/>
                     </Route>
@@ -42,6 +39,9 @@ const Main = props => {
                     </Route>
                     <Route path={"/items"}>
                         <Items/>
+                    </Route>
+                    <Route path={"/profile"}>
+                        <Profile/>
                     </Route>
                     <Route path={"/logout"} render={logout}/>
                     <Route path={"/users"}>
