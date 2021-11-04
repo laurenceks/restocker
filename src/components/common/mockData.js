@@ -1370,20 +1370,84 @@ const mockTransactions = [{
 const mockLocations = [
     {
         id: 1,
-        name: "Chertsey"
-    }, {
-        id: 2,
-        name: "AShford"
-    }, {
-        id: 3,
-        name: "Polegate"
-    }, {
-        id: 4,
-        name: "Gatwick"
-    }, {
-        id: 5,
-        name: "Farnborough"
+        organisationId: 5,
+        name: "Chertsey",
+        createdBy: 18,
+        editedBy: 100,
+        lastUpdated: "2021-06-19 04:26:06"
     },
+    {
+        id: 2,
+        organisationId: 2,
+        name: "Ashford",
+        createdBy: 63,
+        editedBy: 62,
+        lastUpdated: "2020-12-11 12:45:21"
+    },
+    {
+        id: 3,
+        organisationId: 1,
+        name: "Farnborough",
+        createdBy: 7,
+        editedBy: 75,
+        lastUpdated: "2021-06-10 03:08:49"
+    },
+    {
+        id: 4,
+        organisationId: 1,
+        name: "Polegate",
+        createdBy: 37,
+        editedBy: 8,
+        lastUpdated: "2021-05-09 10:59:11"
+    },
+    {
+        id: 5,
+        organisationId: 4,
+        name: "Gatwick",
+        createdBy: 65,
+        editedBy: 68,
+        lastUpdated: "2021-04-08 13:19:48"
+    },
+    {
+        id: 6,
+        organisationId: 5,
+        name: "Tangmere",
+        createdBy: 19,
+        editedBy: 13,
+        lastUpdated: "2021-01-03 10:08:13"
+    },
+    {
+        id: 7,
+        organisationId: 5,
+        name: "Brighton",
+        createdBy: 47,
+        editedBy: 24,
+        lastUpdated: "2021-10-13 11:21:00"
+    },
+    {
+        id: 8,
+        organisationId: 1,
+        name: "Godalming",
+        createdBy: 23,
+        editedBy: 71,
+        lastUpdated: "2021-01-31 12:02:31"
+    },
+    {
+        id: 9,
+        organisationId: 3,
+        name: "Paddock Wood",
+        createdBy: 99,
+        editedBy: 31,
+        lastUpdated: "2021-10-06 17:14:05"
+    },
+    {
+        id: 10,
+        organisationId: 4,
+        name: "Hastings",
+        createdBy: 90,
+        editedBy: 94,
+        lastUpdated: "2021-04-28 08:04:56"
+    }
 ]
 const mockSearchOptions = [
     {
