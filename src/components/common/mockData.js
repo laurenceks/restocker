@@ -1,4 +1,4 @@
-export const dummyItems = [{
+const dummyItems = [{
     "id": 1,
     "itemName": "Salmonella",
     "currentStock": 33
@@ -400,7 +400,7 @@ export const dummyItems = [{
     "currentStock": 15
 }]
 
-export const mockLists = [{
+const mockLists = [{
     "id": 1,
     "name": "Orange",
     "currentStock": 20,
@@ -666,7 +666,7 @@ export const mockLists = [{
     "editedBy": 6,
     "lastUpdated": "2021-04-02 17:17:50"
 }]
-export const dummyTransactions = [{
+const mockTransactions = [{
     "id": 1,
     "itemId": 3,
     "type": "withdraw",
@@ -1367,3 +1367,55 @@ export const dummyTransactions = [{
     "user": 1,
     "timestamp": "2021-09-14 05:35:00"
 }]
+const mockLocations = [
+    {
+        id: 1,
+        name: "Chertsey"
+    }, {
+        id: 2,
+        name: "AShford"
+    }, {
+        id: 3,
+        name: "Polegate"
+    }, {
+        id: 4,
+        name: "Gatwick"
+    }, {
+        id: 5,
+        name: "Farnborough"
+    },
+]
+const mockSearchOptions = [
+    {
+        label: "Items",
+        link: "/items",
+        description: "Add or edit items"
+    },
+    {
+        label: "Home",
+        link: "/",
+        description: "See an overview of stock levels"
+    },
+    {
+        label: "Dashboard",
+        link: "/",
+        description: "See an overview of stock levels"
+    },
+    {
+        label: "Stock",
+        link: "/stock",
+        description: "See stock levels in detail"
+    },
+    {
+        label: "Withdraw",
+        link: "/withdraw",
+        description: "Withdraw stock"
+    },
+    {
+        label: "Restock",
+        link: "/restock",
+        description: "Add stock"
+    },
+]
+
+export {mockLocations, mockLists, mockSearchOptions};
