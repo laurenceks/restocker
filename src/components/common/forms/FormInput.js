@@ -42,7 +42,7 @@ const FormInput = ({
                            max={max}
                            step={step}
                            onChange={(e) => {
-                               const returnValue = type === "number" ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
+                               const returnValue = type === "number" && e.target.value ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
                                if (value === undefined || value === null) {
                                    //uncontrolled input
                                    setInputState(returnValue);
@@ -78,7 +78,7 @@ FormInput.propTypes = {
 };
 FormInput.defaultProps = {
     form: "",
-    id: "input-" + Math.random(),
+    id: "input-" + parseInt(Math.random()*1000000),
     label: "Input",
     placeholder: "Input",
     type: "text",
