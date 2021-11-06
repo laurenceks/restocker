@@ -6,6 +6,7 @@ import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "@gouch/to-title-case";
+import fetchJson from "../../functions/fetchJson";
 
 const Register = () => {
     const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
@@ -14,28 +15,24 @@ const Register = () => {
     const registerForm = useRef();
 
     useEffect(() => {
-        fetch("./php/common/getUserOrganisations.php", {
+        fetchJson("./php/common/getUserOrganisations.php", {
             method: "GET",
-        }).then((x) => {
-            x.json().then((x) => {
-                setOrganisations(x);
-            })
+        }, (x) => {
+            setOrganisations(x);
         })
     }, []);
 
     const register = formOutput => {
         setRegisterFeedback({...registerFeedback, inProgress: true})
-        fetch("./php/login/register.php", {
+        fetchJson("./php/login/register.php", {
             method: "POST",
             body: JSON.stringify({...formOutput.values, organisation: organisation})
-        }).then((x) => {
-            x.json().then((x) => {
-                setRegisterFeedback({
-                    ...registerFeedback,
-                    ...x,
-                    inProgress: false,
-                    feedbackClass: x.success ? "bg-success" : "bg-danger",
-                })
+        }, (x) => {
+            setRegisterFeedback({
+                ...registerFeedback,
+                ...x,
+                inProgress: false,
+                feedbackClass: x.success ? "bg-success" : "bg-danger",
             })
         });
     }
@@ -71,35 +68,38 @@ const Register = () => {
                         <FormInput type={"typeahead"}
                                    id={"inputRegisterOrganisationWrap"}
                                    typeaheadProps={{
-                                        inputProps:
-                                            {
-                                                id: "inputRegisterOrganisation",
-                                                useFloatingLabel: true,
-                                                floatingLabelText: "Organisation",
-                                                className: "loginInput",
-                                                "data-statename": "organisation"
-                                            },
-                                        allowNew: true,
-                                        onChange: (e) => setOrganisation(e[0] ? {
-                                            ...e[0],
-                                            organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
-                                        } : {}),
-                                        onInputChange: (x, e) => {
-                                            //TODO set input value to toTitleCase?
-                                            //setOrganisation([]);
-                                        },
-                                        labelKey: "organisation",
-                                        options: organisations
-                                    }}
+                                       inputProps:
+                                           {
+                                               id: "inputRegisterOrganisation",
+                                               useFloatingLabel: true,
+                                               floatingLabelText: "Organisation",
+                                               className: "loginInput",
+                                               "data-statename": "organisation"
+                                           },
+                                       allowNew: true,
+                                       onChange: (e) => setOrganisation(e[0] ? {
+                                           ...e[0],
+                                           organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
+                                       } : {}),
+                                       onInputChange: (x, e) => {
+                                           //TODO set input value to toTitleCase?
+                                           //setOrganisation([]);
+                                       },
+                                       labelKey: "organisation",
+                                       options: organisations
+                                   }}
                                    invalidFeedback={"Please select your organisation, or add a new one"}
                         />
                         {organisation && organisation.customOption &&
                         <p className="my-3 text-muted small">{organisation.organisation} will be saved as a new
                             organisation with you as the admin</p>}
                     </div>
-                    <InputCheckbox id={"inputRegisterTsandCs"} label={"I agree to the terms and conditions"}
+                    <InputCheckbox id={"inputRegisterTsandCs"}
+                                   label={"I agree to the terms and conditions"}
                                    invalidFeedback={"You must agree to the terms and conditions"}
-                                   checkRequired={true}/>
+                                   checkRequired={true}
+                                   className={"mb-3"}
+                    />
                     <button className="w-100 btn btn-lg btn-primary" type="submit">Register</button>
                 </>
                 }
