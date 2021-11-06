@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 
@@ -16,25 +16,35 @@ const InputCheckbox = ({
                        }) => {
     const [inputState, setInputState] = useState(defaultChecked);
     const inputRef = useRef();
+    const outerClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        inputRef.current.focus();
+        setInputState(prev => {
+            return !prev;
+        });
+    }
     return (
-        <div className={`form-check checkbox cursor-pointer ${className && `${className}`}`} onClick={() => {
-            inputRef.current.click()
-        }}>
+        <div className={`form-check checkbox cursor-pointer user-select-none ${className && `${className}`}`} onClick={outerClick}>
             <input type={type}
                    id={id}
                    className={`form-check-input ${inputClass && ` ${inputClass}`}`}
                    data-checkrequired={checkRequired}
                    name={name}
                    ref={inputRef}
-                   onChange={(e) => {
-                       setInputState(e.target.value);
-                       if (onChange) {
-                           onChange(id, e.target.value)
+                   checked={inputState}
+                   onClick={(e) => {
+                       e.stopPropagation();
+                       setInputState(e.target.checked)
+                   }}
+                   onChange={(e)=>{
+                       if(onChange){
+                           onChange(id, e.target.checked);
                        }
                    }}
-                   defaultChecked={defaultChecked}
             />
-            <label htmlFor={id} className={"form-check-label"}>
+            <label htmlFor={id} className={"form-check-label"}
+                   onClick={outerClick}>
                 {label}
             </label>
             {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
