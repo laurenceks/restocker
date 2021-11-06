@@ -5,7 +5,7 @@ function getUserInfo($userId, $auth = null)
     $getUserInfo = $db->prepare("
         SELECT users.email, users_info.*, users_organisations.organisation
         FROM users
-        LEFT JOIN users_info ON users.id = users_info.id
+        LEFT JOIN users_info ON users.id = users_info.userId
         LEFT JOIN users_organisations ON users_info.organisationId = users_organisations.id
         WHERE users.id = :userId
         ");
