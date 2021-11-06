@@ -1370,7 +1370,7 @@ const mockTransactions = [{
 const mockLocations = [
     {
         id: 1,
-        organisationId: 5,
+        organisationId: 1,
         name: "Chertsey",
         createdBy: 18,
         editedBy: 100,
@@ -1378,7 +1378,7 @@ const mockLocations = [
     },
     {
         id: 2,
-        organisationId: 2,
+        organisationId: 1,
         name: "Ashford",
         createdBy: 63,
         editedBy: 62,
@@ -1402,7 +1402,7 @@ const mockLocations = [
     },
     {
         id: 5,
-        organisationId: 4,
+        organisationId: 1,
         name: "Gatwick",
         createdBy: 65,
         editedBy: 68,
@@ -1410,7 +1410,7 @@ const mockLocations = [
     },
     {
         id: 6,
-        organisationId: 5,
+        organisationId: 1,
         name: "Tangmere",
         createdBy: 19,
         editedBy: 13,
@@ -1418,7 +1418,7 @@ const mockLocations = [
     },
     {
         id: 7,
-        organisationId: 5,
+        organisationId: 1,
         name: "Brighton",
         createdBy: 47,
         editedBy: 24,
@@ -1434,7 +1434,7 @@ const mockLocations = [
     },
     {
         id: 9,
-        organisationId: 3,
+        organisationId: 1,
         name: "Paddock Wood",
         createdBy: 99,
         editedBy: 31,
@@ -1442,7 +1442,7 @@ const mockLocations = [
     },
     {
         id: 10,
-        organisationId: 4,
+        organisationId: 1,
         name: "Hastings",
         createdBy: 90,
         editedBy: 94,
