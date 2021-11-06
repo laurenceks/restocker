@@ -28,7 +28,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
 
     formInputs.forEach(x => {
         if (!x.value || x.value === "") {
-            updateOutput(x);
+            updateOutput(x, !x.dataset.notrequired);
         } else if (inputsNotCheckedByRegex.indexOf(x.type) === -1) {
             let exp = /regex/;
             if (x.type === "email") {
