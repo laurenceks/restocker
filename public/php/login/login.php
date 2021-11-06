@@ -9,7 +9,7 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = array("success" => false, "feedback" => "An unknown error occurred", "user" => array());
 
 try {
     $rememberDuration = $input["inputLoginRemember"] == "true" ? 60 * 60 * 48 : null;
