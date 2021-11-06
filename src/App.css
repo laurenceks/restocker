@@ -120,6 +120,12 @@ input[type="checkbox"], input[type="checkbox"] ~ label {
     cursor: pointer;
 }
 
+div.form-check > div.inputFeedbackTooltip {
+    position: relative;
+    left: -1.5rem;
+    width: calc(100% + 1.5rem) !important;
+}
+
 div.inputFeedbackTooltip {
     overflow: hidden;
     margin-top: 0;
