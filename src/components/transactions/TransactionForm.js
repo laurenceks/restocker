@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
 import {useEffect, useRef, useState} from "react"
 
-import {mockLists, mockLocations} from "../common/mockData";
-import InputCheckbox from "../common/forms/InputCheckbox";
+import {mockLists} from "../common/mockData";
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
@@ -11,30 +10,35 @@ import naturalSort from "../../functions/naturalSort";
 
 const TransactionForm = ({formType}) => {
 
+    //initialise location list before template class
+    const [locationList, setLocationList] = useState([]);
+    const [itemList, setItemList] = useState([]);
+    const [listList, setlistList] = useState(mockLists);
+
     class transactionDataTemplate {
-        constructor(type = "item") {
+        constructor(type = "item", selectedLocation = []) {
             this.withdrawType = type;
-            this.id = null;
+            this.itemId = null;
             this.name = "";
-            this.selected = [];
+            this.selectedItem = itemList.length <= 1 ? itemList : [];
+            this.selectedLocation = locationList.length <= 1 ? locationList : selectedLocation;
+            this.selectedList = listList.length <= 1 ? listList : [];
             this.quantity = 0;
             this.displayQuantity = "";
             this.unit = "";
-            this.locationid = null;
+            this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null
         }
     }
 
     const [withdrawItemType, setWithdrawItemType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(null);
-    const [itemList, setItemList] = useState([]);
-    const [listList, setlistList] = useState(mockLists);
 
     const transactionFormRef = useRef();
 
 
     const getItems = () => {
-        fetchAllItems(processItems)
+        fetchAllItems(processItems, true)
     }
 
     const processItems = (x) => {
@@ -42,6 +46,7 @@ const TransactionForm = ({formType}) => {
         setItemList((formType === "withdraw" ? x.items.filter(x => {
             return x.currentStock > 0;
         }) : x.items).sort(naturalSort));
+        setLocationList([x.locations[0]]);
     }
 
     const withdrawItems = (e) => {
@@ -72,10 +77,10 @@ const TransactionForm = ({formType}) => {
         //if lists change then check if current option is still available
         const currentList = formType === "withdraw" ? itemList : listList;
         if (transactionData && !currentList.some((x) => {
-            return x.id === transactionData?.id
+            return x.id === transactionData?.itemId
         })) {
             //reset transaction data
-            setTransactionData(new transactionDataTemplate(withdrawItemType));
+            setTransactionData(new transactionDataTemplate(withdrawItemType, transactionData.selectedLocation || []));
         }
         getItems();
     }, [itemList, listList]);
@@ -127,19 +132,20 @@ const TransactionForm = ({formType}) => {
                                         "data-statename": "Item"
                                     },
                                 onChange: (e) => {
-                                    setTransactionData(e[0] ? {
+                                    console.log(transactionData.selectedLocation)
+                                    setTransactionData({
                                         ...transactionData,
-                                        name: e[0].name,
-                                        id: e[0].id,
-                                        selected: e,
+                                        name: e[0]?.name || "",
+                                        itemId: e[0]?.id || null,
+                                        selectedItem: e || [],
                                         displayQuantity: Math.max(Math.abs(transactionData.quantity), Number(maxQty)),
-                                        unit: e[0].unit
-                                    } : new transactionDataTemplate());
+                                        unit: e[0]?.unit || ""
+                                    });
                                     setMaxQty(formType === "withdraw" ? e[0]?.currentStock || null : null);
                                 },
                                 labelKey: "name",
                                 options: withdrawItemType === "item" ? itemList : listList,
-                                selected: transactionData.selected
+                                selected: transactionData.selectedItem
                             }}
                         />
                     </div>
@@ -165,26 +171,34 @@ const TransactionForm = ({formType}) => {
                     </div>
                     <div className="col-12 col-md-4 mb-3">
                         <FormInput
-                            type={"typeahead"} id={"inputWithdrawLocation"}
+                            type={"typeahead"}
+                            id={"inputWithdrawLocation"}
                             typeaheadProps={{
                                 inputProps:
                                     {
                                         id: "inputWithdrawLocation",
                                         useFloatingLabel: true,
                                         floatingLabelText: "Location",
-                                        "data-statename": "Location"
+                                        "data-statename": "Location",
+                                        disabled: locationList.length <= 1
                                     },
                                 onChange: (e) => {
+                                    console.log({
+                                        ...transactionData,
+                                        locationId: e[0]?.id || null,
+                                        selectedLocation: e || []
+                                    });
                                     setTransactionData({
                                         ...transactionData,
                                         locationId: e[0]?.id || null,
+                                        selectedLocation: e || []
                                     });
                                 },
                                 labelKey: "name",
-                                options: mockLocations.sort((a, b) => {
+                                options: locationList.sort((a, b) => {
                                     return naturalSort(a.name, b.name)
                                 }),
-                                // selected: transactionData.selected
+                                selected: transactionData.selectedLocation
                             }}
                         />
                     </div>
