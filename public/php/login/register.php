@@ -30,11 +30,25 @@ try {
             //new organisation - add to DB list and mark user as an admin
             $superAdmin = 1;
             $approved = 1;
-            $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation) VALUES (:organisation)");
-            $addOrganisation->bindParam(":organisation", $input["inputRegisterOrganisation"]);
+            $addOrganisation = $db->prepare("INSERT INTO users_organisations (organisation, createdBy, editedBy) VALUES (:organisation, :uId1, :uId2)");
+            $addOrganisation->bindValue(":organisation", $input["inputRegisterOrganisation"]);
+            $addOrganisation->bindValue(":uId1", $userId);
+            $addOrganisation->bindValue(":uId2", $userId);
             $addOrganisation->execute();
             $organisationId = $db->lastInsertId();
             $output["organisationId"] = $organisationId;
+
+            //add new default location for new organisation
+            $addLocation = $db->prepare("INSERT INTO locations (organisationId, createdBy, editedBy) VALUES (:organisationId, :uId3, :uId4)");
+            $addLocation->bindValue(":organisationId", $organisationId);
+            $addLocation->bindValue(":uId3", $userId);
+            $addLocation->bindValue(":uId4", $userId);
+            $addLocation->execute();
+            $locationId = $db->lastInsertId();
+
+            $output["locationId"] = $locationId;
+
+
         } else {
             //organisation exists - just use passed organisationId
             $organisationId = $input["organisation"]["id"];
