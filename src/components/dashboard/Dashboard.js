@@ -381,55 +381,53 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className={"row"}>
-                <div className="row my-3 gy-3 align-items-center">
-                    <div className={"col col-12 col-md-3"}>
-                        <DashboardActionButton
-                            text={"Withdraw"}
-                            icon={<BsBoxArrowLeft/>}
-                            colour={"btn-outline-primary"}
-                            type={"link"}
-                            link={"/withdraw"}
-                        />
-                    </div>
-                    <div className={"col col-12 col-md-3"}>
+            <div className="row my-3 gy-3 align-items-center">
+                <div className={"col col-12 col-md-3"}>
+                    <DashboardActionButton
+                        text={"Withdraw"}
+                        icon={<BsBoxArrowLeft/>}
+                        colour={"btn-outline-primary"}
+                        type={"link"}
+                        link={"/withdraw"}
+                    />
+                </div>
+                <div className={"col col-12 col-md-3"}>
 
-                        <DashboardActionButton
-                            text={"Restock"}
-                            icon={<BsBoxArrowInRight/>}
-                            colour={"btn-outline-primary"}
-                            type={"link"}
-                            link={"/restock"}
-                        />
-                    </div>
-                    <div className={"col col-12 col-md-3"}>
-                        <FormInput type={"number"} label={"Period (days)"}
-                                   defaultValue={90}
-                                   value={dashBoardSettings.ratePeriod}
-                                   onChange={(id, val) => {
-                                       setDashBoardSettings({...dashBoardSettings, ratePeriod: val})
-                                   }}/>
-                    </div>
-                    <div className={"col col-12 col-md-3"}>
-                        <FormInput type={"typeahead"}
-                                   label={"Location"}
-                                   typeaheadProps={{
-                                       inputProps:
-                                           {
-                                               useFloatingLabel: true,
-                                               floatingLabelText: "Location",
-                                               "data-statename": "Location"
-                                           },
-                                       onChange: (e) => {
-                                           setDashBoardSettings({
-                                               ...dashBoardSettings,
-                                               location: e[0]?.id || null,
-                                           });
+                    <DashboardActionButton
+                        text={"Restock"}
+                        icon={<BsBoxArrowInRight/>}
+                        colour={"btn-outline-primary"}
+                        type={"link"}
+                        link={"/restock"}
+                    />
+                </div>
+                <div className={"col col-12 col-md-3"}>
+                    <FormInput type={"number"} label={"Period (days)"}
+                               defaultValue={90}
+                               value={dashBoardSettings.ratePeriod}
+                               onChange={(id, val) => {
+                                   setDashBoardSettings({...dashBoardSettings, ratePeriod: val})
+                               }}/>
+                </div>
+                <div className={"col col-12 col-md-3"}>
+                    <FormInput type={"typeahead"}
+                               label={"Location"}
+                               typeaheadProps={{
+                                   inputProps:
+                                       {
+                                           useFloatingLabel: true,
+                                           floatingLabelText: "Location",
+                                           "data-statename": "Location"
                                        },
-                                       labelKey: "name",
-                                       options: mockLocations,
-                                   }}/>
-                    </div>
+                                   onChange: (e) => {
+                                       setDashBoardSettings({
+                                           ...dashBoardSettings,
+                                           location: e[0]?.id || null,
+                                       });
+                                   },
+                                   labelKey: "name",
+                                   options: mockLocations,
+                               }}/>
                 </div>
             </div>
         </div>
