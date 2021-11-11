@@ -7,12 +7,14 @@ import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
+import deepmerge from "deepmerge";
 
 const TransactionForm = ({formType}) => {
 
     //initialise location list before template class
     const [locationList, setLocationList] = useState([]);
     const [itemList, setItemList] = useState([]);
+    const [itemData, setItemData] = useState({});
     const [listList, setlistList] = useState(mockLists);
 
     class transactionDataTemplate {
@@ -42,11 +44,45 @@ const TransactionForm = ({formType}) => {
     }
 
     const processItems = (x) => {
-        x.items.forEach(x => x.sortKey = x.name);
-        setItemList((formType === "withdraw" ? x.items.filter(x => {
-            return x.currentStock > 0;
-        }) : x.items).sort(naturalSort));
-        setLocationList([x.locations[0]]);
+        setLocationList(x.locations);
+        setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
+        updateOptions({fetchedData: x});
+    }
+
+    const updateOptions = (newData = {}) => {
+        //provide empty array if no location/item
+        newData = {
+            location: newData.location || transactionData.selectedLocation || [],
+            item: newData.item || transactionData.selectedItem || []
+        };
+        const newOptions = {
+            locationId: newData.location?.[0]?.id || transactionData.locationId,
+            selectedLocation: newData.location || transactionData.selectedLocation,
+            itemId: newData.item?.length === 0 ? null : newData.item?.[0]?.id || transactionData.itemId,
+            name: newData.item?.[0]?.name || transactionData.name,
+            unit: newData.item?.[0]?.unit || transactionData.unit,
+            displayQuantity: transactionData.displayQuantity
+        };
+        //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
+        const newItemList = (newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || [];
+        setItemList(newItemList);
+        if (formType !== "restock") {
+            //check if itemId is still in current list of items for location
+            newOptions.selectedItem = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
+            newOptions.selectedItem = newOptions.selectedItem ? newOptions.selectedItem = [newOptions.selectedItem] : [];
+        } else {
+            //otherwise if restocking just let it be the selection
+            newOptions.selectedItem = newData.item || transactionData.selectedItem;
+        }
+        //if restocking clear maxQty, otherwise set it to currently selected item max or null
+        const newMaxQty = formType === "restock" ? null : newOptions.selectedItem?.[0]?.currentStock || null;
+        //set the new display quantity to the current value, or the newMaxQty if lower
+        const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : Math.min(newOptions.displayQuantity, newMaxQty);
+        //make current quantity into right polarisation
+        newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
+        newOptions.displayQuantity = newDisplayQty;
+        setTransactionData({...transactionData, ...newOptions})
+        setMaxQty(newMaxQty);
     }
 
     const withdrawItems = (e) => {
@@ -59,31 +95,20 @@ const TransactionForm = ({formType}) => {
             getItems();
         });
     }
+
     const withdrawList = (e) => {
         console.log("Withdraw list")
     }
 
     useEffect(() => {
-        //on initial load fetch item lists
-        getItems();
-    }, []);
-
-    useEffect(() => {
-        //if formtype changes reprocess items
+        //refresh item lists when page changes between form types
         getItems();
     }, [formType]);
 
     useEffect(() => {
-        //if lists change then check if current option is still available
-        const currentList = formType === "withdraw" ? itemList : listList;
-        if (transactionData && !currentList.some((x) => {
-            return x.id === transactionData?.itemId
-        })) {
-            //reset transaction data
-            setTransactionData(new transactionDataTemplate(withdrawItemType, transactionData.selectedLocation || []));
-        }
+        //on initial mount fetch item lists
         getItems();
-    }, [itemList, listList]);
+    }, []);
 
     return (
         <div className="container">
@@ -129,22 +154,14 @@ const TransactionForm = ({formType}) => {
                                         id: "inputWithdrawName",
                                         useFloatingLabel: true,
                                         floatingLabelText: "Item",
-                                        "data-statename": "Item"
+                                        "data-statename": "Item",
+                                        disabled: (withdrawItemType === "item" ? itemList : listList).length <= 1
                                     },
                                 onChange: (e) => {
-                                    console.log(transactionData.selectedLocation)
-                                    setTransactionData({
-                                        ...transactionData,
-                                        name: e[0]?.name || "",
-                                        itemId: e[0]?.id || null,
-                                        selectedItem: e || [],
-                                        displayQuantity: Math.max(Math.abs(transactionData.quantity), Number(maxQty)),
-                                        unit: e[0]?.unit || ""
-                                    });
-                                    setMaxQty(formType === "withdraw" ? e[0]?.currentStock || null : null);
+                                    updateOptions({item: e});
                                 },
                                 labelKey: "name",
-                                options: withdrawItemType === "item" ? itemList : listList,
+                                options: itemList,
                                 selected: transactionData.selectedItem
                             }}
                         />
@@ -165,6 +182,7 @@ const TransactionForm = ({formType}) => {
                                                                   });
                                                               }}
                                                               value={transactionData.displayQuantity}
+                                                              disabled={transactionData.selectedItem.length === 0 || !transactionData.selectedItem}
                             /></div>
                             <div className="col-4"><p className="m-0">{transactionData.unit}</p></div>
                         </div>
@@ -183,16 +201,7 @@ const TransactionForm = ({formType}) => {
                                         disabled: locationList.length <= 1
                                     },
                                 onChange: (e) => {
-                                    console.log({
-                                        ...transactionData,
-                                        locationId: e[0]?.id || null,
-                                        selectedLocation: e || []
-                                    });
-                                    setTransactionData({
-                                        ...transactionData,
-                                        locationId: e[0]?.id || null,
-                                        selectedLocation: e || []
-                                    });
+                                    updateOptions({location: e});
                                 },
                                 labelKey: "name",
                                 options: locationList.sort((a, b) => {
