@@ -7,32 +7,39 @@ require "../common/fetchFunctions/fetchFunctionItems.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "outOfStockItems" => array(), "errorType" => null);
-
-$currentItemsAtLocation = array_filter(fetchFunctionItems($_SESSION["user"]->organisationId, $input["locationId"]), function ($row) use ($input, $output) {
-    return intval($row["locationId"]) == $input["locationId"];
-});
-
+$output = array("success" => false, "feedback" => "An unknown error occurred", "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
 
 if ($input["transactionType"] !== "restock") {
     $currentItemsAtLocationByItemId = array();
-    foreach ($currentItemsAtLocation as $item) {
-        $currentItemsAtLocationByItemId[$item["id"]] = $item;
+    foreach (fetchFunctionItems($_SESSION["user"]->organisationId, $input["locationId"]) as $row) {
+        $currentItemsAtLocationByItemId[$row["locationId"]][$row["id"]] = $row;
     }
     $output["current"] = $currentItemsAtLocationByItemId;
 
     //make sure each item has sufficient stock before proceeding
+    //TODO fetch locations list and make sure location still exists
     foreach ($input["transactionArray"] as $transaction) {
-        if (!$transaction["itemId"] || !$currentItemsAtLocationByItemId[$transaction["itemId"]] || abs($transaction["quantity"]) > $currentItemsAtLocationByItemId[$transaction["itemId"]]["currentStock"]) {
-            //an item can't be withdrawn
-            $output["outOfStockItems"][] = array("id" => $transaction["itemId"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$transaction["itemId"]]["currentStock"]);
+        if (!$transaction["itemId"]) {
+            //invalid item Id
+            $output["feedback"] = "Invalid itemId passed";
+            $output["errorTypes"][] = "invalidItemId";
+            earlyExit($output);
+        } else if (!isset($currentItemsAtLocationByItemId["all"][$transaction["itemId"]])) {
+            //item doesn't exist anymore
+            $output["missingItems"][] = array("id" => $transaction["itemId"], "requested" => abs($transaction["quantity"]));
+        } else if (!isset($currentItemsAtLocationByItemId[$input["locationId"]]) || !isset($currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]) || abs($transaction["quantity"]) > $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]) {
+            //an item can't be withdrawn because it is out of stock
+            $output["outOfStockItems"][] = array("id" => $transaction["itemId"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]);
         }
     }
-    if (count($output["outOfStockItems"]) > 0) {
-        $output["feedback"] = "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "one" : "some") . " of the items requested, please try again";
-        $output["errorType"] = "outOfStock";
-        echo json_encode($output);
-        exit();
+    if (count($output["missingItems"]) > 0) {
+        $output["feedback"] = (count($output["outOfStockItems"]) === 1 ? "One" : "Some") . " of the items requested are missing - possibly due to deletion - please review your transaction and try again (stock levels have been refreshed)";
+        $output["errorTypes"][] = "missingItems";
+        earlyExit($output);
+    } else if (count($output["outOfStockItems"]) > 0) {
+        $output["feedback"] = "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "one" : "some") . " of the items requested at the given location, please review your transaction and try again (stock levels have been refreshed)";
+        $output["errorTypes"][] = "outOfStock";
+        earlyExit($output);
     }
 }
 
@@ -56,3 +63,9 @@ try {
 }
 
 echo json_encode($output);
+
+function earlyExit($output)
+{
+    echo json_encode($output);
+    exit();
+}

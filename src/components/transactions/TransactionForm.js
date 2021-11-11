@@ -106,10 +106,18 @@ const TransactionForm = ({formType}) => {
             setSubmitted(true);
             if (x.success) {
                 setTransactionData(new transactionDataTemplate(withdrawItemType));
-            } else if (x.errorType === "outOfStock") {
+            } else if (x.errorTypes.includes("outOfStock")) {
                 //handle out of stock error
+                console.log(x.feedback);
+                console.log(x.outOfStockItems);
                 setTransactionData({...transactionData, quantity: null, maxQty: null})
                 //TODO modal notifying of out of stock
+            }else if (x.errorTypes.includes("missingItems")) {
+                //handle out of stock error
+                console.log(x.feedback);
+                console.log(x.missingItems);
+                getItems();
+                //TODO modal notifying of missingItems
             }
         });
     }
