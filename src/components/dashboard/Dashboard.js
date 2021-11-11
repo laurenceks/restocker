@@ -157,8 +157,8 @@ const Dashboard = () => {
         ],
         stockLevel: [
             {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
-            {lower: 0.9, upper: 0.95, colourClass: "ok", tableClass: "table-warning"},
-            {upper: 1, colourClass: "good", tableClass: "table-success"},
+            {lower: 0.9, upper: 0.975, colourClass: "ok", tableClass: "table-warning"},
+            {lower: 0.975, colourClass: "good", tableClass: "table-success"},
         ],
         outOfStock: [
             {upper: 0.05, colourClass: "good", tableClass: "table-success"},
@@ -180,7 +180,7 @@ const Dashboard = () => {
                 return (val >= x.lower && val < x.upper) || (val >= x.lower && i === range.length - 1)
             }
         })
-        return result && classType === "all" ? result : result[classType] ? result[classType] : null;
+        return result && classType === "all" ? result : result?.[classType] ? result?.[classType] : null;
     }
 
     const getRateData = () => {
