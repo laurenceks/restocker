@@ -168,7 +168,7 @@ const Dashboard = () => {
         belowWarningLevel: [
             {upper: 0.15, colourClass: "good", tableClass: "table-success"},
             {lower: 0.15, upper: 0.2, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 0.25, colourClass: "bad", tableClass: "table-danger"},
+            {lower: 0.2, colourClass: "bad", tableClass: "table-danger"},
         ]
     }
 
