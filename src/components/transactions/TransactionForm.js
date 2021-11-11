@@ -16,6 +16,8 @@ const TransactionForm = ({formType}) => {
     const [itemList, setItemList] = useState([]);
     const [itemData, setItemData] = useState({});
     const [listList, setlistList] = useState(mockLists);
+    const [submitted, setSubmitted] = useState(false);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
 
     class transactionDataTemplate {
         constructor(type = "item", selectedLocation = []) {
@@ -28,7 +30,7 @@ const TransactionForm = ({formType}) => {
             this.quantity = 0;
             this.displayQuantity = "";
             this.unit = "";
-            this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null
+            this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null;
         }
     }
 
@@ -86,13 +88,14 @@ const TransactionForm = ({formType}) => {
     }
 
     const withdrawItems = (e) => {
+        //disable form submission until complete
+        setSubmitDisabled(true);
         fetchJson("./php/items/addTransaction.php", {
             method: "POST",
             body: JSON.stringify(transactionData),
         }, (x) => {
+            setSubmitted(true);
             setTransactionData(new transactionDataTemplate(withdrawItemType));
-            setMaxQty(null);
-            getItems();
         });
     }
 
@@ -101,14 +104,29 @@ const TransactionForm = ({formType}) => {
     }
 
     useEffect(() => {
+        //disable submission until item list updated
+        setSubmitDisabled(true);
         //refresh item lists when page changes between form types
         getItems();
     }, [formType]);
 
     useEffect(() => {
+        //disable submission until item list updated
+        setSubmitDisabled(true);
         //on initial mount fetch item lists
         getItems();
     }, []);
+
+    useEffect(() => {
+        //enable submit button, as fields validated once state set
+        setSubmitDisabled(false);
+        //if transaction data has been submitted, refresh item list
+        if (transactionData.submitted) {
+            setSubmitted(false);
+            getItems();
+        }
+    }, [transactionData]);
+
 
     return (
         <div className="container">
@@ -182,7 +200,7 @@ const TransactionForm = ({formType}) => {
                                                                   });
                                                               }}
                                                               value={transactionData.displayQuantity}
-                                                              disabled={transactionData.selectedItem.length === 0 || !transactionData.selectedItem}
+                                                              disabled={(transactionData.selectedItem.length === 0 || !transactionData.selectedItem) && formType !== "restock"}
                             /></div>
                             <div className="col-4"><p className="m-0">{transactionData.unit}</p></div>
                         </div>
@@ -215,7 +233,11 @@ const TransactionForm = ({formType}) => {
                 <div className={"row"}>
                     <div className="col-12 col-sm-2">
                         <button type="submit"
-                                className="btn btn-primary w-100">{formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}</button>
+                                className="btn btn-primary w-100"
+                                disabled={submitDisabled}
+                        >
+                            {formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}
+                        </button>
                     </div>
                 </div>
             </form>
