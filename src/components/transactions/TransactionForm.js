@@ -8,17 +8,9 @@ import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
 import deepmerge from "deepmerge";
+import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 
 const TransactionForm = ({formType}) => {
-
-    //initialise location list before template class
-    const [locationList, setLocationList] = useState([]);
-    const [itemList, setItemList] = useState([]);
-    const [itemData, setItemData] = useState({});
-    const [listList, setlistList] = useState(mockLists);
-    const [submitted, setSubmitted] = useState(false);
-    const [submitDisabled, setSubmitDisabled] = useState(false);
-
     class transactionDataTemplate {
         constructor(type = "item", selectedLocation = []) {
             this.withdrawType = type;
@@ -31,15 +23,21 @@ const TransactionForm = ({formType}) => {
             this.displayQuantity = "";
             this.unit = "";
             this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null;
+            this.transactionArray = [];
         }
     }
 
+    //initialise location list before template class
+    const [locationList, setLocationList] = useState([]);
+    const [itemList, setItemList] = useState([]);
+    const [itemData, setItemData] = useState({});
+    const [listList, setlistList] = useState(mockLists);
+    const [submitted, setSubmitted] = useState(false);
+    const [submitDisabled, setSubmitDisabled] = useState(false);
     const [withdrawItemType, setWithdrawItemType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(null);
-
     const transactionFormRef = useRef();
-
 
     const getItems = () => {
         fetchAllItems(processItems, true)
@@ -69,9 +67,9 @@ const TransactionForm = ({formType}) => {
         const newItemList = (newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || [];
         setItemList(newItemList);
         if (formType !== "restock") {
-            //check if itemId is still in current list of items for location
+            //check if itemId is still in current list of items for location, or if no selection and only one option pick that
             newOptions.selectedItem = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
-            newOptions.selectedItem = newOptions.selectedItem ? newOptions.selectedItem = [newOptions.selectedItem] : [];
+            newOptions.selectedItem = newOptions.selectedItem ? newOptions.selectedItem = [newOptions.selectedItem] : (newItemList.length === 1 ? newItemList : []);
         } else {
             //otherwise if restocking just let it be the selection
             newOptions.selectedItem = newData.item || transactionData.selectedItem;
@@ -83,6 +81,8 @@ const TransactionForm = ({formType}) => {
         //make current quantity into right polarisation
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
+        //generate transaction array for API call
+        newOptions.transactionArray = withdrawItemType === "item" ? [{itemId: newOptions.itemId, quantity: newOptions.quantity}] : [];
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
     }
@@ -144,14 +144,14 @@ const TransactionForm = ({formType}) => {
                         <h5 className="d-inline-block ">Type</h5>
                     </div>
                     <div className="col-12 col-md-11">
-                        <div className="btn-group" role="group" aria-label="Withdraw list type">
-                            <input type="radio" className="btn-check" name="btnradio" id="btnradio1"
-                                   autoComplete="off" checked/>
-                            <label className="btn btn-outline-primary" htmlFor="btnradio1">List</label>
-                            <input type="radio" className="btn-check" name="btnradio" id="btnradio2"
-                                   autoComplete="off"/>
-                            <label className="btn btn-outline-primary" htmlFor="btnradio2">item</label>
-                        </div>
+                        <InputCheckboxGroup
+                            boxes={[{label: "Item", value: "item"}, {label: "List", value: "list"}]}
+                            type={"radio"}
+                            name={"withDrawItemType"}
+                            state={withdrawItemType}
+                            onChange={(e) => {
+                                setWithdrawItemType(e.target.dataset.value)
+                            }}/>
                     </div>
                 </div>
                 }
