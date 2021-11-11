@@ -14,6 +14,7 @@ const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
         constructor(type = "item", selectedLocation = []) {
             this.withdrawType = type;
+            this.transactionType = formType;
             this.itemId = null;
             this.name = "";
             this.selectedItem = itemList.length <= 1 ? itemList : [];
@@ -61,28 +62,36 @@ const TransactionForm = ({formType}) => {
             itemId: newData.item?.length === 0 ? null : newData.item?.[0]?.id || transactionData.itemId,
             name: newData.item?.[0]?.name || transactionData.name,
             unit: newData.item?.[0]?.unit || transactionData.unit,
-            displayQuantity: transactionData.displayQuantity
+            displayQuantity: transactionData.displayQuantity,
+            transactionType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
-        const newItemList = (newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || [];
+        const newItemList = ((newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
+            return formType === "restock" || x.currentStock > 0
+        });
         setItemList(newItemList);
         if (formType !== "restock") {
             //check if itemId is still in current list of items for location, or if no selection and only one option pick that
             newOptions.selectedItem = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
-            newOptions.selectedItem = newOptions.selectedItem ? newOptions.selectedItem = [newOptions.selectedItem] : (newItemList.length === 1 ? newItemList : []);
+            newOptions.selectedItem = newOptions.selectedItem && newOptions.selectedItem.currentStock > 0 ? newOptions.selectedItem = [newOptions.selectedItem] : (newItemList.length === 1 ? newItemList : []);
+            newOptions.itemId = newOptions.selectedItem?.[0]?.id || null;
         } else {
             //otherwise if restocking just let it be the selection
             newOptions.selectedItem = newData.item || transactionData.selectedItem;
         }
         //if restocking clear maxQty, otherwise set it to currently selected item max or null
-        const newMaxQty = formType === "restock" ? null : newOptions.selectedItem?.[0]?.currentStock || null;
+        const newMaxQty = formType === "restock" ? null : newOptions.selectedItem?.[0]?.currentStock || 0;
         //set the new display quantity to the current value, or the newMaxQty if lower
         const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : Math.min(newOptions.displayQuantity, newMaxQty);
         //make current quantity into right polarisation
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
-        newOptions.transactionArray = withdrawItemType === "item" ? [{itemId: newOptions.itemId, quantity: newOptions.quantity}] : [];
+        newOptions.transactionArray = withdrawItemType === "item" ? [{
+            itemId: newOptions.itemId,
+            quantity: newOptions.quantity,
+            locationId: newOptions.locationId
+        }] : [];
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
     }
@@ -95,7 +104,13 @@ const TransactionForm = ({formType}) => {
             body: JSON.stringify(transactionData),
         }, (x) => {
             setSubmitted(true);
-            setTransactionData(new transactionDataTemplate(withdrawItemType));
+            if (x.success) {
+                setTransactionData(new transactionDataTemplate(withdrawItemType));
+            } else if (x.errorType === "outOfStock") {
+                //handle out of stock error
+                setTransactionData({...transactionData, quantity: null, maxQty: null})
+                //TODO modal notifying of out of stock
+            }
         });
     }
 
@@ -121,7 +136,7 @@ const TransactionForm = ({formType}) => {
         //enable submit button, as fields validated once state set
         setSubmitDisabled(false);
         //if transaction data has been submitted, refresh item list
-        if (transactionData.submitted) {
+        if (submitted) {
             setSubmitted(false);
             getItems();
         }
@@ -196,7 +211,11 @@ const TransactionForm = ({formType}) => {
                                                                   setTransactionData({
                                                                       ...transactionData,
                                                                       displayQuantity: Math.abs(qty),
-                                                                      quantity: qty
+                                                                      quantity: qty,
+                                                                      transactionArray: withdrawItemType === "item" ? [{
+                                                                          ...transactionData.transactionArray[0],
+                                                                          quantity: qty
+                                                                      }] : transactionData.transactionArray
                                                                   });
                                                               }}
                                                               value={transactionData.displayQuantity}
