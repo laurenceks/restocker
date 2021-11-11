@@ -13,6 +13,8 @@ function fetchFunctionItems($organisationId, $locationId = null)
                             FROM   items
                                    LEFT JOIN transactions
                                           ON items.id = transactions.itemid
+                            WHERE items.deleted = 0
+                            AND items.organisationId = :organisationId1
                             GROUP  BY transactions.itemid
                             UNION
                             SELECT items.id,
@@ -24,8 +26,9 @@ function fetchFunctionItems($organisationId, $locationId = null)
                             FROM   `items`
                                    LEFT JOIN transactions
                                           ON items.id = transactions.itemid
-                            WHERE  items.organisationid = :organisationId1
-                                   AND transactions.organisationid = :organisationId2'
+                            WHERE  items.deleted = 0
+                                AND items.organisationid = :organisationId2
+                                   AND transactions.organisationid = :organisationId3'
                                     . "\n" . $locationWhere . "\n" .
                                     'GROUP  BY items.id,
                                       transactions.locationid
@@ -33,6 +36,7 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                       id; ');
     $getAllItems->bindValue(':organisationId1', $organisationId);
     $getAllItems->bindValue(':organisationId2', $organisationId);
+    $getAllItems->bindValue(':organisationId3', $organisationId);
     if ($locationId) {
         $getAllItems->bindValue(':locationId', $locationId);
     }
