@@ -6,6 +6,7 @@ import setCase from "../../../functions/setCase";
 
 const FormInput = ({
                        defaultValue,
+                       disabled,
                        forceCase,
                        form,
                        id,
@@ -54,6 +55,7 @@ const FormInput = ({
                            form={form}
                            defaultValue={defaultValue}
                            value={value === "" || value ? value : inputState}
+                           disabled={disabled}
                     />
                     <label htmlFor={id}>{label}</label>
                 </div>
@@ -75,13 +77,15 @@ FormInput.propTypes = {
     min: PropTypes.number,
     passwordId: PropTypes.number,
     step: PropTypes.number,
+    disabled: PropTypes.bool
 };
 FormInput.defaultProps = {
     form: "",
-    id: "input-" + parseInt(Math.random()*1000000),
+    id: "input-" + parseInt(Math.random() * 1000000),
     label: "Input",
     placeholder: "Input",
     type: "text",
+    disabled: false,
     defaultValue: null,
     forceCase: null,
     inputClass: null,
