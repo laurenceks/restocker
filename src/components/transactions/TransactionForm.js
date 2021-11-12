@@ -98,28 +98,28 @@ const TransactionForm = ({formType}) => {
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
-        newOptions.transactionArray = productType === "item" ? [{
-            itemId: newOptions.productId,
-            itemName: newOptions.productName,
-            quantity: newOptions.quantity,
-            postTransactionQuantity: newOptions.quantity + newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId]?.currentStock,
-            locationId: newOptions.locationId,
-            locationName: newOptions.selectedLocation?.[0]?.name,
-            type: formType === "transfer" ? "transfer" : newOptions.quantity < 0 ? "withdraw" : "restock"
-        }] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
-            const transactionQty = x.quantity * newOptions.quantity;
-            return {
-                itemId: x.id,
-                itemName: x.name,
-                quantity: transactionQty,
-                postTransactionQuantity: transactionQty + (newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId].currentStock || 0),
-                locationId: newOptions.locationId,
-                locationName: newOptions.selectedLocation?.[0]?.name,
-                type: newOptions.quantity < 0 ? "withdraw" : "restock"
-            }
+        newOptions.transactionArray = productType === "item" ? [createTransactionElement(newItemData, newOptions)] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
+            createTransactionElement(newItemData, newOptions, x)
         });
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
+    }
+
+    const createTransactionElement = (newItemData, newOptions, x) => {
+        const transactionQty = (x?.quantity || 1) * newOptions.quantity;
+        const postTransactionQuantity = transactionQty + (newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId]?.currentStock || 0);
+        const transactionProductId = x?.id || newOptions.productId;
+        console.log(newItemData.itemsByLocationThenItemId[newOptions.locationId][transactionProductId]);
+        return {
+            itemId: transactionProductId,
+            itemName: x?.name || newOptions.productName,
+            quantity: transactionQty,
+            postTransactionQuantity: postTransactionQuantity,
+            postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newItemData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
+            locationId: newOptions.locationId,
+            locationName: newOptions.selectedLocation?.[0]?.name,
+            type: newOptions.quantity < 0 ? "withdraw" : "restock"
+        }
     }
 
     const commitTransaction = (e) => {
@@ -303,7 +303,10 @@ const TransactionForm = ({formType}) => {
                     <Table
                         headers={["Item", "Quantity", formType === "withdraw" ? "Remaining stock" : "New stock", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
                         rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
-                            return [x.itemName, Math.abs(x.quantity), x.postTransactionQuantity || "0", x.locationName, formType === "transfer" ? x.destinationName : null]
+                            return [x.itemName, Math.abs(x.quantity), {
+                                text: x.postTransactionQuantity || "0",
+                                className: x.postTransactionQuantityClassName
+                            }, x.locationName, formType === "transfer" ? x.destinationName : null]
                         })}
                     />
                 </div> : ""}
