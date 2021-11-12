@@ -9,7 +9,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $output = array("success" => false, "feedback" => "An unknown error occurred", "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
 
-if ($input["transactionType"] !== "restock") {
+if ($input["transactionFormType"] !== "restock") {
     $currentItemsAtLocationByItemId = array();
     foreach (fetchFunctionItems($_SESSION["user"]->organisationId, $input["locationId"]) as $row) {
         $currentItemsAtLocationByItemId[$row["locationId"]][$row["id"]] = $row;
@@ -48,8 +48,8 @@ $transactionQueries = array();
 foreach ($input["transactionArray"] as $transaction) {
     $addTransaction = $db->prepare("INSERT INTO transactions (itemId, type, quantity, userId, organisationId, locationId) VALUES (:itemId, :type, :quantity, :userId, :organisationId, :locationId)");
     $addTransaction->bindParam(":itemId", $transaction["itemId"]);
-    $transactionType = $input["transactionType"] || $transaction["quantity"] < 0 ? "withdraw" : "restock";
-    $addTransaction->bindParam(":type", $transactionType);
+    $transactionFormType = $input["transactionFormType"] || $transaction["quantity"] < 0 ? "withdraw" : "restock";
+    $addTransaction->bindParam(":type", $transactionFormType);
     $addTransaction->bindParam(":locationId", $transaction["locationId"]);
     $addTransaction->bindParam(":quantity", $transaction["quantity"]);
     $addTransaction->bindValue(":userId", $_SESSION["user"]->userId);

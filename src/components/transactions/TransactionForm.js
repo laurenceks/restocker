@@ -14,8 +14,8 @@ import Table from "../common/tables/Table";
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
         constructor(type = "item", selectedLocation = []) {
-            this.withdrawType = type;
-            this.transactionType = formType;
+            this.transactionType = type;
+            this.transactionFormType = formType;
             this.itemId = null;
             this.name = "";
             this.selectedItem = itemList.length <= 1 ? itemList : [];
@@ -36,7 +36,7 @@ const TransactionForm = ({formType}) => {
     const [listList, setlistList] = useState(mockLists);
     const [submitted, setSubmitted] = useState(false);
     const [submitDisabled, setSubmitDisabled] = useState(false);
-    const [withdrawItemType, setWithdrawItemType] = useState("item");
+    const [transactionItemType, setTransactionItemType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(null);
     const transactionFormRef = useRef();
@@ -72,7 +72,7 @@ const TransactionForm = ({formType}) => {
             name: newData.item?.[0]?.name || transactionData.name,
             unit: newData.item?.[0]?.unit || transactionData.unit,
             displayQuantity: transactionData.displayQuantity,
-            transactionType: formType
+            transactionFormType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
         const newItemList = ((newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
@@ -96,7 +96,7 @@ const TransactionForm = ({formType}) => {
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
-        newOptions.transactionArray = withdrawItemType === "item" ? [{
+        newOptions.transactionArray = transactionItemType === "item" ? [{
             itemId: newOptions.itemId,
             itemName: newOptions.name,
             quantity: newOptions.quantity,
@@ -108,7 +108,7 @@ const TransactionForm = ({formType}) => {
         setMaxQty(newMaxQty);
     }
 
-    const withdrawItems = (e) => {
+    const commitTransaction = (e) => {
         //disable form submission until complete
         setSubmitDisabled(true);
         fetchJson("./php/items/addTransaction.php", {
@@ -117,7 +117,7 @@ const TransactionForm = ({formType}) => {
         }, (x) => {
             setSubmitted(true);
             if (x.success) {
-                setTransactionData(new transactionDataTemplate(withdrawItemType, transactionData.selectedLocation));
+                setTransactionData(new transactionDataTemplate(transactionItemType, transactionData.selectedLocation));
             } else if (x.errorTypes.includes("outOfStock")) {
                 //handle out of stock error
                 console.log(x.feedback);
@@ -165,12 +165,12 @@ const TransactionForm = ({formType}) => {
     return (
         <div className="container">
             <form ref={transactionFormRef}
-                  id={"withdrawForm"}
+                  id={"transactionForm"}
                   onSubmit={(e) => {
-                      validateForm(e, transactionFormRef, withdrawItemType === "item" ? withdrawItems : withdrawList);
+                      validateForm(e, transactionFormRef, transactionItemType === "item" ? commitTransaction : withdrawList);
                   }}>
                 <div className={"row align-items-center"}>
-                    <h1>{formType === "withdraw" ? `Withdraw ${withdrawItemType}` : "Restock item"}</h1>
+                    <h1>{formType === "withdraw" ? `Withdraw ${transactionItemType}` : "Restock item"}</h1>
                 </div>
                 {formType === "withdraw" &&
                 <div className="row align-items-center mb-3">
@@ -181,16 +181,16 @@ const TransactionForm = ({formType}) => {
                         <InputCheckboxGroup
                             boxes={[{label: "Item", value: "item"}, {label: "List", value: "list"}]}
                             type={"radio"}
-                            name={"withDrawItemType"}
-                            state={withdrawItemType}
+                            name={"transactionItemType"}
+                            state={transactionItemType}
                             onChange={(e) => {
-                                setWithdrawItemType(e.target.dataset.value)
+                                setTransactionItemType(e.target.dataset.value)
                             }}/>
                     </div>
                 </div>
                 }
                 <div className={"row align-items-center"}>
-                    <h5>{withdrawItemType === "item" ? "Item" : "List"}</h5>
+                    <h5>{transactionItemType === "item" ? "Item" : "List"}</h5>
                 </div>
                 <div className={"row align-items-center"}>
                     <div className="col-12 col-md-1 mb-3">
@@ -199,15 +199,15 @@ const TransactionForm = ({formType}) => {
                     <div className="col-12 col-md-4 mb-3">
                         <FormInput
                             type={"typeahead"}
-                            id={"inputWithdrawName"}
+                            id={"inputTransactionName"}
                             typeaheadProps={{
                                 inputProps:
                                     {
-                                        id: "inputWithdrawName",
+                                        id: "inputTransactionName",
                                         useFloatingLabel: true,
                                         floatingLabelText: "Item",
                                         "data-statename": "Item",
-                                        disabled: (withdrawItemType === "item" ? itemList : listList).length <= 1
+                                        disabled: (transactionItemType === "item" ? itemList : listList).length <= 1
                                     },
                                 onChange: (e) => {
                                     updateOptions({item: e});
@@ -221,7 +221,7 @@ const TransactionForm = ({formType}) => {
                     <div className="col-12 col-md-3 mb-3">
                         <div className="row align-items-center">
                             <div className="col-8"><FormInput type={"number"}
-                                                              id={"inputWithdrawQuantity"}
+                                                              id={"inputTransactionQuantity"}
                                                               label={"Quantity"}
                                                               min={0}
                                                               max={maxQty ? Math.max(0, maxQty) : null}
@@ -231,7 +231,7 @@ const TransactionForm = ({formType}) => {
                                                                       ...transactionData,
                                                                       displayQuantity: Math.abs(qty),
                                                                       quantity: qty,
-                                                                      transactionArray: withdrawItemType === "item" ? [{
+                                                                      transactionArray: transactionItemType === "item" ? [{
                                                                           ...transactionData.transactionArray[0],
                                                                           quantity: qty
                                                                       }] : transactionData.transactionArray
@@ -247,11 +247,11 @@ const TransactionForm = ({formType}) => {
                         {locationList.length > 0 ?
                             <FormInput
                                 type={"typeahead"}
-                                id={"inputWithdrawLocation"}
+                                id={"inputTransactionLocation"}
                                 typeaheadProps={{
                                     inputProps:
                                         {
-                                            id: "inputWithdrawLocation",
+                                            id: "inputTransactionLocation",
                                             useFloatingLabel: true,
                                             floatingLabelText: "Location",
                                             "data-statename": "Location",
