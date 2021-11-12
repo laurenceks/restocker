@@ -45,7 +45,7 @@ const TransactionForm = ({formType}) => {
     const processItems = (x) => {
         const newLocationlist = formType === "restock" ? x.locations : x.locations.filter((l) => {
             //if not a restock form, filter out any location without stock
-            return x.itemsByLocationId[l.id];
+            return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y=>y.currentStock > 0);
         });
         setLocationList(newLocationlist);
         setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
