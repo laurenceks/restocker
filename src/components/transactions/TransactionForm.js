@@ -237,28 +237,31 @@ const TransactionForm = ({formType}) => {
                         </div>
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        <FormInput
-                            type={"typeahead"}
-                            id={"inputWithdrawLocation"}
-                            typeaheadProps={{
-                                inputProps:
-                                    {
-                                        id: "inputWithdrawLocation",
-                                        useFloatingLabel: true,
-                                        floatingLabelText: "Location",
-                                        "data-statename": "Location",
-                                        disabled: locationList.length <= 1
+                        {locationList.length > 0 ?
+                            <FormInput
+                                type={"typeahead"}
+                                id={"inputWithdrawLocation"}
+                                typeaheadProps={{
+                                    inputProps:
+                                        {
+                                            id: "inputWithdrawLocation",
+                                            useFloatingLabel: true,
+                                            floatingLabelText: "Location",
+                                            "data-statename": "Location",
+                                            disabled: locationList.length <= 1
+                                        },
+                                    onChange: (e) => {
+                                        updateOptions({location: e});
                                     },
-                                onChange: (e) => {
-                                    updateOptions({location: e});
-                                },
-                                labelKey: "name",
-                                options: locationList.sort((a, b) => {
-                                    return naturalSort(a.name, b.name)
-                                }),
-                                selected: transactionData.selectedLocation
-                            }}
-                        />
+                                    labelKey: "name",
+                                    options: locationList.sort((a, b) => {
+                                        return naturalSort(a.name, b.name)
+                                    }),
+                                    selected: transactionData.selectedLocation
+                                }}
+                            />
+                        :
+                        <div className={"alert alert-warning text-dark m-0"}>There are no locations available with any stock</div>}
                     </div>
                 </div>
                 <div className={"row"}>
