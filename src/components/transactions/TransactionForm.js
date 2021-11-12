@@ -105,7 +105,7 @@ const TransactionForm = ({formType}) => {
         }, (x) => {
             setSubmitted(true);
             if (x.success) {
-                setTransactionData(new transactionDataTemplate(withdrawItemType));
+                setTransactionData(new transactionDataTemplate(withdrawItemType, transactionData.selectedLocation));
             } else if (x.errorTypes.includes("outOfStock")) {
                 //handle out of stock error
                 console.log(x.feedback);
