@@ -12,7 +12,7 @@ import Table from "../common/tables/Table";
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
         constructor(type = "item", selectedLocation = []) {
-            this.transactionType = type;
+            this.productType = type;
             this.transactionFormType = formType;
             this.productId = null;
             this.productName = "";
@@ -33,7 +33,7 @@ const TransactionForm = ({formType}) => {
     const [listList, setlistList] = useState(mockLists);
     const [submitted, setSubmitted] = useState(false);
     const [submitDisabled, setSubmitDisabled] = useState(false);
-    const [transactionItemType, setTransactionItemType] = useState("item");
+    const [productType, setProductType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(null);
     const transactionFormRef = useRef();
@@ -45,7 +45,7 @@ const TransactionForm = ({formType}) => {
     const processItems = (x) => {
         const newLocationlist = formType === "restock" ? x.locations : x.locations.filter((l) => {
             //if not a restock form, filter out any location without stock
-            return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y=>y.currentStock > 0);
+            return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y => y.currentStock > 0);
         });
         setLocationList(newLocationlist);
         setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
@@ -59,16 +59,17 @@ const TransactionForm = ({formType}) => {
     const updateOptions = (newData = {}) => {
         //provide empty array if no location/item
         newData = {
+            ...newData,
             location: newData.location || transactionData.selectedLocation || [],
             product: newData.product || transactionData.selectedProduct || [],
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
             selectedLocation: newData.location || transactionData.selectedLocation,
-            itemId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
+            productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
             productName: newData.product?.[0]?.name || transactionData.productName,
             unit: newData.product?.[0]?.unit || transactionData.unit,
-            displayQuantity: transactionData.displayQuantity,
+            displayQuantity: newData.displayQuantity || transactionData.displayQuantity || 0,
             transactionFormType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
@@ -77,10 +78,13 @@ const TransactionForm = ({formType}) => {
         });
         setItemList(newItemList);
         if (formType !== "restock") {
-            //check if itemId is still in current list of items for location, or if no selection and only one option pick that
-            newOptions.selectedProduct = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
-            newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newItemList.length === 1 ? newItemList : []);
-            newOptions.itemId = newOptions.selectedProduct?.[0]?.id || null;
+            if (productType === "item") { //check if productId is still in current list of items for location, or if no selection and only one option pick that
+                newOptions.selectedProduct = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId];
+                newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newItemList.length === 1 ? newItemList : []);
+            } else {
+                newOptions.selectedProduct = newData.product || transactionData.selectedProduct || [];
+            }
+                newOptions.productId = newOptions.selectedProduct?.[0]?.id || null;
         } else {
             //otherwise if restocking just let it be the selection
             newOptions.selectedProduct = newData.product || transactionData.selectedProduct;
@@ -93,14 +97,23 @@ const TransactionForm = ({formType}) => {
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
-        newOptions.transactionArray = transactionItemType === "item" ? [{
-            itemId: newOptions.itemId,
+        newOptions.transactionArray = productType === "item" ? [{
+            itemId: newOptions.productId,
             itemName: newOptions.productName,
             quantity: newOptions.quantity,
             locationId: newOptions.locationId,
             locationName: newOptions.selectedLocation?.[0]?.name,
             type: formType === "transfer" ? "transfer" : newOptions.quantity < 0 ? "withdraw" : "restock"
-        }] : [];
+        }] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
+           return {
+               itemId: x.id,
+               itemName: x.name,
+               quantity: x.quantity * newOptions.quantity,
+               locationId: newOptions.locationId,
+               locationName: newOptions.selectedLocation?.[0]?.name,
+               type: newOptions.quantity < 0 ? "withdraw" : "restock"
+           }
+        });
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
     }
@@ -114,7 +127,7 @@ const TransactionForm = ({formType}) => {
         }, (x) => {
             setSubmitted(true);
             if (x.success) {
-                setTransactionData(new transactionDataTemplate(transactionItemType, transactionData.selectedLocation));
+                setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation));
             } else if (x.errorTypes.includes("outOfStock")) {
                 //handle out of stock error
                 console.log(x.feedback);
@@ -138,6 +151,10 @@ const TransactionForm = ({formType}) => {
     useEffect(() => {
         //disable submission until item list updated
         setSubmitDisabled(true);
+        //make sure product type is only item if not withdrawing
+        if (formType !== "withdraw") {
+            setProductType("item")
+        }
         //refresh item lists when page changes between form types
         getItems();
     }, [formType]);
@@ -164,10 +181,10 @@ const TransactionForm = ({formType}) => {
             <form ref={transactionFormRef}
                   id={"transactionForm"}
                   onSubmit={(e) => {
-                      validateForm(e, transactionFormRef, transactionItemType === "item" ? commitTransaction : withdrawList);
+                      validateForm(e, transactionFormRef, productType === "item" ? commitTransaction : withdrawList);
                   }}>
                 <div className={"row align-items-center"}>
-                    <h1>{formType === "withdraw" ? `Withdraw ${transactionItemType}` : "Restock item"}</h1>
+                    <h1>{formType === "withdraw" ? `Withdraw ${productType}` : "Restock item"}</h1>
                 </div>
                 {formType === "withdraw" &&
                 <div className="row align-items-center mb-3">
@@ -178,16 +195,16 @@ const TransactionForm = ({formType}) => {
                         <InputCheckboxGroup
                             boxes={[{label: "Item", value: "item"}, {label: "List", value: "list"}]}
                             type={"radio"}
-                            name={"transactionItemType"}
-                            state={transactionItemType}
+                            name={"productType"}
+                            state={productType}
                             onChange={(e) => {
-                                setTransactionItemType(e.target.dataset.value)
+                                setProductType(e.target.dataset.value)
                             }}/>
                     </div>
                 </div>
                 }
                 <div className={"row align-items-center"}>
-                    <h5>{transactionItemType === "item" ? "Item" : "List"}</h5>
+                    <h5>{productType === "item" ? "Item" : "List"}</h5>
                 </div>
                 <div className={"row align-items-center"}>
                     <div className="col-12 col-md-1 mb-3">
@@ -202,15 +219,15 @@ const TransactionForm = ({formType}) => {
                                     {
                                         id: "inputTransactionProductName",
                                         useFloatingLabel: true,
-                                        floatingLabelText: transactionItemType === "item" ? "Item" : "List",
-                                        "data-statename": transactionItemType === "item" ? "Item" : "List",
-                                        disabled: (transactionItemType === "item" ? itemList : listList).length <= 1
+                                        floatingLabelText: productType === "item" ? "Item" : "List",
+                                        "data-statename": productType === "item" ? "Item" : "List",
+                                        disabled: (productType === "item" ? itemList : listList).length <= 1
                                     },
                                 onChange: (e) => {
                                     updateOptions({product: e});
                                 },
                                 labelKey: "name",
-                                options: (transactionItemType === "item" ? itemList : listList).sort((a, b) => {
+                                options: (productType === "item" ? itemList : listList).sort((a, b) => {
                                     return naturalSort(a.name, b.name)
                                 }),
                                 selected: transactionData.selectedProduct
@@ -230,10 +247,10 @@ const TransactionForm = ({formType}) => {
                                                                       ...transactionData,
                                                                       displayQuantity: Math.abs(qty),
                                                                       quantity: qty,
-                                                                      transactionArray: transactionItemType === "item" ? [{
+                                                                      transactionArray: productType === "item" ? [{
                                                                           ...transactionData.transactionArray[0],
                                                                           quantity: qty
-                                                                      }] : transactionData.transactionArray
+                                                                      }] : transactionData.transactionArray.forEach
                                                                   });
                                                               }}
                                                               value={transactionData.displayQuantity}
@@ -282,15 +299,15 @@ const TransactionForm = ({formType}) => {
                 </div>
             </form>
             {(transactionData.transactionArray.length > 0 && transactionData.transactionArray[0].itemName && transactionData.transactionArray[0].quantity && transactionData.transactionArray[0].locationName) ?
-            <div className="text-dark bg-light rounded-3 p-3 my-5">
-                <p className="my-3">This will make the following transactions</p>
-                <Table
-                    headers={["Item", "Quantity", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
-                    rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
-                        return [x.itemName, Math.abs(x.quantity), x.locationName, formType === "transfer" ? x.destinationName : null]
-                    })}
-                />
-            </div> : ""}
+                <div className="text-dark bg-light rounded-3 p-3 my-5">
+                    <p className="my-3">This will make the following transactions</p>
+                    <Table
+                        headers={["Item", "Quantity", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
+                        rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
+                            return [x.itemName, Math.abs(x.quantity), x.locationName, formType === "transfer" ? x.destinationName : null]
+                        })}
+                    />
+                </div> : ""}
         </div>
     )
         ;
