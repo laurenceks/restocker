@@ -74,13 +74,14 @@ const TransactionForm = ({formType}) => {
             transactionFormType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
-        const newItemList = ((newData.fetchedData?.itemsByLocationId || itemData.itemsByLocationId)?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
+        const newItemData = newData.fetchedData || itemData;
+        const newItemList = (newItemData.itemsByLocationId?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
             return formType === "restock" || x.currentStock > 0
         });
         setItemList(newItemList);
         if (formType !== "restock") {
             if (productType === "item") { //check if productId is still in current list of items for location, or if no selection and only one option pick that
-                newOptions.selectedProduct = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId];
+                newOptions.selectedProduct = newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId];
                 newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newItemList.length === 1 ? newItemList : []);
             } else {
                 newOptions.selectedProduct = newData.product || transactionData.selectedProduct || [];
@@ -101,14 +102,17 @@ const TransactionForm = ({formType}) => {
             itemId: newOptions.productId,
             itemName: newOptions.productName,
             quantity: newOptions.quantity,
+            postTransactionQuantity: newOptions.quantity + newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId]?.currentStock,
             locationId: newOptions.locationId,
             locationName: newOptions.selectedLocation?.[0]?.name,
             type: formType === "transfer" ? "transfer" : newOptions.quantity < 0 ? "withdraw" : "restock"
         }] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
+            const transactionQty = x.quantity * newOptions.quantity;
             return {
                 itemId: x.id,
                 itemName: x.name,
-                quantity: x.quantity * newOptions.quantity,
+                quantity: transactionQty,
+                postTransactionQuantity: transactionQty + (newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId].currentStock || 0),
                 locationId: newOptions.locationId,
                 locationName: newOptions.selectedLocation?.[0]?.name,
                 type: newOptions.quantity < 0 ? "withdraw" : "restock"
@@ -297,9 +301,9 @@ const TransactionForm = ({formType}) => {
                 <div className="text-dark bg-light rounded-3 p-3 my-5">
                     <p className="my-3">This will make the following transactions</p>
                     <Table
-                        headers={["Item", "Quantity", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
+                        headers={["Item", "Quantity", formType === "withdraw" ? "Remaining stock" : "New stock", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
                         rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
-                            return [x.itemName, Math.abs(x.quantity), x.locationName, formType === "transfer" ? x.destinationName : null]
+                            return [x.itemName, Math.abs(x.quantity), x.postTransactionQuantity || "0", x.locationName, formType === "transfer" ? x.destinationName : null]
                         })}
                     />
                 </div> : ""}
