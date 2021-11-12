@@ -43,10 +43,12 @@ const Table = ({title, headers, rows, tableClassName, fullWidth}) => {
                 <thead>
                 <tr>
                     {headers.map((x, i) => {
-                        return (<th key={`${title}-th-${i}`}
-                                    colSpan={x.colspan}
-                                    className={x.className}>
-                            {x.text || x}</th>);
+                        if (x) {
+                            return (<th key={`${title}-th-${i}`}
+                                        colSpan={x.colspan}
+                                        className={x.className}>
+                                {x.text || x}</th>)
+                        }
                     })}
                 </tr>
                 </thead>
@@ -55,8 +57,10 @@ const Table = ({title, headers, rows, tableClassName, fullWidth}) => {
                     return (
                         <tr key={`${title}-tr-${i}`}>
                             {x.map((y, j) => {
-                                return <TableCell key={`${title}-tr-${i}-td-${j}`} content={y}
-                                                  className={y?.className}/>
+                                if (y) {
+                                    return <TableCell key={`${title}-tr-${i}-td-${j}`} content={y}
+                                                      className={y?.className}/>
+                                }
                             })}
                         </tr>
                     )
