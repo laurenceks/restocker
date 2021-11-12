@@ -9,7 +9,7 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                    items.unit,
                                    "all" AS locationId,
                                    items.currentStock,
-                                   items.warninglevel
+                                   items.warningLevel
                             FROM   items
                                    LEFT JOIN transactions
                                           ON items.id = transactions.itemid
@@ -22,7 +22,7 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                    items.unit,
                                    transactions.locationid,
                                    CAST(SUM(quantity) AS INTEGER) AS currentStock,
-                                   items.warninglevel
+                                   items.warningLevel
                             FROM   `items`
                                    LEFT JOIN transactions
                                           ON items.id = transactions.itemid
