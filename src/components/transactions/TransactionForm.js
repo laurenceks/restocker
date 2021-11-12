@@ -9,6 +9,7 @@ import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
 import deepmerge from "deepmerge";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
+import Table from "../common/tables/Table";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -52,7 +53,10 @@ const TransactionForm = ({formType}) => {
         setLocationList(newLocationlist);
         setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
         //pass updated data, don't change location if valid or reset selection
-        updateOptions({fetchedData: x, location: newLocationlist.some(l => l.id === transactionData.locationId) ? null : []});
+        updateOptions({
+            fetchedData: x,
+            location: newLocationlist.some(l => l.id === transactionData.locationId) ? null : []
+        });
     }
 
     const updateOptions = (newData = {}) => {
@@ -94,8 +98,11 @@ const TransactionForm = ({formType}) => {
         //generate transaction array for API call
         newOptions.transactionArray = withdrawItemType === "item" ? [{
             itemId: newOptions.itemId,
+            itemName: newOptions.name,
             quantity: newOptions.quantity,
-            locationId: newOptions.locationId
+            locationId: newOptions.locationId,
+            locationName: newOptions.selectedLocation?.[0]?.name,
+            type: formType === "transfer" ? "transfer" : newOptions.quantity < 0 ? "withdraw" : "restock"
         }] : [];
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
@@ -260,21 +267,31 @@ const TransactionForm = ({formType}) => {
                                     selected: transactionData.selectedLocation
                                 }}
                             />
-                        :
-                        <div className={"alert alert-warning text-dark m-0"}>There are no locations available with any stock</div>}
+                            :
+                            <div className={"alert alert-warning text-dark m-0"}>There are no locations available with
+                                any stock</div>}
                     </div>
                 </div>
                 <div className={"row"}>
                     <div className="col-12 col-sm-2">
                         <button type="submit"
                                 className="btn btn-primary w-100"
-                                disabled={submitDisabled}
-                        >
+                                disabled={submitDisabled}>
                             {formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}
                         </button>
                     </div>
                 </div>
             </form>
+            {(transactionData.transactionArray.length > 0 && transactionData.transactionArray[0].itemName && transactionData.transactionArray[0].quantity && transactionData.transactionArray[0].locationName) ?
+            <div className="text-dark bg-light rounded-3 p-3 my-5">
+                <p className="my-3">This will make the following transactions</p>
+                <Table
+                    headers={["Item", "Quantity", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
+                    rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
+                        return [x.itemName, Math.abs(x.quantity), x.locationName, formType === "transfer" ? x.destinationName : null]
+                    })}
+                />
+            </div> : ""}
         </div>
     )
         ;
