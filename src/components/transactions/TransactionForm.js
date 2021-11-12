@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
 import {useEffect, useRef, useState} from "react"
-
 import {mockLists} from "../common/mockData";
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
-import deepmerge from "deepmerge";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
 
@@ -16,11 +14,10 @@ const TransactionForm = ({formType}) => {
         constructor(type = "item", selectedLocation = []) {
             this.transactionType = type;
             this.transactionFormType = formType;
-            this.itemId = null;
-            this.name = "";
-            this.selectedItem = itemList.length <= 1 ? itemList : [];
+            this.productId = null;
+            this.productName = "";
+            this.selectedProduct = itemList.length <= 1 ? itemList : [];
             this.selectedLocation = locationList.length <= 1 ? locationList : selectedLocation;
-            this.selectedList = listList.length <= 1 ? listList : [];
             this.quantity = 0;
             this.displayQuantity = "";
             this.unit = "";
@@ -63,14 +60,14 @@ const TransactionForm = ({formType}) => {
         //provide empty array if no location/item
         newData = {
             location: newData.location || transactionData.selectedLocation || [],
-            item: newData.item || transactionData.selectedItem || []
+            product: newData.product || transactionData.selectedProduct || [],
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
             selectedLocation: newData.location || transactionData.selectedLocation,
-            itemId: newData.item?.length === 0 ? null : newData.item?.[0]?.id || transactionData.itemId,
-            name: newData.item?.[0]?.name || transactionData.name,
-            unit: newData.item?.[0]?.unit || transactionData.unit,
+            itemId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
+            productName: newData.product?.[0]?.name || transactionData.productName,
+            unit: newData.product?.[0]?.unit || transactionData.unit,
             displayQuantity: transactionData.displayQuantity,
             transactionFormType: formType
         };
@@ -81,15 +78,15 @@ const TransactionForm = ({formType}) => {
         setItemList(newItemList);
         if (formType !== "restock") {
             //check if itemId is still in current list of items for location, or if no selection and only one option pick that
-            newOptions.selectedItem = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
-            newOptions.selectedItem = newOptions.selectedItem && newOptions.selectedItem.currentStock > 0 ? newOptions.selectedItem = [newOptions.selectedItem] : (newItemList.length === 1 ? newItemList : []);
-            newOptions.itemId = newOptions.selectedItem?.[0]?.id || null;
+            newOptions.selectedProduct = (newData.fetchedData || itemData)?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.itemId];
+            newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newItemList.length === 1 ? newItemList : []);
+            newOptions.itemId = newOptions.selectedProduct?.[0]?.id || null;
         } else {
             //otherwise if restocking just let it be the selection
-            newOptions.selectedItem = newData.item || transactionData.selectedItem;
+            newOptions.selectedProduct = newData.product || transactionData.selectedProduct;
         }
         //if restocking clear maxQty, otherwise set it to currently selected item max or null
-        const newMaxQty = formType === "restock" ? null : newOptions.selectedItem?.[0]?.currentStock || 0;
+        const newMaxQty = formType === "restock" ? null : newOptions.selectedProduct?.[0]?.currentStock || 0;
         //set the new display quantity to the current value, or the newMaxQty if lower
         const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : Math.min(newOptions.displayQuantity, newMaxQty);
         //make current quantity into right polarisation
@@ -98,7 +95,7 @@ const TransactionForm = ({formType}) => {
         //generate transaction array for API call
         newOptions.transactionArray = transactionItemType === "item" ? [{
             itemId: newOptions.itemId,
-            itemName: newOptions.name,
+            itemName: newOptions.productName,
             quantity: newOptions.quantity,
             locationId: newOptions.locationId,
             locationName: newOptions.selectedLocation?.[0]?.name,
@@ -199,22 +196,24 @@ const TransactionForm = ({formType}) => {
                     <div className="col-12 col-md-4 mb-3">
                         <FormInput
                             type={"typeahead"}
-                            id={"inputTransactionName"}
+                            id={"inputTransactionProductName"}
                             typeaheadProps={{
                                 inputProps:
                                     {
-                                        id: "inputTransactionName",
+                                        id: "inputTransactionProductName",
                                         useFloatingLabel: true,
-                                        floatingLabelText: "Item",
-                                        "data-statename": "Item",
+                                        floatingLabelText: transactionItemType === "item" ? "Item" : "List",
+                                        "data-statename": transactionItemType === "item" ? "Item" : "List",
                                         disabled: (transactionItemType === "item" ? itemList : listList).length <= 1
                                     },
                                 onChange: (e) => {
-                                    updateOptions({item: e});
+                                    updateOptions({product: e});
                                 },
                                 labelKey: "name",
-                                options: itemList,
-                                selected: transactionData.selectedItem
+                                options: (transactionItemType === "item" ? itemList : listList).sort((a, b) => {
+                                    return naturalSort(a.name, b.name)
+                                }),
+                                selected: transactionData.selectedProduct
                             }}
                         />
                     </div>
@@ -238,7 +237,7 @@ const TransactionForm = ({formType}) => {
                                                                   });
                                                               }}
                                                               value={transactionData.displayQuantity}
-                                                              disabled={(transactionData.selectedItem.length === 0 || !transactionData.selectedItem) && formType !== "restock"}
+                                                              disabled={(transactionData.selectedProduct.length === 0 || !transactionData.selectedProduct) && formType !== "restock"}
                             /></div>
                             <div className="col-4"><p className="m-0">{transactionData.unit}</p></div>
                         </div>
