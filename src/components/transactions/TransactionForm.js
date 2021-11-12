@@ -69,6 +69,7 @@ const TransactionForm = ({formType}) => {
             productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
             productName: newData.product?.[0]?.name || transactionData.productName,
             unit: newData.product?.[0]?.unit || transactionData.unit,
+            quantity: newData.quantity || transactionData.quantity || 0,
             displayQuantity: newData.displayQuantity || transactionData.displayQuantity || 0,
             transactionFormType: formType
         };
@@ -84,7 +85,7 @@ const TransactionForm = ({formType}) => {
             } else {
                 newOptions.selectedProduct = newData.product || transactionData.selectedProduct || [];
             }
-                newOptions.productId = newOptions.selectedProduct?.[0]?.id || null;
+            newOptions.productId = newOptions.selectedProduct?.[0]?.id || null;
         } else {
             //otherwise if restocking just let it be the selection
             newOptions.selectedProduct = newData.product || transactionData.selectedProduct;
@@ -93,7 +94,6 @@ const TransactionForm = ({formType}) => {
         const newMaxQty = formType === "restock" ? null : newOptions.selectedProduct?.[0]?.currentStock || 0;
         //set the new display quantity to the current value, or the newMaxQty if lower
         const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : Math.min(newOptions.displayQuantity, newMaxQty);
-        //make current quantity into right polarisation
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
@@ -105,14 +105,14 @@ const TransactionForm = ({formType}) => {
             locationName: newOptions.selectedLocation?.[0]?.name,
             type: formType === "transfer" ? "transfer" : newOptions.quantity < 0 ? "withdraw" : "restock"
         }] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
-           return {
-               itemId: x.id,
-               itemName: x.name,
-               quantity: x.quantity * newOptions.quantity,
-               locationId: newOptions.locationId,
-               locationName: newOptions.selectedLocation?.[0]?.name,
-               type: newOptions.quantity < 0 ? "withdraw" : "restock"
-           }
+            return {
+                itemId: x.id,
+                itemName: x.name,
+                quantity: x.quantity * newOptions.quantity,
+                locationId: newOptions.locationId,
+                locationName: newOptions.selectedLocation?.[0]?.name,
+                type: newOptions.quantity < 0 ? "withdraw" : "restock"
+            }
         });
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
@@ -243,15 +243,10 @@ const TransactionForm = ({formType}) => {
                                                               max={maxQty ? Math.max(0, maxQty) : null}
                                                               onChange={(id, val) => {
                                                                   const qty = maxQty ? Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1) : Math.max(val, 0) * (formType === "withdraw" ? -1 : 1);
-                                                                  setTransactionData({
-                                                                      ...transactionData,
+                                                                  updateOptions({
                                                                       displayQuantity: Math.abs(qty),
-                                                                      quantity: qty,
-                                                                      transactionArray: productType === "item" ? [{
-                                                                          ...transactionData.transactionArray[0],
-                                                                          quantity: qty
-                                                                      }] : transactionData.transactionArray.forEach
-                                                                  });
+                                                                      quantity: qty
+                                                                  })
                                                               }}
                                                               value={transactionData.displayQuantity}
                                                               disabled={(transactionData.selectedProduct.length === 0 || !transactionData.selectedProduct) && formType !== "restock"}
