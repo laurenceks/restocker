@@ -43,24 +43,31 @@ if ($input["transactionType"] !== "restock") {
     }
 }
 
-try {
+$transactionQueries = array();
+
+foreach ($input["transactionArray"] as $transaction) {
     $addTransaction = $db->prepare("INSERT INTO transactions (itemId, type, quantity, userId, organisationId, locationId) VALUES (:itemId, :type, :quantity, :userId, :organisationId, :locationId)");
-    $addTransaction->bindParam(":itemId", $input["itemId"]);
-    $transactionType = $input["quantity"] < 0 ? "withdraw" : "restock";
+    $addTransaction->bindParam(":itemId", $transaction["itemId"]);
+    $transactionType = $input["transactionType"] || $transaction["quantity"] < 0 ? "withdraw" : "restock";
     $addTransaction->bindParam(":type", $transactionType);
-    $addTransaction->bindParam(":locationId", $input["locationId"]);
-    $addTransaction->bindParam(":quantity", $input["quantity"]);
+    $addTransaction->bindParam(":locationId", $transaction["locationId"]);
+    $addTransaction->bindParam(":quantity", $transaction["quantity"]);
     $addTransaction->bindValue(":userId", $_SESSION["user"]->userId);
     $addTransaction->bindValue(":organisationId", $_SESSION["user"]->organisationId);
-    $addTransaction->execute();
-    $output["success"] = true;
-    $output["feedback"] = "Transaction added (" . $transactionType . ")";
-    updateCurrentStockLevel();
-
-} catch
-(PDOException $e) {
-    echo $output["feedback"] = $e->getMessage();
+    $transactionQueries[] = $addTransaction;
 }
+
+foreach ($transactionQueries as $query) {
+    try {
+        $query->execute();
+        updateCurrentStockLevel();
+    } catch (PDOException $e) {
+        echo $output["feedback"] = $e->getMessage();
+    }
+}
+
+$output["success"] = true;
+$output["feedback"] = "Transactions complete";
 
 echo json_encode($output);
 
