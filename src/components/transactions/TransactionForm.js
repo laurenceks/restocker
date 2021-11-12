@@ -45,9 +45,14 @@ const TransactionForm = ({formType}) => {
     }
 
     const processItems = (x) => {
-        setLocationList(x.locations);
+        const newLocationlist = formType === "restock" ? x.locations : x.locations.filter((l) => {
+            //if not a restock form, filter out any location without stock
+            return x.itemsByLocationId[l.id];
+        });
+        setLocationList(newLocationlist);
         setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
-        updateOptions({fetchedData: x});
+        //pass updated data, don't change location if valid or reset selection
+        updateOptions({fetchedData: x, location: newLocationlist.some(l => l.id === transactionData.locationId) ? null : []});
     }
 
     const updateOptions = (newData = {}) => {
@@ -112,7 +117,7 @@ const TransactionForm = ({formType}) => {
                 console.log(x.outOfStockItems);
                 setTransactionData({...transactionData, quantity: null, maxQty: null})
                 //TODO modal notifying of out of stock
-            }else if (x.errorTypes.includes("missingItems")) {
+            } else if (x.errorTypes.includes("missingItems")) {
                 //handle out of stock error
                 console.log(x.feedback);
                 console.log(x.missingItems);
@@ -149,7 +154,6 @@ const TransactionForm = ({formType}) => {
             getItems();
         }
     }, [transactionData]);
-
 
     return (
         <div className="container">
