@@ -38,11 +38,13 @@ const TransactionForm = ({formType}) => {
     const [maxQty, setMaxQty] = useState(null);
     const transactionFormRef = useRef();
 
-    const getItems = () => {
-        fetchAllItems(processItems, true)
+    const getItems = (retainedSettings) => {
+        fetchAllItems((x) => {
+            processItems(x, retainedSettings)
+        }, true)
     }
 
-    const processItems = (x) => {
+    const processItems = (x, retainedSettings = {}) => {
         const newLocationlist = formType === "restock" ? x.locations : x.locations.filter((l) => {
             //if not a restock form, filter out any location without stock
             return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y => y.currentStock > 0);
@@ -51,6 +53,7 @@ const TransactionForm = ({formType}) => {
         setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
         //pass updated data, don't change location if valid or reset selection
         updateOptions({
+            ...retainedSettings,
             fetchedData: x,
             location: newLocationlist.some(l => l.id === transactionData.locationId) ? null : []
         });
@@ -99,7 +102,7 @@ const TransactionForm = ({formType}) => {
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
         newOptions.transactionArray = productType === "item" ? [createTransactionElement(newItemData, newOptions)] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
-            createTransactionElement(newItemData, newOptions, x)
+            return createTransactionElement(newItemData, newOptions, x)
         });
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
@@ -109,7 +112,6 @@ const TransactionForm = ({formType}) => {
         const transactionQty = (x?.quantity || 1) * newOptions.quantity;
         const postTransactionQuantity = transactionQty + (newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId]?.currentStock || 0);
         const transactionProductId = x?.id || newOptions.productId;
-        console.log(newItemData.itemsByLocationThenItemId[newOptions.locationId][transactionProductId]);
         return {
             itemId: transactionProductId,
             itemName: x?.name || newOptions.productName,
@@ -153,20 +155,26 @@ const TransactionForm = ({formType}) => {
     }
 
     useEffect(() => {
+        const productTypeChange = productType === "list";
         //disable submission until item list updated
         setSubmitDisabled(true);
         //make sure product type is only item if not withdrawing
-        if (formType !== "withdraw") {
-            setProductType("item")
+        if (formType !== "withdraw" && productTypeChange) {
+            setProductType("item");
         }
-        //refresh item lists when page changes between form types
-        getItems();
+        //refresh item lists when page changes between form types, making sure blank product is passed if product type changes
+        getItems(productTypeChange ? {product: []} : null);
     }, [formType]);
+
+    useEffect(() => {
+        //if product type changes, clear product input field
+        updateOptions({product: []})
+    }, [productType]);
 
     useEffect(() => {
         //disable submission until item list updated
         setSubmitDisabled(true);
-        //on initial mount fetch item lists
+        //on initial render fetch item lists
         getItems();
     }, []);
 
@@ -297,7 +305,7 @@ const TransactionForm = ({formType}) => {
                     </div>
                 </div>
             </form>
-            {(transactionData.transactionArray.length > 0 && transactionData.transactionArray[0].itemName && transactionData.transactionArray[0].quantity && transactionData.transactionArray[0].locationName) ?
+            {(transactionData.transactionArray.length > 0 && transactionData.transactionArray?.[0]?.itemName && transactionData.transactionArray?.[0]?.quantity && transactionData.transactionArray?.[0]?.locationName) ?
                 <div className="text-dark bg-light rounded-3 p-3 my-5">
                     <p className="my-3">This will make the following transactions</p>
                     <Table
