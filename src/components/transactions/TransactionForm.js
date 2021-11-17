@@ -29,8 +29,8 @@ const TransactionForm = ({formType}) => {
     //initialise location list before template class
     const [locationList, setLocationList] = useState([]);
     const [itemList, setItemList] = useState([]);
-    const [itemData, setItemData] = useState({});
-    const [listList, setlistList] = useState(mockLists);
+    const [productData, setProductData] = useState({});
+    const [listList, setListList] = useState([]);
     const [submitted, setSubmitted] = useState(false);
     const [submitDisabled, setSubmitDisabled] = useState(false);
     const [productType, setProductType] = useState("item");
@@ -50,7 +50,12 @@ const TransactionForm = ({formType}) => {
             return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y => y.currentStock > 0);
         });
         setLocationList(newLocationlist);
-        setItemData({itemsByLocationId: x.itemsByLocationId, itemsByLocationThenItemId: x.itemsByLocationThenItemId});
+        setProductData({
+            itemsByLocationId: x.itemsByLocationId,
+            itemsByLocationThenItemId: x.itemsByLocationThenItemId,
+            listsByLocationId: x.listsByLocationId,
+            listsByLocationThenListId: x.listsByLocationThenListId
+        });
         //pass updated data, don't change location if valid or reset selection
         updateOptions({
             ...retainedSettings,
@@ -77,17 +82,22 @@ const TransactionForm = ({formType}) => {
             transactionFormType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
-        const newItemData = newData.fetchedData || itemData;
-        const newItemList = (newItemData.itemsByLocationId?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
+        const newProductData = newData.fetchedData || productData;
+        const newItemList = (newProductData.itemsByLocationId?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
             return formType === "restock" || x.currentStock > 0
         });
+        const newListList = (newProductData.listsByLocationId?.[formType === "restock" ? "all" : newOptions.locationId] || []).filter((x) => {
+            return formType === "restock" || x.currentStock > 0;
+        });
         setItemList(newItemList);
+        setListList(newListList);
         if (formType !== "restock") {
             if (productType === "item") { //check if productId is still in current list of items for location, or if no selection and only one option pick that
-                newOptions.selectedProduct = newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId];
+                newOptions.selectedProduct = newProductData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId];
                 newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newItemList.length === 1 ? newItemList : []);
             } else {
-                newOptions.selectedProduct = newData.product || transactionData.selectedProduct || [];
+                newOptions.selectedProduct = newProductData?.listsByLocationThenListId?.[newOptions.locationId]?.[newOptions.productId];
+                newOptions.selectedProduct = newOptions.selectedProduct && newOptions.selectedProduct.currentStock > 0 ? newOptions.selectedProduct = [newOptions.selectedProduct] : (newListList.length === 1 ? newListList : []);
             }
             newOptions.productId = newOptions.selectedProduct?.[0]?.id || null;
         } else {
@@ -101,23 +111,24 @@ const TransactionForm = ({formType}) => {
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
-        newOptions.transactionArray = productType === "item" ? [createTransactionElement(newItemData, newOptions)] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
-            return createTransactionElement(newItemData, newOptions, x)
+        newOptions.transactionArray = productType === "item" ? [createTransactionElement(newProductData, newOptions)] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
+            //TODO update remaining stock correctly
+            return createTransactionElement(newProductData, newOptions, x)
         });
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
     }
 
-    const createTransactionElement = (newItemData, newOptions, x) => {
+    const createTransactionElement = (newProductData, newOptions, x) => {
         const transactionQty = (x?.quantity || 1) * newOptions.quantity;
-        const postTransactionQuantity = transactionQty + (newItemData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[newOptions.productId]?.currentStock || 0);
-        const transactionProductId = x?.id || newOptions.productId;
+        const transactionProductId = x?.itemId || newOptions.productId;
+        const postTransactionQuantity = transactionQty + (newProductData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[transactionProductId]?.currentStock || 0);
         return {
             itemId: transactionProductId,
             itemName: x?.name || newOptions.productName,
             quantity: transactionQty,
             postTransactionQuantity: postTransactionQuantity,
-            postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newItemData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
+            postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newProductData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
             locationId: newOptions.locationId,
             locationName: newOptions.selectedLocation?.[0]?.name,
             type: newOptions.quantity < 0 ? "withdraw" : "restock"
@@ -128,6 +139,7 @@ const TransactionForm = ({formType}) => {
         //disable form submission until complete
         setSubmitDisabled(true);
         fetchJson("./php/items/addTransaction.php", {
+
             method: "POST",
             body: JSON.stringify(transactionData),
         }, (x) => {
@@ -148,10 +160,6 @@ const TransactionForm = ({formType}) => {
                 //TODO modal notifying of missingItems
             }
         });
-    }
-
-    const withdrawList = (e) => {
-        console.log("Withdraw list")
     }
 
     useEffect(() => {
@@ -193,7 +201,7 @@ const TransactionForm = ({formType}) => {
             <form ref={transactionFormRef}
                   id={"transactionForm"}
                   onSubmit={(e) => {
-                      validateForm(e, transactionFormRef, productType === "item" ? commitTransaction : withdrawList);
+                      validateForm(e, transactionFormRef, commitTransaction);
                   }}>
                 <div className={"row align-items-center"}>
                     <h1>{formType === "withdraw" ? `Withdraw ${productType}` : "Restock item"}</h1>
