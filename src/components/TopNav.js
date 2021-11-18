@@ -34,7 +34,7 @@ const TopNav = ({user}) => {
                             <NavLink to={"/restock"} className="nav-link rounded-3 mx-1">Restock</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1">Restock</NavLink>
+                            <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1">Transfer</NavLink>
                         </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
