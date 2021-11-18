@@ -8,26 +8,30 @@ import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
+import setCase from "../../functions/setCase";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
-        constructor(type = "item", selectedLocation = []) {
+        constructor(type = "item", selectedLocation = [], selectedDestination = []) {
             this.productType = type;
             this.transactionFormType = formType;
             this.productId = null;
             this.productName = "";
             this.selectedProduct = itemList.length <= 1 ? itemList : [];
             this.selectedLocation = locationList.length <= 1 ? locationList : selectedLocation;
+            this.selectedDestination = destinationList.length <= 1 ? destinationList : selectedDestination;
             this.quantity = 0;
             this.displayQuantity = "";
             this.unit = "";
             this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null;
+            this.destinationId = (destinationList?.length <= 1 ? destinationList[0]?.id : selectedDestination[0]?.id) || null;
             this.transactionArray = [];
         }
     }
 
     //initialise location list before template class
     const [locationList, setLocationList] = useState([]);
+    const [destinationList, setDestinationList] = useState([]);
     const [itemList, setItemList] = useState([]);
     const [productData, setProductData] = useState({});
     const [listList, setListList] = useState([]);
@@ -50,6 +54,7 @@ const TransactionForm = ({formType}) => {
             return x.itemsByLocationId[l.id] && x.itemsByLocationId[l.id].some(y => y.currentStock > 0);
         });
         setLocationList(newLocationlist);
+        setDestinationList(x.locations);
         setProductData({
             itemsByLocationId: x.itemsByLocationId,
             itemsByLocationThenItemId: x.itemsByLocationThenItemId,
@@ -69,11 +74,14 @@ const TransactionForm = ({formType}) => {
         newData = {
             ...newData,
             location: newData.location || transactionData.selectedLocation || [],
+            destination: newData.destination || transactionData.selectedDestination || [],
             product: newData.product || transactionData.selectedProduct || [],
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
             selectedLocation: newData.location || transactionData.selectedLocation,
+            destinationId: newData.destination?.[0]?.id || transactionData.destinationId,
+            selectedDestination: newData.destination || transactionData.selectedDestination,
             productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
             productName: newData.product?.[0]?.name || transactionData.productName,
             unit: newData.product?.[0]?.unit || transactionData.unit,
@@ -112,26 +120,36 @@ const TransactionForm = ({formType}) => {
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
         newOptions.transactionArray = productType === "item" ? [createTransactionElement(newProductData, newOptions)] : (newOptions.selectedProduct?.[0]?.items || []).map((x) => {
-            //TODO update remaining stock correctly
-            return createTransactionElement(newProductData, newOptions, x)
+            return createTransactionElement(newProductData, newOptions, x);
         });
+        if (formType === "transfer" && newOptions.selectedDestination[0]) {
+            console.log(newOptions)
+            newOptions.transactionArray.push(createTransactionElement(newProductData, newOptions, {
+                itemId: newOptions.productId,
+                quantity: (newOptions.quantity * -1),
+                locationId: newOptions.destinationId,
+                locationName: newOptions.selectedDestination[0].name,
+                isTransfer: true
+            }))
+        }
         setTransactionData({...transactionData, ...newOptions})
         setMaxQty(newMaxQty);
     }
 
     const createTransactionElement = (newProductData, newOptions, x) => {
-        const transactionQty = (x?.quantity || 1) * newOptions.quantity;
+        const transactionQty = x?.isTransfer ? x?.quantity || newOptions.quantity : (x?.quantity || 1) * newOptions.quantity;
         const transactionProductId = x?.itemId || newOptions.productId;
-        const postTransactionQuantity = transactionQty + (newProductData?.itemsByLocationThenItemId?.[newOptions.locationId]?.[transactionProductId]?.currentStock || 0);
+        const postTransactionQuantity = transactionQty + (newProductData?.itemsByLocationThenItemId?.[x?.locationId || newOptions.locationId]?.[transactionProductId]?.currentStock || 0);
         return {
             itemId: transactionProductId,
             itemName: x?.name || newOptions.productName,
             quantity: transactionQty,
             postTransactionQuantity: postTransactionQuantity,
             postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newProductData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
-            locationId: newOptions.locationId,
-            locationName: newOptions.selectedLocation?.[0]?.name,
-            type: newOptions.quantity < 0 ? "withdraw" : "restock"
+            locationId: x?.locationId || newOptions.locationId,
+            locationName: x?.locationName || newOptions.selectedLocation?.[0]?.name,
+            type: transactionQty < 0 ? "withdraw" : "restock",
+            isTransfer: x?.isTransfer || false
         }
     }
 
@@ -204,7 +222,7 @@ const TransactionForm = ({formType}) => {
                       validateForm(e, transactionFormRef, commitTransaction);
                   }}>
                 <div className={"row align-items-center"}>
-                    <h1>{formType === "withdraw" ? `Withdraw ${productType}` : "Restock item"}</h1>
+                    <h1>{`${setCase(formType, "capitalise")} ${productType}`}</h1>
                 </div>
                 {formType === "withdraw" &&
                 <div className="row align-items-center mb-3">
@@ -256,21 +274,22 @@ const TransactionForm = ({formType}) => {
                     </div>
                     <div className="col-12 col-md-3 mb-3">
                         <div className="row align-items-center">
-                            <div className="col-8"><FormInput type={"number"}
-                                                              id={"inputTransactionQuantity"}
-                                                              label={"Quantity"}
-                                                              min={0}
-                                                              max={maxQty ? Math.max(0, maxQty) : null}
-                                                              onChange={(id, val) => {
-                                                                  const qty = maxQty ? Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1) : Math.max(val, 0) * (formType === "withdraw" ? -1 : 1);
-                                                                  updateOptions({
-                                                                      displayQuantity: Math.abs(qty),
-                                                                      quantity: qty
-                                                                  })
-                                                              }}
-                                                              value={transactionData.displayQuantity}
-                                                              disabled={(transactionData.selectedProduct.length === 0 || !transactionData.selectedProduct) && formType !== "restock"}
-                            /></div>
+                            <div className="col-8">
+                                <FormInput type={"number"}
+                                           id={"inputTransactionQuantity"}
+                                           label={"Quantity"}
+                                           min={0}
+                                           max={maxQty ? Math.max(0, maxQty) : null}
+                                           onChange={(id, val) => {
+                                               const qty = maxQty ? Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1) : Math.max(val, 0) * (formType === "withdraw" ? -1 : 1);
+                                               updateOptions({
+                                                   displayQuantity: Math.abs(qty),
+                                                   quantity: qty
+                                               })
+                                           }}
+                                           value={transactionData.displayQuantity}
+                                           disabled={(transactionData.selectedProduct.length === 0 || !transactionData.selectedProduct) && formType !== "restock"}
+                                /></div>
                             <div className="col-4"><p className="m-0">{transactionData.unit}</p></div>
                         </div>
                     </div>
@@ -284,7 +303,7 @@ const TransactionForm = ({formType}) => {
                                         {
                                             id: "inputTransactionLocation",
                                             useFloatingLabel: true,
-                                            floatingLabelText: "Location",
+                                            floatingLabelText: formType === "transfer" ? "From" : "Location",
                                             "data-statename": "Location",
                                             disabled: locationList.length <= 1
                                         },
@@ -299,10 +318,44 @@ const TransactionForm = ({formType}) => {
                                 }}
                             />
                             :
-                            <div className={"alert alert-warning text-dark m-0"}>There are no locations available with
+                            <div className={"alert alert-warning text-primary m-0"}>There are no locations available
+                                with
                                 any stock</div>}
                     </div>
                 </div>
+                {formType === "transfer" &&
+                <div className={"row"}>
+                    <div className="col-12 col-md-8 mb-3 d-none d-md-block">
+                    </div>
+                    <div className="col-12 col-md-4 mb-3">
+                        {destinationList.length > 0 ?
+                            <FormInput
+                                type={"typeahead"}
+                                id={"inputTransactionDestination"}
+                                typeaheadProps={{
+                                    inputProps:
+                                        {
+                                            id: "inputTransactionDestination",
+                                            useFloatingLabel: true,
+                                            floatingLabelText: "To",
+                                            "data-statename": "Destination",
+                                            disabled: destinationList.length <= 1
+                                        },
+                                    onChange: (e) => {
+                                        updateOptions({destination: e});
+                                    },
+                                    labelKey: "name",
+                                    options: destinationList.sort((a, b) => {
+                                        return naturalSort(a.name, b.name)
+                                    }),
+                                    selected: transactionData.selectedDestination
+                                }}
+                            />
+                            :
+                            <div className={"alert alert-warning text-primary m-0"}>
+                                There are no destinations available</div>}
+                    </div>
+                </div>}
                 <div className={"row"}>
                     <div className="col-12 col-sm-2">
                         <button type="submit"
@@ -313,17 +366,32 @@ const TransactionForm = ({formType}) => {
                     </div>
                 </div>
             </form>
-            {(transactionData.transactionArray.length > 0 && transactionData.transactionArray?.[0]?.itemName && transactionData.transactionArray?.[0]?.quantity && transactionData.transactionArray?.[0]?.locationName) ?
+            {(transactionData.transactionArray.length > 0 && transactionData.transactionArray?.[0]?.itemName && transactionData.transactionArray?.[0]?.quantity && transactionData.transactionArray?.[0]?.locationName && (formType !== "transfer" || transactionData.transactionArray?.[1]?.locationName)) ?
                 <div className="text-dark bg-light rounded-3 p-3 my-5">
                     <p className="my-3">This will make the following transactions</p>
                     <Table
-                        headers={["Item", "Quantity", formType === "withdraw" ? "Remaining stock" : "New stock", formType === "transfer" ? "From" : "Location", formType === "transfer" ? "To" : null]}
-                        rows={transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
-                            return [x.itemName, Math.abs(x.quantity), {
-                                text: x.postTransactionQuantity || "0",
-                                className: x.postTransactionQuantityClassName
-                            }, x.locationName, formType === "transfer" ? x.destinationName : null]
-                        })}
+                        headers={formType === "transfer" ? ["Item", "Quantity", "Remaining stock", "New stock", "From", "To"] : ["Item", "Quantity", formType === "withdraw" ? "Remaining stock" : "New stock", "Location"]}
+                        rows={formType === "transfer" ?
+                            [[transactionData.transactionArray[0].itemName,
+                                Math.abs(transactionData.transactionArray[0].quantity),
+                                {
+                                    text: transactionData.transactionArray[0].postTransactionQuantity || "0",
+                                    className: transactionData.transactionArray[0].postTransactionQuantityClassName
+                                }, {
+                                    text: transactionData.transactionArray[1].postTransactionQuantity || "0",
+                                    className: transactionData.transactionArray[1].postTransactionQuantityClassName
+                                }, transactionData.transactionArray[0].locationName,
+                                transactionData.transactionArray[1].locationName]]
+                            :
+                            transactionData.transactionArray.filter(x => x.locationName && x.itemName && x.quantity).map((x) => {
+                                return [x.itemName,
+                                    Math.abs(x.quantity),
+                                    {
+                                        text: x.postTransactionQuantity || "0",
+                                        className: x.postTransactionQuantityClassName
+                                    },
+                                    x.locationName]
+                            })}
                     />
                 </div> : ""}
         </div>
