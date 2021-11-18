@@ -33,6 +33,9 @@ const TopNav = ({user}) => {
                         <li className="nav-item">
                             <NavLink to={"/restock"} className="nav-link rounded-3 mx-1">Restock</NavLink>
                         </li>
+                        <li className="nav-item">
+                            <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1">Restock</NavLink>
+                        </li>
                         {(user?.admin || user?.superAdmin) &&
                         <li className="nav-item dropdown">
                             <div

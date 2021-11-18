@@ -37,6 +37,9 @@ const Main = props => {
                     <Route path={"/restock"}>
                         <TransactionForm formType={"restock"}/>
                     </Route>
+                    <Route path={"/transfer"}>
+                        <TransactionForm formType={"transfer"}/>
+                    </Route>
                     <Route path={"/items"}>
                         <Items/>
                     </Route>
