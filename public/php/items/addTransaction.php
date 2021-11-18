@@ -46,11 +46,12 @@ if ($input["transactionFormType"] !== "restock") {
 $transactionQueries = array();
 
 foreach ($input["transactionArray"] as $transaction) {
-    $addTransaction = $db->prepare("INSERT INTO transactions (itemId, type, quantity, userId, organisationId, locationId) VALUES (:itemId, :type, :quantity, :userId, :organisationId, :locationId)");
+    $addTransaction = $db->prepare("INSERT INTO transactions (itemId, type, quantity, userId, organisationId, locationId, isTransfer) VALUES (:itemId, :type, :quantity, :userId, :organisationId, :locationId, :isTransfer)");
     $addTransaction->bindParam(":itemId", $transaction["itemId"]);
     $transactionFormType = $input["transactionFormType"] || $transaction["quantity"] < 0 ? "withdraw" : "restock";
     $addTransaction->bindParam(":type", $transactionFormType);
     $addTransaction->bindParam(":locationId", $transaction["locationId"]);
+    $addTransaction->bindParam(":isTransfer", $transaction["isTransfer"]);
     $addTransaction->bindParam(":quantity", $transaction["quantity"]);
     $addTransaction->bindValue(":userId", $_SESSION["user"]->userId);
     $addTransaction->bindValue(":organisationId", $_SESSION["user"]->organisationId);
