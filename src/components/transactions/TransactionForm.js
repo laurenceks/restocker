@@ -9,6 +9,7 @@ import naturalSort from "../../functions/naturalSort";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
 import setCase from "../../functions/setCase";
+import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -41,6 +42,15 @@ const TransactionForm = ({formType}) => {
     const [productType, setProductType] = useState("item");
     const [transactionData, setTransactionData] = useState(new transactionDataTemplate());
     const [maxQty, setMaxQty] = useState(null);
+    const [modalProps, setModalProps] = useState({
+        show: false,
+        bodyText: "",
+        title: "Transaction error",
+        headerClass: "bg-danger text-light",
+        handleClick: () => {
+            setModalProps({...modalProps, show: false})
+        }
+    });
     const transactionFormRef = useRef();
 
     const getItems = (retainedSettings) => {
@@ -174,18 +184,26 @@ const TransactionForm = ({formType}) => {
             setSubmitted(true);
             if (x.success) {
                 setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation, transactionData.selectedDestination));
-            } else if (x.errorTypes.includes("outOfStock")) {
-                //handle out of stock error
-                console.log(x.feedback);
-                console.log(x.outOfStockItems);
+            } else {
                 setTransactionData({...transactionData, quantity: null, maxQty: null})
-                //TODO modal notifying of out of stock
-            } else if (x.errorTypes.includes("missingItems")) {
-                //handle out of stock error
-                console.log(x.feedback);
-                console.log(x.missingItems);
+                let errorBody = "Your transaction could not be completed due to the following errors:\n\n"
+                console.log(x)
+                if (x.errorTypes.includes("outOfStock")) {
+                    errorBody += `${x.outOfStockItems?.length === 1 ? "One" : "Some"} of the items you wanted to ${formType} are out of stock:\n${x.outOfStockItems.map((x) => {
+                        return `\n\t• ${x.name} (${x.requested} requested, ${x.current} available)`;
+                    }).join("")}`;
+                }
+                if (x.errorTypes.includes("missingItems")) {
+                    errorBody += `\n${x.missingItems?.length === 1 ? "One" : "Some"} of the items you wanted to ${formType} are no longer available (they have likely been deleted by an organisational admin):\n${x.missingItems.map((x) => {
+                        return `\n\t• ${x.name}`;
+                    }).join("")}`
+                }
+                setModalProps({
+                    ...modalProps,
+                    show: true,
+                    bodyText: errorBody + "\n\nPlease try again - the form has been updated with the latest options"
+                });
                 getItems();
-                //TODO modal notifying of missingItems
             }
         });
     }
@@ -413,6 +431,7 @@ const TransactionForm = ({formType}) => {
                             })}
                     />
                 </div> : ""}
+            <AcknowledgeModal {...modalProps} />
         </div>
     )
         ;
