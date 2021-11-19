@@ -49,8 +49,7 @@ const TransactionForm = ({formType}) => {
     }
 
     const processItems = (x, retainedSettings = {}) => {
-        const newLocationList = filterLocationList(x.locations, x.itemsByLocationId, x.listsByLocationId);
-        setLocationList(newLocationList);
+        const newLocationList = filterLocationList(x.locations, x.itemsByLocationId, x.listsByLocationId, retainedSettings?.productTypeChange);
         setDestinationList(x.locations);
         setProductData({
             itemsByLocationId: x.itemsByLocationId,
@@ -58,19 +57,22 @@ const TransactionForm = ({formType}) => {
             listsByLocationId: x.listsByLocationId,
             listsByLocationThenListId: x.listsByLocationThenListId
         });
+        setLocationList(newLocationList);
         //pass updated data, don't change location if valid or reset selection
         updateOptions({
             ...retainedSettings,
             fetchedData: x,
-            location: newLocationList.some(l => l.id === transactionData.locationId) ? null : []
+            location: newLocationList.some(l => l.id === transactionData.locationId) ? null : [],
         });
     }
 
-    const filterLocationList = (locations = destinationList || [], itemsByLocationId = productData?.itemsByLocationId || [], listsByLocationId = productData?.listsByLocationId || []) => {
+    const filterLocationList = (locations = destinationList || [], itemsByLocationId = productData?.itemsByLocationId || [], listsByLocationId = productData?.listsByLocationId || [], forceItem = false) => {
         return formType === "restock" ? locations : locations.filter((l) => {
             //if not a restock form, filter out any location without stock
-            const productReferenceList = productType === "item" ? itemsByLocationId : listsByLocationId;
-            return productReferenceList[l.id] && productReferenceList[l.id].some(y => y.currentStock > 0);
+            const productReferenceList = (productType === "item" || forceItem) ? itemsByLocationId : listsByLocationId;
+            return productReferenceList[l.id] && (productReferenceList[l.id]).some((x) => {
+                return productType === "list" ? x.currentStock > 0 && productData?.listsByLocationThenListId?.all?.[x.id]?.items?.length === productData?.listsByLocationThenListId?.[l.id]?.[x.id]?.items?.length : x.currentStock > 0;
+            });
         })
     }
 
@@ -78,9 +80,9 @@ const TransactionForm = ({formType}) => {
         //provide empty array if no location/item
         newData = {
             ...newData,
-            location: newData.location || transactionData.selectedLocation || [],
-            destination: newData.destination || transactionData.selectedDestination || [],
+            destination: newData.destination || (destinationList.length === 1 ? destinationList : transactionData.selectedDestination) || [],
             product: newData.product || transactionData.selectedProduct || [],
+            location: newData.location || (locationList.length === 1 ? locationList : transactionData.selectedLocation) || [],
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
@@ -194,22 +196,22 @@ const TransactionForm = ({formType}) => {
             setProductType("item");
         }
         //refresh item lists when page changes between form types, making sure blank product is passed if product type changes
-        getItems(productTypeChange ? {product: []} : null);
+        getItems(productTypeChange ? {product: [], productTypeChange} : null);
     }, [formType]);
 
     useEffect(() => {
         //if product type changes, re-filter locations
-        const optionsUpdatedOnProductTypeChange= {product: []};
         const updatedLocationList = filterLocationList();
+        const passedData = {product: []};
         //check current location is still valid, if not remove it
-        if (transactionData?.locationId && !updatedLocationList?.some((x) => {
-            return x.id === transactionData?.locationId;
-        })){
-            optionsUpdatedOnProductTypeChange.location = [];
+        if (updatedLocationList.length === 1) {
+            passedData.location = updatedLocationList;
+        } else if (updatedLocationList.length === 0 || (transactionData?.locationId && !updatedLocationList?.some(x => x.id === transactionData?.locationId))) {
+            passedData.location = [];
         }
         setLocationList(updatedLocationList);
         //clear product input field
-        updateOptions(optionsUpdatedOnProductTypeChange);
+        updateOptions(passedData);
     }, [productType]);
 
     useEffect(() => {
