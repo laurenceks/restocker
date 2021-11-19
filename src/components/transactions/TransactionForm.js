@@ -31,6 +31,7 @@ const TransactionForm = ({formType}) => {
 
     //initialise location list before template class
     const [locationList, setLocationList] = useState([]);
+    const [locationsLoadedOnce, setLocationsLoadedOnce] = useState(false);
     const [destinationList, setDestinationList] = useState([]);
     const [itemList, setItemList] = useState([]);
     const [productData, setProductData] = useState({});
@@ -50,6 +51,7 @@ const TransactionForm = ({formType}) => {
 
     const processItems = (x, retainedSettings = {}) => {
         const newLocationList = filterLocationList(x.locations, x.itemsByLocationId, x.listsByLocationId, retainedSettings?.productTypeChange);
+        setLocationsLoadedOnce(true);
         setDestinationList(x.locations);
         setProductData({
             itemsByLocationId: x.itemsByLocationId,
@@ -311,33 +313,28 @@ const TransactionForm = ({formType}) => {
                         </div>
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        {locationList.length > 0 ?
-                            <FormInput
-                                type={"typeahead"}
-                                id={"inputTransactionLocation"}
-                                typeaheadProps={{
-                                    inputProps:
-                                        {
-                                            id: "inputTransactionLocation",
-                                            useFloatingLabel: true,
-                                            floatingLabelText: formType === "transfer" ? "From" : "Location",
-                                            "data-statename": "Location",
-                                            disabled: locationList.length <= 1
-                                        },
-                                    onChange: (e) => {
-                                        updateOptions({location: e});
+                        <FormInput
+                            type={"typeahead"}
+                            id={"inputTransactionLocation"}
+                            typeaheadProps={{
+                                inputProps:
+                                    {
+                                        id: "inputTransactionLocation",
+                                        useFloatingLabel: true,
+                                        floatingLabelText: formType === "transfer" ? "From" : "Location",
+                                        "data-statename": "Location",
+                                        disabled: locationList.length <= 1
                                     },
-                                    labelKey: "name",
-                                    options: locationList.sort((a, b) => {
-                                        return naturalSort(a.name, b.name)
-                                    }),
-                                    selected: transactionData.selectedLocation
-                                }}
-                            />
-                            :
-                            <div className={"alert alert-warning text-primary m-0"}>There are no locations available
-                                with
-                                any stock</div>}
+                                onChange: (e) => {
+                                    updateOptions({location: e});
+                                },
+                                labelKey: "name",
+                                options: locationList.sort((a, b) => {
+                                    return naturalSort(a.name, b.name)
+                                }),
+                                selected: transactionData.selectedLocation
+                            }}
+                        />
                     </div>
                 </div>
                 {formType === "transfer" &&
@@ -345,42 +342,44 @@ const TransactionForm = ({formType}) => {
                     <div className="col-12 col-md-8 mb-3 d-none d-md-block">
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        {destinationList.length > 0 ?
-                            <FormInput
-                                type={"typeahead"}
-                                id={"inputTransactionDestination"}
-                                typeaheadProps={{
-                                    inputProps:
-                                        {
-                                            id: "inputTransactionDestination",
-                                            useFloatingLabel: true,
-                                            floatingLabelText: "To",
-                                            "data-statename": "Destination",
-                                            disabled: destinationList.length <= 1
-                                        },
-                                    onChange: (e) => {
-                                        updateOptions({destination: e});
+                        <FormInput
+                            type={"typeahead"}
+                            id={"inputTransactionDestination"}
+                            typeaheadProps={{
+                                inputProps:
+                                    {
+                                        id: "inputTransactionDestination",
+                                        useFloatingLabel: true,
+                                        floatingLabelText: "To",
+                                        "data-statename": "Destination",
+                                        disabled: destinationList.length <= 1
                                     },
-                                    labelKey: "name",
-                                    options: destinationList.sort((a, b) => {
-                                        return naturalSort(a.name, b.name)
-                                    }),
-                                    selected: transactionData.selectedDestination
-                                }}
-                            />
-                            :
-                            <div className={"alert alert-warning text-primary m-0"}>
-                                There are no destinations available</div>}
+                                onChange: (e) => {
+                                    updateOptions({destination: e});
+                                },
+                                labelKey: "name",
+                                options: destinationList.sort((a, b) => {
+                                    return naturalSort(a.name, b.name)
+                                }),
+                                selected: transactionData.selectedDestination
+                            }}
+                        />
                     </div>
                 </div>}
                 <div className={"row"}>
-                    <div className="col-12 col-sm-2">
-                        <button type="submit"
-                                className="btn btn-primary w-100"
-                                disabled={submitDisabled}>
-                            {formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}
-                        </button>
-                    </div>
+                    {locationList.length > 0 && (destinationList.length > 0 || formType !== "transfer") ?
+                        <div className="col-12 col-sm-2">
+                            <button type="submit"
+                                    className="btn btn-primary w-100"
+                                    disabled={submitDisabled}>
+                                {formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}
+                            </button>
+                        </div>
+                        :
+                        <div className={"alert alert-warning text-primary m-0 col-12 col-sm-5"}>
+                            There are
+                            no {locationList.length === 0 && "locations"} {(locationList.length === 0 && (formType === "transfer" && destinationList.length === 0)) && "or"} {(formType === "transfer" && destinationList.length === 0) && "destinations"} available
+                            with any stock</div>}
                 </div>
             </form>
             {(transactionData.transactionArray.length > 0 && transactionData.transactionArray?.[0]?.itemName && transactionData.transactionArray?.[0]?.quantity && transactionData.transactionArray?.[0]?.locationName && (formType !== "transfer" || transactionData.transactionArray?.[1]?.locationName)) ?
