@@ -60,11 +60,12 @@ const TransactionForm = ({formType}) => {
             listsByLocationThenListId: x.listsByLocationThenListId
         });
         setLocationList(newLocationList);
-        //pass updated data, don't change location if valid or reset selection
+        //pass updated data, don't change location/destination if valid or reset selection
         updateOptions({
             ...retainedSettings,
             fetchedData: x,
             location: newLocationList.some(l => l.id === transactionData.locationId) ? null : [],
+            destination: x?.locations?.some(l => l.id === transactionData.destinationId) ? null : [],
         });
     }
 
@@ -82,9 +83,9 @@ const TransactionForm = ({formType}) => {
         //provide empty array if no location/item
         newData = {
             ...newData,
-            destination: newData.destination || (destinationList.length === 1 ? destinationList : transactionData.selectedDestination) || [],
             product: newData.product || transactionData.selectedProduct || [],
             location: newData.location || (locationList.length === 1 ? locationList : transactionData.selectedLocation) || [],
+            destination: newData.destination || (destinationList.length === 1 ? destinationList : transactionData.selectedDestination) || [],
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
@@ -172,7 +173,7 @@ const TransactionForm = ({formType}) => {
         }, (x) => {
             setSubmitted(true);
             if (x.success) {
-                setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation));
+                setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation, transactionData.selectedDestination));
             } else if (x.errorTypes.includes("outOfStock")) {
                 //handle out of stock error
                 console.log(x.feedback);
@@ -265,7 +266,7 @@ const TransactionForm = ({formType}) => {
                 </div>
                 <div className={"row align-items-center"}>
                     <div className="col-12 col-md-1 mb-3">
-                        <p className="m-0">ID {transactionData.id}</p>
+                        <p className="m-0">ID {transactionData.productId}</p>
                     </div>
                     <div className="col-12 col-md-4 mb-3">
                         <FormInput
