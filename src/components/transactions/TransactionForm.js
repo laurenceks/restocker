@@ -367,18 +367,20 @@ const TransactionForm = ({formType}) => {
                     </div>
                 </div>}
                 <div className={"row"}>
-                    {locationList.length > 0 && (destinationList.length > 0 || formType !== "transfer") ?
+                    {!locationsLoadedOnce || (locationList.length > 0 && (destinationList.length > 0 || formType !== "transfer")) ?
                         <div className="col-12 col-sm-2">
                             <button type="submit"
                                     className="btn btn-primary w-100"
-                                    disabled={submitDisabled}>
+                                    disabled={submitDisabled || !locationsLoadedOnce}>
                                 {formType.charAt(0).toUpperCase() + formType.slice(1, formType.length)}
                             </button>
                         </div>
                         :
                         <div className={"alert alert-warning text-primary m-0 col-12 col-sm-5"}>
-                            There are
-                            no {locationList.length === 0 && "locations"} {(locationList.length === 0 && (formType === "transfer" && destinationList.length === 0)) && "or"} {(formType === "transfer" && destinationList.length === 0) && "destinations"} available
+                            There are no
+                            {locationList.length === 0 && " locations"}
+                            {(locationList.length === 0 && (formType === "transfer" && destinationList.length === 0)) && " or"}
+                            {(formType === "transfer" && destinationList.length === 0) && " destinations"} available
                             with any stock</div>}
                 </div>
             </form>
