@@ -187,11 +187,10 @@ const Dashboard = () => {
         fetchJson("./php/items/getRates.php", {
             method: "POST",
             body: JSON.stringify(dashBoardSettings)
-        }, (x) => {
+        }, (res) => {
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
-            console.log(x)
-            x.rateData.forEach((x) => {
+            res.rateData.forEach((x) => {
                     const rateDataForId = {
                         itemId: x.itemId,
                         days: x.days || 0,
@@ -225,6 +224,7 @@ const Dashboard = () => {
                         restockRate: rateDataForId.restockRate,
                         lastTransaction: x.lastTransaction
                     };
+                    newItemData.stockPercentage = newItemData.currentStock / newItemData.warningLevel;
                     newDashboardData.itemsStats.totalStock += newItemData.currentStock;
                     newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
                     newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
@@ -259,10 +259,7 @@ const Dashboard = () => {
                             }])
                 }
             )
-            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsStats.totalStock / newDashboardData.itemsList.reduce((a, b) => {
-                    return a + b.warningLevel;
-                }
-                , 0);
+            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a,b) => a + Math.min(1, b.stockPercentage), 0) / newDashboardData.itemsList.length;
             rateCategories.forEach((x) => {
                     newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
                         return (a || 0) + (b || 0);
@@ -273,11 +270,11 @@ const Dashboard = () => {
             newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
             newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
             newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.stockPercentage, dashboardRanges.stockLevel);
-            x.chartData.forEach((y) => {
+            res.chartData.forEach((y) => {
                     newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
                     let outOfStockOnThisDate = 0;
                     let belowWarningLevelOnThisDate = 0;
-                    x.chartItemData.filter(el => el.date === y.date).forEach((el) => {
+                    res.chartItemData.filter(el => el.date === y.date).forEach((el) => {
                         outOfStockOnThisDate += el.stockOnDate === 0 ? 1 : 0;
                         belowWarningLevelOnThisDate += el.stockOnDate !== 0 && el.stockOnDate <= newDashboardData.items[el.itemId]?.warningLevel ? 1 : 0;
                     })
@@ -298,7 +295,7 @@ const Dashboard = () => {
     return (
         <div className="container">
             <div className="row my-3 gy-3">
-                <DashboardStatTile title={"Safe stock"}
+                <DashboardStatTile title={"Mean stock"}
                                    number={dashboardData.itemsStats.stockPercentage === 0 ? 0 : dashboardData.itemsStats.stockPercentage.toFixed(2) * 100 + "%" || ""}
                                    colourClass={dashboardData.tileClasses.stockLevel}
                                    icon={<MdShowChart/>}/>
