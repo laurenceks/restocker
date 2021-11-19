@@ -26,18 +26,18 @@ if ($input["transactionFormType"] !== "restock") {
             earlyExit($output);
         } else if (!isset($currentItemsAtLocationByItemId["all"][$transaction["itemId"]])) {
             //item doesn't exist anymore
-            $output["missingItems"][] = array("id" => $transaction["itemId"], "requested" => abs($transaction["quantity"]));
+            $output["missingItems"][] = array("id" => $transaction["itemId"],"name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]));
         } else if (!isset($currentItemsAtLocationByItemId[$input["locationId"]]) || !isset($currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]) || abs($transaction["quantity"]) > $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]) {
             //an item can't be withdrawn because it is out of stock
-            $output["outOfStockItems"][] = array("id" => $transaction["itemId"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]);
+            $output["outOfStockItems"][] = array("id" => $transaction["itemId"],"name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]);
         }
     }
     if (count($output["missingItems"]) > 0) {
-        $output["feedback"] = (count($output["outOfStockItems"]) === 1 ? "One" : "Some") . " of the items requested are missing - possibly due to deletion - please review your transaction and try again (stock levels have been refreshed)";
+        $output["feedback"] .= (count($output["outOfStockItems"]) === 1 ? "One" : "Some") . " of the items requested are missing - possibly due to deletion - please review your transaction and try again (stock levels have been refreshed)";
         $output["errorTypes"][] = "missingItems";
         earlyExit($output);
     } else if (count($output["outOfStockItems"]) > 0) {
-        $output["feedback"] = "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "one" : "some") . " of the items requested at the given location, please review your transaction and try again (stock levels have been refreshed)";
+        $output["feedback"] .= "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "One" : "some") . " of the items requested at the given location, please review your transaction and try again (stock levels have been refreshed)";
         $output["errorTypes"][] = "outOfStock";
         earlyExit($output);
     }
