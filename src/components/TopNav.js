@@ -48,6 +48,7 @@ const TopNav = ({user}) => {
                             </div>
                             <ul className="dropdown-menu" aria-labelledby="adminDropdown">
                                 <li><NavLink className="dropdown-item" to={"/items"}>Items</NavLink></li>
+                                <li><NavLink className="dropdown-item" to={"/lists"}>Lists</NavLink></li>
                                 <li><NavLink className="dropdown-item" to={"/users"}>Users</NavLink></li>
                                 <li><NavLink className="dropdown-item" to={"/settings"}>Settings</NavLink></li>
                             </ul>
