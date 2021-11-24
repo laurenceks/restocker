@@ -104,7 +104,7 @@ const TransactionForm = ({formType}) => {
             productName: newData.product?.[0]?.name || transactionData.productName,
             unit: newData.product?.[0]?.unit || transactionData.unit,
             quantity: newData.quantity || transactionData.quantity || 0,
-            displayQuantity: newData.displayQuantity || transactionData.displayQuantity || 0,
+            displayQuantity: newData.displayQuantity === "" ? "" : newData.displayQuantity || transactionData.displayQuantity || "",
             transactionFormType: formType
         };
         //set item list to all if restock form, items at a location for a given location ID, or revert to blank array if no items in stock at location
@@ -134,7 +134,7 @@ const TransactionForm = ({formType}) => {
         //if restocking clear maxQty, otherwise set it to currently selected item max or null
         const newMaxQty = formType === "restock" ? null : newOptions.selectedProduct?.[0]?.currentStock || 0;
         //set the new display quantity to the current value, or the newMaxQty if lower
-        const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : Math.min(newOptions.displayQuantity, newMaxQty);
+        const newDisplayQty = formType === "restock" ? newOptions.displayQuantity : newOptions.displayQuantity === "" ? "" : Math.min(newOptions.displayQuantity, newMaxQty);
         newOptions.quantity = newDisplayQty * (formType === "restock" ? 1 : -1);
         newOptions.displayQuantity = newDisplayQty;
         //generate transaction array for API call
@@ -319,7 +319,7 @@ const TransactionForm = ({formType}) => {
                                            onChange={(id, val) => {
                                                const qty = maxQty ? Math.max(Math.min(maxQty, val), 0) * (formType === "withdraw" ? -1 : 1) : Math.max(val, 0) * (formType === "withdraw" ? -1 : 1);
                                                updateOptions({
-                                                   displayQuantity: Math.abs(qty),
+                                                   displayQuantity: !val ? "" : Math.abs(qty),
                                                    quantity: qty
                                                })
                                            }}
