@@ -83,9 +83,7 @@ const TransactionForm = ({formType}) => {
         return formType === "restock" ? locations : locations.filter((l) => {
             //if not a restock form, filter out any location without stock
             const productReferenceList = (productType === "item" || forceItem) ? itemsByLocationId : listsByLocationId;
-            return productReferenceList[l.id] && (productReferenceList[l.id]).some((x) => {
-                return productType === "list" ? x.currentStock > 0 && productData?.listsByLocationThenListId?.all?.[x.id]?.items?.length === productData?.listsByLocationThenListId?.[l.id]?.[x.id]?.items?.length : x.currentStock > 0;
-            });
+            return productReferenceList[l.id] && (productReferenceList[l.id]).some((x) => x.currentStock > 0);
         })
     }
 
