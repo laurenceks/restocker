@@ -36,7 +36,13 @@ const renderCellContent = (x) => {
 
 const TableCell = ({className, content, align}) => {
     return (
-        <td className={`${align && align + " "} ${className || ""}`}>{content || content === 0 ? renderCellContent(content) : ""}</td>
+        <td className={`${align && align + " "} ${className || ""}`}
+            colSpan={content.colspan}
+            rowSpan={content.rowspan}
+            {...content.cellData}
+        >
+            {content || content === 0 ? content.fragment || renderCellContent(content) : ""}
+        </td>
     );
 };
 
