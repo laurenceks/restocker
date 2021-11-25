@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import {Typeahead} from "react-bootstrap-typeahead";
@@ -23,7 +22,7 @@ const FormInput = ({
                        typeaheadProps,
                        value
                    }) => {
-    const [inputState, setInputState] = useState(defaultValue || "");
+
     return (
         <div className={"loginInputWrap"}>
             {type === "typeahead" ?
@@ -37,6 +36,7 @@ const FormInput = ({
                 <div className="form-floating">
                     <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`}
                            id={id}
+                           name={id}
                            placeholder={placeholder || label}
                            data-passwordid={passwordId}
                            min={min}
@@ -44,17 +44,14 @@ const FormInput = ({
                            step={step}
                            onChange={(e) => {
                                const returnValue = type === "number" && e.target.value ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
-                               if (value === undefined || value === null) {
-                                   //uncontrolled input
-                                   setInputState(returnValue);
-                               }
+
                                if (onChange) {
                                    onChange(id, returnValue);
                                }
                            }}
                            form={form}
+                           value={value}
                            defaultValue={defaultValue}
-                           value={value === "" || value ? value : inputState}
                            disabled={disabled}
                     />
                     <label htmlFor={id}>{label}</label>
@@ -66,6 +63,7 @@ const FormInput = ({
 };
 
 FormInput.propTypes = {
+    defaultValue: PropTypes.string,
     forceCase: PropTypes.string,
     form: PropTypes.string,
     id: PropTypes.string,
