@@ -297,8 +297,7 @@ const Lists = () => {
                 }}>
                     <div className="row my-3">
                         <h2 className="mb-3">Add new list</h2>
-                        <div className="col-12 col-md-4 mb-3 mb-md-0">
-                            <div className="loginFormInputGroup">
+                        <div className="col-12 col-md-3 mb-3 mb-md-0">
                                 <FormInput type={"text"}
                                            id={"inputAddListName"}
                                            label={"Name"}
@@ -308,10 +307,8 @@ const Lists = () => {
                                            onChange={(e, x) => {
                                                setAddData({...addData, name: x})
                                            }}/>
-                            </div>
                         </div>
-                        <div className="col-12 col-md-4 mb-3 mb-md-0">
-                            <div className="loginFormInputGroup">
+                        <div className="col-12 col-md-3 mb-3 mb-md-0">
                                 <FormItem id={"inputAddListItem"}
                                           label={"Item"}
                                           invalidFeedback={"You must select an item from the list"}
@@ -319,10 +316,8 @@ const Lists = () => {
                                               setAddData({...addData, itemId: e[0]?.id || null, unit: e[0]?.unit || null})
                                           }}
                                 />
-                            </div>
                         </div>
                         <div className="col-12 col-md-2 mb-3 mb-md-0">
-                            <div className="loginFormInputGroup">
                                 <FormInput type={"number"}
                                            id={"inputAddListItemQuantity"}
                                            label={"Quantity"}
@@ -332,7 +327,9 @@ const Lists = () => {
                                            onChange={(e, x) => {
                                                setAddData({...addData, quantity: x})
                                            }}/>
-                            </div>
+                        </div>
+                        <div className="col-12 col-md-2 d-flex align-items-center">
+                            {addData.unit}
                         </div>
                         <div className="col-12 col-md-2 d-flex align-items-center">
                             <button type={"submit"} className={"btn btn-success"}>Add</button>
