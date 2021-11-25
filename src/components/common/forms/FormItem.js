@@ -37,7 +37,6 @@ const FormItem = ({
     const getItems = () => {
         fetchAllItems((x) => {
             setItemsLoadedOnce(true);
-            console.log(filterValues);
             if (filterValues) {
                 setItems(x.items.filter((x) => {
                     return filterValues.values.indexOf(x[filterValues.key]) === -1
