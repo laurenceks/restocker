@@ -11,7 +11,8 @@ $getAllLists = $db->prepare("
        items.id   AS itemId,
        items.NAME AS itemName,
        items.unit,
-       listitems.quantity
+       listitems.quantity,
+               listitems.id as listItemsId   
 FROM   lists
        LEFT JOIN listitems
               ON listitems.listid = lists.id
