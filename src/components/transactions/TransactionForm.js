@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
 import {useEffect, useRef, useState} from "react"
-import {mockLists} from "../common/mockData";
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
