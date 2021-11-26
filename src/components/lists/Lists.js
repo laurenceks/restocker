@@ -3,10 +3,6 @@ import {Fragment, useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
-import fetchAllItems from "../../functions/fetchAllItems";
-import naturalSort from "../../functions/naturalSort";
-import {log10} from "chart.js/helpers";
-import deepmerge from "deepmerge";
 import FormItem from "../common/forms/FormItem";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
 
@@ -23,7 +19,6 @@ const Lists = () => {
         const [addData, setAddData] = useState(new addDataTemplate());
         const [sortKey, setSortKey] = useState("name");
         const [listList, setListList] = useState([]);
-        const [listsById, setListsById] = useState([]);
         const [listRows, setListRows] = useState([]);
         const [modalOptions, setModalOptions] = useState({
             show: false,
@@ -34,14 +29,11 @@ const Lists = () => {
         });
         const addListForm = useRef();
         const listRowsRef = useRef(listRows);
-        const listsRef = useRef(listList);
         listRowsRef.current = listRows;
-        listRowsRef.current = listList;
 
         class editListDataTemplate {
             constructor() {
                 this.id = null;
-
                 this.name = null;
                 this.items = [];
                 this.index = null;
