@@ -11,15 +11,16 @@ $getAllLists = $db->prepare("
        items.id   AS itemId,
        items.NAME AS itemName,
        items.unit,
-       listitems.quantity,
-               listitems.id as listItemsId   
+       list_items.quantity,
+               list_items.id as listItemsId   
 FROM   lists
-       LEFT JOIN listitems
-              ON listitems.listid = lists.id
+       LEFT JOIN list_items
+              ON list_items.listid = lists.id
        LEFT JOIN items
-              ON items.id = listitems.itemid
+              ON items.id = list_items.itemid
 WHERE  lists.organisationid = :organisationId
        AND items.deleted = 0 
+AND lists.deleted = 0
         ");
 $getAllLists->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllLists->execute();
