@@ -5,6 +5,7 @@ import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
+import ConfirmModal from "../Bootstrap/ConfirmModal";
 
 const Items = () => {
     class addDataTemplate {
@@ -20,6 +21,13 @@ const Items = () => {
     //TODO add sort key to table headers on click
     const [sortKey, setSortKey] = useState("name");
     const [itemList, setItemList] = useState([[0, "", "", "", "", ""]]);
+    const [modalOptions, setModalOptions] = useState({
+        show: false,
+        deleteId: null,
+        bodyText: "",
+        headerClass: "bg-danger text-light",
+        yesButtonVariant: "danger"
+    });
 
     const addItemForm = useRef();
     const itemListRef = useRef([]);
@@ -56,7 +64,14 @@ const Items = () => {
                             text: "Delete",
                             buttonClass: "btn-danger btn-sm",
                             handler: () => {
-                                deleteItem(item.id);
+                                setModalOptions(prevState => {
+                                    return {
+                                        ...prevState,
+                                        show: true,
+                                        deleteId: item.id,
+                                        bodyText: `Are you sure you want to delete ${item.name}?`
+                                    }
+                                })
                             }
                         }
                     ]
@@ -81,6 +96,9 @@ const Items = () => {
             method: "POST",
             body: JSON.stringify({id: id}),
         }, (x) => {
+            setModalOptions(prevState => {
+                return {...prevState, show: false}
+            })
             getItems();
         });
     }
@@ -98,7 +116,11 @@ const Items = () => {
             const newItemList = [...itemListRef.current];
             const unitText = itemListRef.current[x][2].match(/\d+ (.*)/)
             const itemId = itemListRef.current[x][0];
-            const inputIds = {name: `editItemRow-${editId}-name`, unit: `editItemRow-${editId}-unit`, warningLevel: `editItemRow-${editId}-wanringLevel`}
+            const inputIds = {
+                name: `editItemRow-${editId}-name`,
+                unit: `editItemRow-${editId}-unit`,
+                warningLevel: `editItemRow-${editId}-wanringLevel`
+            }
             newItemList[x] = [
                 itemId,
                 {
@@ -230,6 +252,15 @@ const Items = () => {
                     rows={itemList}
                 />
             </div>
+            <ConfirmModal
+                {...modalOptions}
+                handleNo={() => {
+                    setModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    });
+                }}
+                handleYes={() => deleteItem(modalOptions.deleteId)}
+            />
         </div>
     );
 };

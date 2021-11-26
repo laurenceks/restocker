@@ -8,6 +8,7 @@ import naturalSort from "../../functions/naturalSort";
 import {log10} from "chart.js/helpers";
 import deepmerge from "deepmerge";
 import FormItem from "../common/forms/FormItem";
+import ConfirmModal from "../Bootstrap/ConfirmModal";
 
 const Lists = () => {
         class addDataTemplate {
@@ -24,6 +25,13 @@ const Lists = () => {
         const [listList, setListList] = useState([]);
         const [listsById, setListsById] = useState([]);
         const [listRows, setListRows] = useState([]);
+        const [modalOptions, setModalOptions] = useState({
+            show: false,
+            deleteId: null,
+            bodyText: "",
+            headerClass: "bg-danger text-light",
+            yesButtonVariant: "danger"
+        });
         const addListForm = useRef();
         const listRowsRef = useRef(listRows);
         const listsRef = useRef(listList);
@@ -105,7 +113,14 @@ const Lists = () => {
                             rowspan: x.items.length,
                             className: "text-center " + cellTemplate.className,
                             handler: () => {
-                                deleteList(x.id);
+                                setModalOptions(prevState => {
+                                    return {
+                                        ...prevState,
+                                        show: true,
+                                        deleteId: x.id,
+                                        bodyText: `Are you sure you want to delete ${x.name}?`
+                                    }
+                                })
                             }
                         }] : j === 0 ? [{...cellTemplate, text: "", rowspan: x.items.length, colspan: 2}] : null));
                     })
@@ -298,35 +313,35 @@ const Lists = () => {
                     <div className="row my-3">
                         <h2 className="mb-3">Add new list</h2>
                         <div className="col-12 col-md-3 mb-3 mb-md-0">
-                                <FormInput type={"text"}
-                                           id={"inputAddListName"}
-                                           label={"Name"}
-                                           invalidFeedback={"You must name your list"}
-                                           forceCase={"title"}
-                                           value={addData.name}
-                                           onChange={(e, x) => {
-                                               setAddData({...addData, name: x})
-                                           }}/>
+                            <FormInput type={"text"}
+                                       id={"inputAddListName"}
+                                       label={"Name"}
+                                       invalidFeedback={"You must name your list"}
+                                       forceCase={"title"}
+                                       value={addData.name}
+                                       onChange={(e, x) => {
+                                           setAddData({...addData, name: x})
+                                       }}/>
                         </div>
                         <div className="col-12 col-md-3 mb-3 mb-md-0">
-                                <FormItem id={"inputAddListItem"}
-                                          label={"Item"}
-                                          invalidFeedback={"You must select an item from the list"}
-                                          onChange={(e) => {
-                                              setAddData({...addData, itemId: e[0]?.id || null, unit: e[0]?.unit || null})
-                                          }}
-                                />
+                            <FormItem id={"inputAddListItem"}
+                                      label={"Item"}
+                                      invalidFeedback={"You must select an item from the list"}
+                                      onChange={(e) => {
+                                          setAddData({...addData, itemId: e[0]?.id || null, unit: e[0]?.unit || null})
+                                      }}
+                            />
                         </div>
                         <div className="col-12 col-md-2 mb-3 mb-md-0">
-                                <FormInput type={"number"}
-                                           id={"inputAddListItemQuantity"}
-                                           label={"Quantity"}
-                                           invalidFeedback={"You must enter an item quantity"}
-                                           min={0}
-                                           value={addData.quantity}
-                                           onChange={(e, x) => {
-                                               setAddData({...addData, quantity: x})
-                                           }}/>
+                            <FormInput type={"number"}
+                                       id={"inputAddListItemQuantity"}
+                                       label={"Quantity"}
+                                       invalidFeedback={"You must enter an item quantity"}
+                                       min={0}
+                                       value={addData.quantity}
+                                       onChange={(e, x) => {
+                                           setAddData({...addData, quantity: x})
+                                       }}/>
                         </div>
                         <div className="col-12 col-md-2 d-flex align-items-center">
                             {addData.unit}
@@ -351,6 +366,15 @@ const Lists = () => {
                                })
                            }}/>
                 </div>
+                <ConfirmModal
+                    {...modalOptions}
+                    handleNo={() => {
+                        setModalOptions(prevState=>{
+                            return {...prevState, show: false}
+                        });
+                    }}
+                    handleYes={() => deleteList(modalOptions.deleteId)}
+                />
             </div>
         );
     }
