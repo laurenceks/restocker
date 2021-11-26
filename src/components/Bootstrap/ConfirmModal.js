@@ -8,7 +8,7 @@ const ConfirmModal = ({show, title, bodyText, handleYes, handleNo, yesText, noTe
             <Modal.Header className={headerClass}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{bodyText}</Modal.Body>
+            <div style={{whiteSpace: "pre-wrap"}}><Modal.Body>{bodyText}</Modal.Body></div>
             <Modal.Footer>
                 <Button variant={noButtonVariant} onClick={handleNo}>
                     {noText}
