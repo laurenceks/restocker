@@ -10,8 +10,8 @@ function fetchFunctionLists($organisationId, $locationId = null)
   lists.id, 
   lists.name as listName, 
   items.id as itemId,
-       listitems.id as listItemsId,
-  listitems.quantity,
+       list_items.id as listItemsId,
+  list_items.quantity,
   items.name as itemName, 
   items.unit, 
   items.warningLevel, 
@@ -19,8 +19,8 @@ function fetchFunctionLists($organisationId, $locationId = null)
 FROM 
   locations, 
   lists 
-  LEFT JOIN listitems on listitems.listId = lists.id 
-  LEFT JOIN items ON items.id = listitems.itemId 
+  LEFT JOIN list_items on list_items.listId = lists.id 
+  LEFT JOIN items ON items.id = list_items.itemId 
 WHERE 
   locations.organisationId = :organisationId1
   AND locations.deleted = 0 
@@ -33,8 +33,8 @@ SELECT
   lists.id, 
   lists.name as listName, 
   items.id as itemId,
-       listitems.id as listItemsId,
-  listitems.quantity,
+       list_items.id as listItemsId,
+  list_items.quantity,
   items.name as itemName, 
   items.unit, 
   items.warningLevel, 
@@ -44,15 +44,15 @@ SELECT
     FROM 
       transactions 
     WHERE 
-      transactions.itemId = listitems.itemId 
+      transactions.itemId = list_items.itemId 
       AND locations.id = transactions.locationId 
       AND transactions.organisationId = :organisationId3
   ) AS currentStock 
 FROM 
   locations, 
   lists 
-  LEFT JOIN listitems on listitems.listId = lists.id 
-  LEFT JOIN items ON items.id = listitems.itemId 
+  LEFT JOIN list_items on list_items.listId = lists.id 
+  LEFT JOIN items ON items.id = list_items.itemId 
 WHERE 
   locations.organisationId = :organisationId4
   AND locations.deleted = 0 
