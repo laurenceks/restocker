@@ -69,7 +69,7 @@ const Items = () => {
                                         ...prevState,
                                         show: true,
                                         deleteId: item.id,
-                                        bodyText: `Are you sure you want to delete ${item.name}?`
+                                        bodyText: `Are you sure you want to delete ${item.name}?\n\nThe item will also be removed from any lists containing it.`
                                     }
                                 })
                             }
