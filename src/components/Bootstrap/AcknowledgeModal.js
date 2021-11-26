@@ -34,8 +34,8 @@ AcknowledgeModal.defaultProps = {
         console.log("Button clicked, but no handler passed")
     },
     buttonText: "OK",
-    title: "Are you sure?",
-    bodyText: "Are you sure you wish to proceed?",
+    title: "Error",
+    bodyText: "An unknown error occurred",
     headClass: null,
     buttonVariant: "primary"
 }
