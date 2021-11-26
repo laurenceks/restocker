@@ -65,7 +65,7 @@ const FormItem = ({
                 {...typeaheadProps}
                 disabled={disabled || !itemsLoadedOnce || typeaheadProps?.options?.length <= 1}
                 options={typeaheadProps.options}
-                selected={selectedState}
+                selected={selected || selectedState}
                 onChange={(e) => {
                     setSelectedState(e);
                     if (onChange) {
