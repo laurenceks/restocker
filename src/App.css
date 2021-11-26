@@ -73,7 +73,8 @@ form.loginForm, div.loginForm {
 }
 
 div.loginFormInputGroup > div.loginInputWrap:first-of-type:not(:only-of-type) input,
-div.loginFormInputGroup > div.loginInputWrap:last-of-type input.is-invalid {
+div.loginFormInputGroup > div.loginInputWrap:last-of-type input.is-invalid,
+div.loginInputWrap:only-of-type input.is-invalid:only-of-type {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
@@ -89,7 +90,8 @@ div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) div.inputFeedba
 }
 
 div.loginFormInputGroup > div.loginInputWrap:last-of-type:not(:only-child) input,
-div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip {
+div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip,
+div.loginInputWrap:last-of-type div.inputFeedbackTooltip {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
