@@ -190,10 +190,6 @@ const Items = () => {
         getItems();
     }, []);
 
-    useEffect(() => {
-        //get user list
-    }, [itemList]);
-
     return (
         <div className="container">
             <form ref={addItemForm} onSubmit={(e) => {
