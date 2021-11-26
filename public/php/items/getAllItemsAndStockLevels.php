@@ -46,15 +46,15 @@ $getAllLists = $db->prepare("SELECT
 'all' as locationId,
 lists.id,
 lists.name AS listName,
-listitems.itemId,
-listitems.quantity,
+list_items.itemId,
+list_items.quantity,
 items.name,
 items.currentStock AS currentStock,
 items.warningLevel
 FROM lists
-LEFT JOIN listItems ON lists.id = listitems.listId
-LEFT JOIN items ON items.id = listitems.itemId
-LEFT JOIN transactions ON transactions.itemId = listitems.itemId
+LEFT JOIN list_items ON lists.id = list_items.listId
+LEFT JOIN items ON items.id = list_items.itemId
+LEFT JOIN transactions ON transactions.itemId = list_items.itemId
 WHERE lists.organisationId = :organisationId1 AND lists.deleted = 0 AND transactions.organisationId = :organisationId2
 GROUP BY lists.id, items.id
 
@@ -64,15 +64,15 @@ SELECT
 transactions.locationId as locationId,
 lists.id,
 lists.name AS listName,
-listitems.itemId,
-listitems.quantity,
+list_items.itemId,
+list_items.quantity,
 items.name,
 SUM(transactions.quantity) AS currentStock,
 items.warningLevel
 FROM lists
-LEFT JOIN listItems ON lists.id = listitems.listId
-LEFT JOIN items ON items.id = listitems.itemId
-LEFT JOIN transactions ON transactions.itemId = listitems.itemId
+LEFT JOIN list_items ON lists.id = list_items.listId
+LEFT JOIN items ON items.id = list_items.itemId
+LEFT JOIN transactions ON transactions.itemId = list_items.itemId
 WHERE lists.organisationId = :organisationId3 AND lists.deleted = 0 AND transactions.organisationId = :organisationId4
 GROUP BY transactions.locationId, lists.id, items.id;");
 
