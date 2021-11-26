@@ -159,7 +159,7 @@ const TransactionForm = ({formType}) => {
         const postTransactionQuantity = transactionQty + (newProductData?.itemsByLocationThenItemId?.[x?.locationId || newOptions.locationId]?.[transactionProductId]?.currentStock || 0);
         return {
             itemId: transactionProductId,
-            itemName: x?.name || newOptions.productName,
+            itemName: x?.itemName || newOptions.productName,
             quantity: transactionQty,
             postTransactionQuantity: postTransactionQuantity,
             postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newProductData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
