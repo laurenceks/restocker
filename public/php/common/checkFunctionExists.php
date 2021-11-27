@@ -1,5 +1,5 @@
 <?php
-function checkFunctionExists($table, $selectKey, $keyValues, $noDeletedColumn = false)
+function checkFunctionExists($table, $selectKey, $keyValues, $ignoreDeleted = false, $compareValues = false)
 {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
@@ -24,13 +24,13 @@ function checkFunctionExists($table, $selectKey, $keyValues, $noDeletedColumn = 
         }
 
         if ($j > 0) {
-            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($noDeletedColumn ? "" : " AND deleted = 0"));
+            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($ignoreDeleted ? "" : " AND deleted = 0"));
             foreach ($keyValues as $pair) {
                 $check->bindValue(':value' . $k, $pair["value"]);
                 $k++;
             }
             $check->execute();
-            $result = count($check->fetchAll(PDO::FETCH_ASSOC)) > 0;
+            $result = $compareValues ? $check->fetchAll(PDO::FETCH_ASSOC)[0] === $keyValues[0]["value"] : count($check->fetchAll(PDO::FETCH_ASSOC)) > 0;
         }
     }
 
