@@ -15,7 +15,7 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
 } else if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["itemId"])))) {
     //that item doesn't exist
     $output["errorType"] = "missingItem";
-    $output["feedback"] = "The item included in the list could not be found - possible due to deletion - please try again";
+    $output["feedback"] = $input["itemName"] . " could not be found - possibly due to deletion - please try again";
 } else {
     try {
         $addList = $db->prepare("INSERT INTO lists (organisationId, name, createdBy, editedBy) VALUES (:organisationId,:name, :uid1, :uid2)");

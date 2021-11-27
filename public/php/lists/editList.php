@@ -31,7 +31,6 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                     if (!$item["deleted"] || isset($item["listItemsId"])) {
                         if (isset($item["listItemsId"]) && checkFunctionExists("list_items", "id", array(array("key" => "id", "value" => $item["listItemsId"])), true)) {
                             //list item exists - update (including setting deletion)
-                $output["errorType"] = json_encode(array_merge($input, $item));
                             $editListItem = $db->prepare("UPDATE list_items SET itemId = :itemId, quantity = :quantity, editedBy = :uid1, deleted = :deleted WHERE id = :listItemsId");
                             $editListItem->bindParam(":listItemsId", $item["listItemsId"]);
                             $editListItem->bindParam(":deleted", $item["deleted"]);
@@ -52,6 +51,8 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                 }
             }
         }
+        $output["success"] = true;
+        $output["feedback"] = $input["name"] . " updated";
     } catch (PDOException $e) {
         echo $output["feedback"] = $e->getMessage();
     }
