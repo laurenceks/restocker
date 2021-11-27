@@ -9,8 +9,9 @@ $getAllLists = $db->prepare("
        lists.name,
        lists.organisationid,
        items.id   AS itemId,
-       items.NAME AS itemName,
+       items.name AS itemName,
        items.unit,
+               list_items.deleted,
        list_items.quantity,
                list_items.id as listItemsId   
 FROM   lists
@@ -21,6 +22,7 @@ FROM   lists
 WHERE  lists.organisationid = :organisationId
        AND items.deleted = 0 
 AND lists.deleted = 0
+AND list_items.deleted = 0
         ");
 $getAllLists->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllLists->execute();
