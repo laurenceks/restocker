@@ -34,6 +34,12 @@ const FormItem = ({
         getItems();
     }, [updated]);
 
+    useEffect(() => {
+        if (itemsLoadedOnce) {
+            setSelectedState(selected);
+        }
+    }, [selected]);
+
     const getItems = () => {
         fetchAllItems((x) => {
             setItemsLoadedOnce(true);
@@ -65,7 +71,7 @@ const FormItem = ({
                 {...typeaheadProps}
                 disabled={disabled || !itemsLoadedOnce || typeaheadProps?.options?.length <= 1}
                 options={typeaheadProps.options}
-                selected={selected || selectedState}
+                selected={selectedState}
                 onChange={(e) => {
                     setSelectedState(e);
                     if (onChange) {
