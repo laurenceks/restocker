@@ -6,6 +6,7 @@ import validateForm from "../../functions/formValidation";
 import FormItem from "../common/forms/FormItem";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
+import naturalSort from "../../functions/naturalSort";
 
 const Lists = () => {
         class addDataTemplate {
@@ -83,7 +84,7 @@ const Lists = () => {
             lists.forEach((x, i) => {
                 const cellTemplate = {cellData: {"data-listid": x.id}, className: `td-listId-${x.id}`};
                 if (i !== editListIndex) {
-                    x.items.forEach((y, j) => {
+                    x.items.sort((a,b)=>naturalSort(a.itemName, b.itemName)).forEach((y, j) => {
                         newListRows.push((j === 0 ? [
                             {
                                 ...cellTemplate,
