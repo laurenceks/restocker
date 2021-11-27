@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
@@ -9,9 +9,23 @@ import Items from "./items/Items";
 import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
 import Lists from "./lists/Lists";
+import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
+import CompleteToast from "./Bootstrap/Toast";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
+    const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({show: false});
+    const showStateChange = (show) => {
+        setCompleteToastOptions(prevState => {
+            return {...prevState, show: show}
+        })
+    }
+    const [completeToastOptions, setCompleteToastOptions] = useState({show: false, showStateChange: showStateChange});
+    globalAppContext.setStateFunctions = {
+        acknowledgeModal: setAcknowledgeModalOptions,
+        completeToast: setCompleteToastOptions
+    };
+
     const logout = (e) => {
         fetch("./php/login/tempLogout.php", {
             method: "GET",
@@ -23,7 +37,6 @@ const Main = props => {
         <div className="contentContainer w-100">
             <TopNav user={globalAppContext.user}/>
             <div className="main my-5 mx-auto px-1 px-md-0">
-
                 <Switch>
                     }}/>
                     <Route path={"/"} exact>
@@ -56,6 +69,8 @@ const Main = props => {
                     </Route>
                 </Switch>
             </div>
+            <AcknowledgeModal {...acknowledgeModalOptions}/>
+            <CompleteToast {...completeToastOptions}/>
         </div>
     );
 };
