@@ -8,6 +8,7 @@ import TransactionForm from "./transactions/TransactionForm";
 import Items from "./items/Items";
 import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
+import Lists from "./lists/Lists";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -42,6 +43,9 @@ const Main = props => {
                     </Route>
                     <Route path={"/items"}>
                         <Items/>
+                    </Route>
+                    <Route path={"/lists"}>
+                        <Lists/>
                     </Route>
                     <Route path={"/profile"}>
                         <Profile/>
