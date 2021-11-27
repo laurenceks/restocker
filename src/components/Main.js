@@ -10,7 +10,7 @@ import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
 import Lists from "./lists/Lists";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
-import CompleteToast from "./Bootstrap/Toast";
+import CompleteToast from "./Bootstrap/CompleteToast";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
