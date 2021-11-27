@@ -5,6 +5,7 @@ import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import FormItem from "../common/forms/FormItem";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
+import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 
 const Lists = () => {
         class addDataTemplate {
@@ -13,25 +14,11 @@ const Lists = () => {
                 this.itemId = null;
                 this.unit = null;
                 this.quantity = "";
+                this.selected = [];
             }
         }
 
-        const [addData, setAddData] = useState(new addDataTemplate());
-        const [sortKey, setSortKey] = useState("name");
-        const [listList, setListList] = useState([]);
-        const [listRows, setListRows] = useState([]);
-        const [modalOptions, setModalOptions] = useState({
-            show: false,
-            deleteId: null,
-            bodyText: "",
-            headerClass: "bg-danger text-light",
-            yesButtonVariant: "danger"
-        });
-        const addListForm = useRef();
-        const listRowsRef = useRef(listRows);
-        listRowsRef.current = listRows;
-
-        class editListDataTemplate {
+        class editDataTemplate {
             constructor() {
                 this.id = null;
                 this.name = null;
@@ -40,12 +27,35 @@ const Lists = () => {
             }
         }
 
-        const [editedList, setEditedList] = useState(new editListDataTemplate());
-        const editedListRef = useRef(editedList);
-        editedListRef.current = editedList;
+        const [addData, setAddData] = useState(new addDataTemplate());
+        const [editData, setEditData] = useState(new editDataTemplate());
+        const [sortKey, setSortKey] = useState("name");
+        const [listList, setListList] = useState([]);
+        const [listRows, setListRows] = useState([]);
+        const [confirmModalOptions, setConfirmModalOptions] = useState({
+            show: false,
+            deleteId: null,
+            bodyText: "",
+            headerClass: "bg-danger text-light",
+            yesButtonVariant: "danger"
+        });
+        const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({
+            show: false,
+            bodyText: "",
+            headerClass: "bg-warning text-primary",
+            yesButtonVariant: "primary",
+            handleClick: () => {
+                setAcknowledgeModalOptions(prevState => {
+                    return {...prevState, show: false}
+                })
+            }
+        });
+        const addListForm = useRef();
+        const editedListRef = useRef(editData);
+        editedListRef.current = editData;
 
         const getLists = (callback, getLocations = false) => {
-            setEditedList(new editListDataTemplate());
+            setEditData(new editDataTemplate());
             fetchJson("./php/lists/getAllLists.php", {
                 method: "GET"
             }, x => setListList(x?.lists || []));
@@ -53,17 +63,22 @@ const Lists = () => {
 
         useEffect(() => {
             //trigger hover effect
-            document.querySelectorAll(`.td-listId-${editedList.id}`).forEach((x) => {
+            document.querySelectorAll(`.td-listId-${editData.id}`).forEach((x) => {
                 x.classList.add("hover")
             })
-        }, [listRows, editedList]);
+        }, [listRows, editData]);
 
         useEffect(() => {
+            //update table rows
             setListRows(makeListRows(listList))
         }, [listList]);
 
+        useEffect(() => {
+            //get list list
+            getLists();
+        }, []);
 
-        const makeListRows = (lists = listList || [], editListIndex = editedList.index === 0 ? 0 : editedList.index || -1) => {
+        const makeListRows = (lists = listList || [], editListIndex = editData.index === 0 ? 0 : editData.index || -1) => {
             const newListRows = [];
             lists.forEach((x, i) => {
                 const cellTemplate = {cellData: {"data-listid": x.id}, className: `td-listId-${x.id}`};
@@ -72,12 +87,12 @@ const Lists = () => {
                         newListRows.push((j === 0 ? [
                             {
                                 ...cellTemplate,
-                                rowspan: x.items.length,
+                                rowspan: x.items.filter(x => !x.deleted).length,
                                 text: x.id
                             },
                             {
                                 ...cellTemplate,
-                                rowspan: x.items.length,
+                                rowspan: x.items.filter(x => !x.deleted).length,
                                 text: x.name,
                             }] : []).concat(
                             [{
@@ -91,10 +106,10 @@ const Lists = () => {
                             type: "button",
                             text: "Edit",
                             buttonClass: "btn-warning",
-                            rowspan: x.items.length,
+                            rowspan: x.items.filter(x => !x.deleted).length,
                             className: "text-center " + cellTemplate.className,
                             handler: () => {
-                                setEditedList({...x, index: i});
+                                setEditData({...x, index: i});
                                 setListRows(makeListRows(listList, i));
                             }
                         }, {
@@ -102,10 +117,10 @@ const Lists = () => {
                             type: "button",
                             text: "Delete",
                             buttonClass: "btn-danger",
-                            rowspan: x.items.length,
+                            rowspan: x.items.filter(x => !x.deleted).length,
                             className: "text-center " + cellTemplate.className,
                             handler: () => {
-                                setModalOptions(prevState => {
+                                setConfirmModalOptions(prevState => {
                                     return {
                                         ...prevState,
                                         show: true,
@@ -114,40 +129,18 @@ const Lists = () => {
                                     }
                                 })
                             }
-                        }] : j === 0 ? [{...cellTemplate, text: "", rowspan: x.items.length, colspan: 2}] : null));
+                        }] : j === 0 ? [{
+                            ...cellTemplate,
+                            text: "",
+                            rowspan: x.items.filter(x => !x.deleted).length,
+                            colspan: 2
+                        }] : null));
                     })
                 } else {
                     newListRows.push(...makeEditRow(x, i))
                 }
             })
             return newListRows;
-        }
-
-        const addList = (x) => {
-            fetchJson("./php/lists/addList.php", {
-                method: "POST",
-                body: JSON.stringify(x.values),
-            }, (x) => {
-                setAddData(new addDataTemplate());
-                getLists();
-            });
-        }
-
-        const deleteList = (id) => {
-            fetchJson("./php/lists/deleteList.php", {
-                method: "POST",
-                body: JSON.stringify({id: id}),
-            }, (x) => {
-                getLists();
-            });
-        }
-        const editList = (x) => {
-            fetchJson("./php/lists/editList.php", {
-                method: "POST",
-                body: JSON.stringify(x),
-            }, (x) => {
-                getLists();
-            });
         }
 
         const makeEditRow = (currentList, listIndex) => {
@@ -169,7 +162,7 @@ const Lists = () => {
                         id: `input-listId-${currentList.id}-name`,
                         defaultValue: currentList.name,
                         onChange: (e, v) => {
-                            setEditedList(prevState => {
+                            setEditData(prevState => {
                                 return {...prevState, name: v}
                             });
                         }
@@ -177,7 +170,7 @@ const Lists = () => {
                 }];
             currentList.items.forEach((y, i) => {
                     newEditRow.push((i === 0 ? firstRow : []).concat(
-                            makeInputCells(currentList, y, i, cellTemplate, listIndex)
+                            y.deleted ? [] : makeInputCells(currentList, y, i, cellTemplate, listIndex)
                         )
                     )
                 }
@@ -192,13 +185,15 @@ const Lists = () => {
                     const newItems = [...currentList.items];
                     newItems.push({
                         itemId: null,
-                        itemName: null,
+                        itemName: "",
                         unit: "units",
                         quantity: null,
-                        listItemsId: currentList.id
+                        listId: currentList.id,
+                        listItemsId: null,
+                        deleted: 0
                     });
                     //save new item in edited list
-                    setEditedList((prevState) => {
+                    setEditData((prevState) => {
                         return {...prevState, items: newItems}
                     });
                     setListList((x) => {
@@ -219,8 +214,6 @@ const Lists = () => {
         }
 
         const makeInputCells = (x, y, i, cellTemplate = {}, startIndex = 0) => {
-            const rowIndex = startIndex + i;
-            console.log([{...x.items[i], name: x.items[i].itemName, id: x.items[i].itemId}]);
             return [{
                 ...cellTemplate,
                 fragment: <FormItem id={`input-listId-${x.id}-itemId-${y.itemId}-name`}
@@ -236,7 +229,7 @@ const Lists = () => {
                                             unit: e?.[0]?.unit || null,
                                         })
                                         //update the editedList with new items
-                                        setEditedList(prevState => {
+                                        setEditData(prevState => {
                                             return {...prevState, items: x.items}
                                         });
                                         //update the full list so the table is re-rendered
@@ -260,7 +253,7 @@ const Lists = () => {
                                 ...x.items[i],
                                 quantity: v
                             })
-                            setEditedList(prevState => {
+                            setEditData(prevState => {
                                 return {...prevState, items: x.items}
                             })
                         }
@@ -270,7 +263,7 @@ const Lists = () => {
                     className: "align-middle " + cellTemplate.className,
                     text: x.items[i]?.unit || "units"
                 },
-                x.items.length > 1 ? {
+                x.items.filter(x => !x.deleted).length > 1 ? {
                     ...cellTemplate,
                     type: "button",
                     text: "Delete",
@@ -278,8 +271,8 @@ const Lists = () => {
                     className: "align-middle " + cellTemplate.className,
                     handler: () => {
                         const newDeleteItems = [...listList[startIndex].items];
-                        newDeleteItems.splice(i, 1);
-                        setEditedList((prevState) => {
+                        newDeleteItems[i] = {...newDeleteItems[i], deleted: 1}
+                        setEditData((prevState) => {
                             return {...prevState, items: newDeleteItems}
                         })
                         setListList((x) => {
@@ -289,14 +282,51 @@ const Lists = () => {
                     }
                 } : ""
             ]
+
         }
 
+        const addList = () => {
+            fetchJson("./php/lists/addList.php", {
+                method: "POST",
+                body: JSON.stringify(addData),
+            }, (x) => {
+                console.log(x)
+                if (x.success) {
+                    setAddData(new addDataTemplate());
+                    getLists();
+                } else {
+                    setAcknowledgeModalOptions(prevState => {
+                        return {
+                            ...prevState,
+                            show: true,
+                            bodyText: x.feedback,
+                            title: x.errorType === "listExists" ? "List already exists" : "Missing item"
+                        }
+                    })
+                }
+            });
+        }
+        const deleteList = (id) => {
+            fetchJson("./php/lists/deleteList.php", {
+                method: "POST",
+                body: JSON.stringify({id: id}),
+            }, (x) => {
+                setConfirmModalOptions(prevState => {
+                    return {...prevState, show: false}
+                })
+                getLists();
+            });
+        }
 
-        useEffect(() => {
-            //get list list
-            getLists();
-        }, []);
-
+        const editList = () => {
+            fetchJson("./php/lists/editList.php", {
+                method: "POST",
+                body: JSON.stringify(editedListRef.current),
+            }, (x) => {
+                console.log(x);
+                getLists();
+            });
+        }
         return (
             <div className="container">
                 <form ref={addListForm} onSubmit={(e) => {
@@ -316,11 +346,17 @@ const Lists = () => {
                                        }}/>
                         </div>
                         <div className="col-12 col-md-3 mb-3 mb-md-0">
-                            <FormItem id={"inputAddListItem"}
+                            <FormItem id={"inputAddListItemId"}
                                       label={"Item"}
                                       invalidFeedback={"You must select an item from the list"}
+                                      selected={addData.selected}
                                       onChange={(e) => {
-                                          setAddData({...addData, itemId: e[0]?.id || null, unit: e[0]?.unit || null})
+                                          setAddData({
+                                              ...addData,
+                                              itemId: e[0]?.id || null,
+                                              unit: e[0]?.unit || null,
+                                              selected: e
+                                          })
                                       }}
                             />
                         </div>
@@ -359,14 +395,15 @@ const Lists = () => {
                            }}/>
                 </div>
                 <ConfirmModal
-                    {...modalOptions}
+                    {...confirmModalOptions}
                     handleNo={() => {
-                        setModalOptions(prevState=>{
+                        setConfirmModalOptions(prevState => {
                             return {...prevState, show: false}
                         });
                     }}
-                    handleYes={() => deleteList(modalOptions.deleteId)}
+                    handleYes={() => deleteList(confirmModalOptions.deleteId)}
                 />
+                <AcknowledgeModal {...acknowledgeModalOptions}/>
             </div>
         );
     }
