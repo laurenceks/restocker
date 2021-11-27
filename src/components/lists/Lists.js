@@ -1,18 +1,20 @@
 import FormInput from "../common/forms/FormInput";
-import {Fragment, useEffect, useRef, useState} from "react"
+import {Fragment, useContext, useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import FormItem from "../common/forms/FormItem";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
-import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 import naturalSort from "../../functions/naturalSort";
+import handleFeedback from "../../functions/handleFeedback";
+import {GlobalAppContext} from "../../App";
 
 const Lists = () => {
         class addDataTemplate {
             constructor() {
                 this.name = "";
                 this.itemId = null;
+                this.itemName = null;
                 this.unit = null;
                 this.quantity = "";
                 this.selected = [];
@@ -28,6 +30,7 @@ const Lists = () => {
             }
         }
 
+        const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
         const [addData, setAddData] = useState(new addDataTemplate());
         const [editData, setEditData] = useState(new editDataTemplate());
         const [sortKey, setSortKey] = useState("name");
@@ -39,17 +42,6 @@ const Lists = () => {
             bodyText: "",
             headerClass: "bg-danger text-light",
             yesButtonVariant: "danger"
-        });
-        const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({
-            show: false,
-            bodyText: "",
-            headerClass: "bg-warning text-primary",
-            yesButtonVariant: "primary",
-            handleClick: () => {
-                setAcknowledgeModalOptions(prevState => {
-                    return {...prevState, show: false}
-                })
-            }
         });
         const addListForm = useRef();
         const editedListRef = useRef(editData);
@@ -84,7 +76,7 @@ const Lists = () => {
             lists.forEach((x, i) => {
                 const cellTemplate = {cellData: {"data-listid": x.id}, className: `td-listId-${x.id}`};
                 if (i !== editListIndex) {
-                    x.items.sort((a,b)=>naturalSort(a.itemName, b.itemName)).forEach((y, j) => {
+                    x.items.sort((a, b) => naturalSort(a.itemName, b.itemName)).forEach((y, j) => {
                         newListRows.push((j === 0 ? [
                             {
                                 ...cellTemplate,
@@ -291,20 +283,12 @@ const Lists = () => {
                 method: "POST",
                 body: JSON.stringify(addData),
             }, (x) => {
-                console.log(x)
-                if (x.success) {
-                    setAddData(new addDataTemplate());
+                handleFeedback(setStateFunctions, x, {bodyText: `${addData.name} has been added`}, (response) => {
+                    if (response.success) {
+                        setAddData(new addDataTemplate())
+                    }
                     getLists();
-                } else {
-                    setAcknowledgeModalOptions(prevState => {
-                        return {
-                            ...prevState,
-                            show: true,
-                            bodyText: x.feedback,
-                            title: x.errorType === "listExists" ? "List already exists" : "Missing item"
-                        }
-                    })
-                }
+                });
             });
         }
         const deleteList = (id) => {
@@ -312,10 +296,12 @@ const Lists = () => {
                 method: "POST",
                 body: JSON.stringify({id: id}),
             }, (x) => {
-                setConfirmModalOptions(prevState => {
-                    return {...prevState, show: false}
+                handleFeedback(setStateFunctions, x, {bodyText: `${listList.find(x => x.id === id).name} has been deleted`}, () => {
+                    setConfirmModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    })
+                    getLists();
                 })
-                getLists();
             });
         }
 
@@ -324,8 +310,9 @@ const Lists = () => {
                 method: "POST",
                 body: JSON.stringify(editedListRef.current),
             }, (x) => {
-                console.log(x);
-                getLists();
+                handleFeedback(setStateFunctions, x, {bodyText: `${editedListRef.current.name} has been saved`}, () => {
+                    getLists();
+                })
             });
         }
         return (
@@ -355,6 +342,7 @@ const Lists = () => {
                                           setAddData({
                                               ...addData,
                                               itemId: e[0]?.id || null,
+                                              itemName: e[0]?.name || null,
                                               unit: e[0]?.unit || null,
                                               selected: e
                                           })
@@ -404,7 +392,6 @@ const Lists = () => {
                     }}
                     handleYes={() => deleteList(confirmModalOptions.deleteId)}
                 />
-                <AcknowledgeModal {...acknowledgeModalOptions}/>
             </div>
         );
     }
