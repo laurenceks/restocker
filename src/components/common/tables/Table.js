@@ -23,7 +23,7 @@ const Table = ({title, headers, rows, tableClassName, fullWidth, rowEnter, rowLe
                     return (
                         <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
                             {x.map((y, j) => {
-                                if (y) {
+                                if (y || y === 0) {
                                     return <TableCell key={`${title}-tr-${i}-td-${j}`}
                                                       content={y}
                                                       className={y?.className}
