@@ -1,4 +1,4 @@
-const HandleFeedback = (setStateFunctions, response, customOptions = {}, callback = null) => {
+const handleFeedback = (setStateFunctions, response, customOptions = {}, callback = ()=>{}) => {
     const defaultState = {
         headerClass: "bg-warning text-primary",
         yesButtonVariant: "primary",
@@ -16,9 +16,9 @@ const HandleFeedback = (setStateFunctions, response, customOptions = {}, callbac
         setStateFunctions.completeToast((prevState => {
             return {
                 ...prevState,
-                ...customOptions,
-                show: true,
                 title: response.feedback,
+                show: true,
+                ...customOptions,
             };
         }))
         callback(response);
@@ -35,4 +35,4 @@ const HandleFeedback = (setStateFunctions, response, customOptions = {}, callbac
     }
 }
 
-export default HandleFeedback;
+export default handleFeedback;
