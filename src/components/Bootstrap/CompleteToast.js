@@ -20,7 +20,7 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, showState
 
     return (
         <ToastContainer className="p-3" position="bottom-end">
-            <Toast onClick={() => setShowState(false)} show={showState} delay={3000} autohide className="cursor-pointer">
+            <Toast onClose={() => setShowState(false)} onClick={() => setShowState(false)} show={showState} delay={3000} autohide className="cursor-pointer">
                 <Toast.Header className={headerClass} closeButton={false}>
                     <IoCheckmarkCircleOutline className={"smallIcon me-2"}/>
                         <p className="fs-5 my-0 me-auto">{title}</p>
