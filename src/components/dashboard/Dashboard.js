@@ -21,8 +21,7 @@ import {Doughnut, Line} from "react-chartjs-2";
 import {bootstrapVariables, commonChartOptions} from "../common/styles";
 import deepmerge from "deepmerge";
 import FormInput from "../common/forms/FormInput";
-import {Collapse} from "react-bootstrap";
-import {mockLocations} from "../common/mockData"
+import FormLocation from "../common/forms/FormLocation";
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -72,7 +71,11 @@ const Dashboard = () => {
     }
 
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
-    const [dashBoardSettings, setDashBoardSettings] = useState({ratePeriod: null, location: null});
+    const [dashBoardSettings, setDashBoardSettings] = useState({
+        ratePeriod: null,
+        locationId: null,
+        locationName: null
+    });
 
     const dashboardRanges = {
         burn: [
@@ -188,6 +191,7 @@ const Dashboard = () => {
             method: "POST",
             body: JSON.stringify(dashBoardSettings)
         }, (res) => {
+            console.log(res);
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
             res.rateData.forEach((x) => {
@@ -259,7 +263,7 @@ const Dashboard = () => {
                             }])
                 }
             )
-            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a,b) => a + Math.min(1, b.stockPercentage), 0) / newDashboardData.itemsList.length;
+            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + Math.min(1, b.stockPercentage), 0) / newDashboardData.itemsList.length;
             rateCategories.forEach((x) => {
                     newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
                         return (a || 0) + (b || 0);
@@ -288,9 +292,8 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-            getRateData();
-        }
-        , [dashBoardSettings]);
+        getRateData();
+    }, [dashBoardSettings]);
 
     return (
         <div className="container">
@@ -407,24 +410,17 @@ const Dashboard = () => {
                                }}/>
                 </div>
                 <div className={"col col-12 col-md-3"}>
-                    <FormInput type={"typeahead"}
-                               label={"Location"}
-                               typeaheadProps={{
-                                   inputProps:
-                                       {
-                                           useFloatingLabel: true,
-                                           floatingLabelText: "Location",
-                                           "data-statename": "Location"
-                                       },
-                                   onChange: (e) => {
-                                       setDashBoardSettings({
-                                           ...dashBoardSettings,
-                                           location: e[0]?.id || null,
-                                       });
-                                   },
-                                   labelKey: "name",
-                                   options: mockLocations,
-                               }}/>
+                    <FormLocation
+                        id="inputDashboardLocation"
+                        onChange={(e) => {
+                            setDashBoardSettings({
+                                    ...dashBoardSettings,
+                                    locationId: e[0]?.id || null,
+                                    locationName: e[0]?.name || null,
+                                }
+                            )
+                        }
+                        }/>
                 </div>
             </div>
         </div>
