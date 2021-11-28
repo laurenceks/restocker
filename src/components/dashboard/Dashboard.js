@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     BsBoxArrowInRight,
@@ -15,6 +15,7 @@ import {
 } from "react-icons/all";
 import DashboardActionButton from "./DashboardActionButton";
 import fetchJson from "../../functions/fetchJson";
+import handleFeedback from "../../functions/handleFeedback";
 import Table from "../common/tables/Table";
 import naturalSort from "../../functions/naturalSort";
 import {Doughnut, Line} from "react-chartjs-2";
@@ -22,6 +23,7 @@ import {bootstrapVariables, commonChartOptions} from "../common/styles";
 import deepmerge from "deepmerge";
 import FormInput from "../common/forms/FormInput";
 import FormLocation from "../common/forms/FormLocation";
+import {GlobalAppContext} from "../../App";
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -70,6 +72,7 @@ const Dashboard = () => {
         }
     }
 
+    const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
     const [dashBoardSettings, setDashBoardSettings] = useState({
         ratePeriod: null,
@@ -191,7 +194,6 @@ const Dashboard = () => {
             method: "POST",
             body: JSON.stringify(dashBoardSettings)
         }, (res) => {
-            console.log(res);
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
             res.rateData.forEach((x) => {
@@ -287,7 +289,8 @@ const Dashboard = () => {
                     newDashboardData.chartData.line.data.inStock.push(newDashboardData.itemsList.length - (outOfStockOnThisDate + belowWarningLevelOnThisDate));
                 }
             );
-            setDashboardData(newDashboardData)
+            setDashboardData(newDashboardData);
+            handleFeedback(setStateFunctions, res, {title:"Data loaded", bodyText:res.feedback})
         });
     }
 
