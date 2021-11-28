@@ -15,12 +15,14 @@ import CompleteToast from "./Bootstrap/CompleteToast";
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
     const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({show: false});
-    const showStateChange = (show) => {
-        setCompleteToastOptions(prevState => {
-            return {...prevState, show: show}
-        })
-    }
-    const [completeToastOptions, setCompleteToastOptions] = useState({show: false, showStateChange: showStateChange});
+    const [completeToastOptions, setCompleteToastOptions] = useState({
+        show: false,
+        showStateChange: (show) => {
+            setCompleteToastOptions(prevState => {
+                return {...prevState, show: show}
+            })
+        }
+    });
     globalAppContext.setStateFunctions = {
         acknowledgeModal: setAcknowledgeModalOptions,
         completeToast: setCompleteToastOptions
