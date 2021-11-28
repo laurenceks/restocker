@@ -290,7 +290,7 @@ const Dashboard = () => {
                 }
             );
             setDashboardData(newDashboardData);
-            handleFeedback(setStateFunctions, res, {title:"Data loaded", bodyText:res.feedback})
+            handleFeedback(setStateFunctions, res, {title:"Update complete", bodyText:res.feedback})
         });
     }
 
