@@ -73,6 +73,7 @@ const Dashboard = () => {
     }
 
     const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
+    const [dashboardLoadedOnce, setDashboardLoadedOnce] = useState(false);
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
     const [dashBoardSettings, setDashBoardSettings] = useState({
         ratePeriod: null,
@@ -162,9 +163,9 @@ const Dashboard = () => {
             },
         ],
         stockLevel: [
-            {upper: 0.9, colourClass: "bad", tableClass: "table-danger"},
-            {lower: 0.9, upper: 0.975, colourClass: "ok", tableClass: "table-warning"},
-            {lower: 0.975, colourClass: "good", tableClass: "table-success"},
+            {upper: 0.9, colourClass: "bad", tableClass: "table-danger", textClass: "text-danger"},
+            {lower: 0.9, upper: 0.975, colourClass: "ok", tableClass: "table-warning", textClass: "text-warning"},
+            {lower: 0.975, colourClass: "good", tableClass: "table-success", textClass: "text-success"},
         ],
         outOfStock: [
             {upper: 0.05, colourClass: "good", tableClass: "table-success"},
@@ -224,13 +225,14 @@ const Dashboard = () => {
                         warningLevel: x.warningLevel,
                         outOfStock: x.currentStock === 0,
                         belowWarningLevel: x.currentStock <= x.warningLevel,
+                        stockPercentage: x.currentStock / (x.warningLevel || 1),
+                        roundedStockPercentage: Math.min(x.currentStock / (x.warningLevel || 1),1),
                         burnRate: rateDataForId.burnRate,
                         douseRate: rateDataForId.douseRate,
                         withdrawRate: rateDataForId.withdrawRate,
                         restockRate: rateDataForId.restockRate,
                         lastTransaction: x.lastTransaction
                     };
-                    newItemData.stockPercentage = newItemData.currentStock / newItemData.warningLevel;
                     newDashboardData.itemsStats.totalStock += newItemData.currentStock;
                     newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
                     newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
@@ -239,12 +241,18 @@ const Dashboard = () => {
                     newDashboardData.itemsList.push(newItemData);
                     const newItemDataClasses = {
                         burn: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "all"),
-                        douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all")
+                        douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all"),
+                        stockPercentage: getRangeClass(newItemData.stockPercentage, dashboardRanges.stockLevel, "all")
                     }
                     newDashboardData.itemsRows.push([newItemData.name, {
                         text: newItemData.stockString,
                         className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
                     },
+                        {
+                            text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 2 : 1) + "%",
+                            sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
+                            className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
+                        },
                         newItemData.burnRate ?
                             {
                                 text: <><span
@@ -254,6 +262,7 @@ const Dashboard = () => {
                             } : {
                                 className: "table-light"
                             },
+
                         newItemData.douseRate ?
                             {
                                 text: <><span
@@ -265,7 +274,7 @@ const Dashboard = () => {
                             }])
                 }
             )
-            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + Math.min(1, b.stockPercentage), 0) / newDashboardData.itemsList.length;
+            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + b.roundedStockPercentage, 0) / newDashboardData.itemsList.length;
             rateCategories.forEach((x) => {
                     newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
                         return (a || 0) + (b || 0);
@@ -290,31 +299,34 @@ const Dashboard = () => {
                 }
             );
             setDashboardData(newDashboardData);
-            handleFeedback(setStateFunctions, res, {title:"Update complete", bodyText:res.feedback})
+            if (dashboardLoadedOnce) {
+                handleFeedback(setStateFunctions, res, {title: "Update complete", bodyText: res.feedback})
+            } else {
+                setDashboardLoadedOnce(true);
+            }
         });
     }
 
     useEffect(() => {
         getRateData();
     }, [dashBoardSettings]);
-
     return (
         <div className="container">
             <div className="row my-3 gy-3">
                 <DashboardStatTile title={"Mean stock"}
-                                   number={dashboardData.itemsStats.stockPercentage === 0 ? 0 : dashboardData.itemsStats.stockPercentage.toFixed(2) * 100 + "%" || ""}
+                                   number={dashboardData.itemsStats.stockPercentage === 0 ? 0 : (Math.round(dashboardData.itemsStats.stockPercentage * 1000) / 10).toFixed(dashboardData.itemsStats.stockPercentage < 0.1 ? 1 : 0) + "%" || "N/A"}
                                    colourClass={dashboardData.tileClasses.stockLevel}
                                    icon={<MdShowChart/>}/>
                 <DashboardStatTile title={"Burn rate"}
-                                   number={dashboardData.rates.averageRates.burn.toFixed(dashboardData.rates.averageRates.burn >= 10 ? 1 : 2) || ""}
+                                   number={dashboardData.rates.averageRates.burn ? (dashboardData.rates.averageRates.burn.toFixed(dashboardData.rates.averageRates.burn >= 10 ? 1 : 2)) : "N/A"}
                                    colourClass={dashboardData.tileClasses.burnRate}
                                    icon={<HiFire/>}/>
                 <DashboardStatTile title={"Out of stock"}
-                                   number={dashboardData.itemsStats.outOfStock === 0 ? 0 : dashboardData.itemsStats.outOfStock || ""}
+                                   number={dashboardData.itemsStats.outOfStock === 0 ? 0 : dashboardData.itemsStats.outOfStock || "N/A"}
                                    colourClass={dashboardData.tileClasses.outOfStock}
                                    icon={<IoWarningOutline/>}/>
                 <DashboardStatTile title={"Restock due"}
-                                   number={dashboardData.itemsStats.belowWarningLevel === 0 ? 0 : dashboardData.itemsStats.belowWarningLevel || ""}
+                                   number={dashboardData.itemsStats.belowWarningLevel === 0 ? 0 : dashboardData.itemsStats.belowWarningLevel || "N/A"}
                                    colourClass={dashboardData.tileClasses.belowWarningLevel}
                                    icon={<IoAlarmOutline/>}/>
             </div>
@@ -377,7 +389,7 @@ const Dashboard = () => {
             <div className="row my-3">
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
-                        <Table headers={["Name", "Current stock", "Burn rate", "Douse rate"]}
+                        <Table headers={["Name", {text: "Current stock", colspan: 2}, "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
                                    return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
                                }).reverse().slice(0, 5)} fullWidth/>
