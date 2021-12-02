@@ -81,10 +81,10 @@ const Items = () => {
         setItemList(newItemsList);
     }
 
-    const addItem = (x) => {
+    const addItem = (form) => {
         fetchJson("./php/items/addItem.php", {
             method: "POST",
-            body: JSON.stringify(x.values),
+            body: JSON.stringify(form.values),
         }, (x) => {
             setAddData(new addDataTemplate());
             getItems();
@@ -102,10 +102,10 @@ const Items = () => {
             getItems();
         });
     }
-    const editItem = (x) => {
+    const editItem = (form) => {
         fetchJson("./php/items/editItem.php", {
             method: "POST",
-            body: JSON.stringify(x),
+            body: JSON.stringify(form),
         }, (x) => {
             getItems();
         });
