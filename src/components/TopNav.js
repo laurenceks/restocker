@@ -13,7 +13,9 @@ const TopNav = ({user}) => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
             <div className="container-fluid">
-                <NavLink to={"/"} className="navbar-brand">Restocker logo</NavLink>
+                <NavLink to={"/"} className="navbar-brand">
+                    <img alt="Restocker logo" src="/img/logoNav.svg" style={{height: "35px"}}/>
+                </NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +64,7 @@ const TopNav = ({user}) => {
                                    aria-label="Search"
                                    typeaheadProps={{
                                        ref: searchInput,
-                                       options: mockSearchOptions.sort((a,b)=>{
+                                       options: mockSearchOptions.sort((a, b) => {
                                            return naturalSort(a.label, b.label);
                                        }),
                                        renderMenuItemChildren: (option) => {
@@ -75,10 +77,10 @@ const TopNav = ({user}) => {
                                            );
                                        },
                                        onChange: (e) => {
-                                               if(e[0]){
+                                           if (e[0]) {
                                                history.push(e[0]?.link || "/");
-                                                   searchInput.current.clear();
-                                               }
+                                               searchInput.current.clear();
+                                           }
 
                                        },
                                    }}
