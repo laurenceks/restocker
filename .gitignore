@@ -43,3 +43,7 @@ archiveBin/
 
 #mock data files
 /Rate calculator.xlsx
+
+#Logo
+
+/public/logo/
