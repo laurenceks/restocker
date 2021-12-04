@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
+    AiOutlinePercentage,
     BsBoxArrowInRight,
     BsBoxArrowLeft,
     HiCheck,
@@ -8,8 +9,8 @@ import {
     HiChevronDoubleUp,
     HiChevronDown,
     HiChevronUp,
-    HiFire,
     IoAlarmOutline,
+    IoFlameSharp,
     IoWarningOutline,
     MdShowChart
 } from "react-icons/all";
@@ -226,7 +227,7 @@ const Dashboard = () => {
                         outOfStock: x.currentStock === 0,
                         belowWarningLevel: x.currentStock <= x.warningLevel,
                         stockPercentage: x.currentStock / (x.warningLevel || 1),
-                        roundedStockPercentage: Math.min(x.currentStock / (x.warningLevel || 1),1),
+                        roundedStockPercentage: Math.min(x.currentStock / (x.warningLevel || 1), 1),
                         burnRate: rateDataForId.burnRate,
                         douseRate: rateDataForId.douseRate,
                         withdrawRate: rateDataForId.withdrawRate,
@@ -320,7 +321,7 @@ const Dashboard = () => {
                 <DashboardStatTile title={"Burn rate"}
                                    number={dashboardData.rates.averageRates.burn ? (dashboardData.rates.averageRates.burn.toFixed(dashboardData.rates.averageRates.burn >= 10 ? 1 : 2)) : "N/A"}
                                    colourClass={dashboardData.tileClasses.burnRate}
-                                   icon={<HiFire/>}/>
+                                   icon={<IoFlameSharp/>}/>
                 <DashboardStatTile title={"Out of stock"}
                                    number={dashboardData.itemsStats.outOfStock === 0 ? 0 : dashboardData.itemsStats.outOfStock || "N/A"}
                                    colourClass={dashboardData.tileClasses.outOfStock}
@@ -389,7 +390,7 @@ const Dashboard = () => {
             <div className="row my-3">
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
-                        <Table headers={["Name", {text: "Current stock", colspan: 2}, "Burn rate", "Douse rate"]}
+                        <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
                                    return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
                                }).reverse().slice(0, 5)} fullWidth/>
