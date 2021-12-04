@@ -249,7 +249,7 @@ const Dashboard = () => {
                         className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
                     },
                         {
-                            text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 2 : 1) + "%",
+                            text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 1 : 0) + "%",
                             sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
                             className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
                         },
