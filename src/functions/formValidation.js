@@ -70,6 +70,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
     if (formIsValid) {
         callBack({
             event: e,
+            isValid: formIsValid,
             form: formRef.current,
             values: values,
             validInputs: validInputs,
