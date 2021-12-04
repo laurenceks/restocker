@@ -44,7 +44,7 @@ const Items = () => {
                             item.name,
                             `${item.currentStock} ${item.unit}`,
                             `${item.warningLevel} ${item.unit}`,
-                            {
+                            !editId ? {
                                 type: "button",
                                 id: 1,
                                 text: "Edit",
@@ -52,8 +52,8 @@ const Items = () => {
                                 handler: () => {
                                     setEditId(item.id)
                                 }
-                            },
-                            {
+                            } : {text:""},
+                            !editId ? {
                                 type: "button",
                                 id: 1,
                                 text: "Delete",
@@ -68,15 +68,14 @@ const Items = () => {
                                         }
                                     })
                                 }
-                            }
-                        ] : makeEditRow(item)
+                            } :  {text:""}
+                        ] : makeItemEditRow(item)
                     )
                 }
             )
         }
 
-        const makeEditRow = (item) => {
-            console.log(item);
+        const makeItemEditRow = (item) => {
             const inputIds = {
                 name: `editItemRow-${editId}-name`,
                 unit: `editItemRow-${editId}-unit`,
