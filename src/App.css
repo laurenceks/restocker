@@ -69,7 +69,7 @@ div.main {
 form.loginForm, div.loginForm {
     width: 100%;
     max-width: 350px;
-    margin-top: clamp(50px, 15%, 150px);
+    margin-top: clamp(50px, 10%, 100px);
 }
 
 div.loginFormInputGroup > div.loginInputWrap:first-of-type:not(:only-of-type) input,

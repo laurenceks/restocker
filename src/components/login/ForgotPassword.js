@@ -25,7 +25,7 @@ const Forgot = () => {
     }
 
     return (
-        <form className={"loginForm align-middle"} ref={forgotForm} onSubmit={(e) => {
+        <form ref={forgotForm} onSubmit={(e) => {
             validateForm(e, forgotForm, forgot)
         }} noValidate>
             <fieldset disabled={forgotFeedback.inProgress && "disabled"}><h1 className="h3 mb-3 fw-normal">Forgot

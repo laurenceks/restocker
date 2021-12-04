@@ -37,7 +37,7 @@ const Register = () => {
         });
     }
     return (
-        <form className={"loginForm align-middle"} ref={registerForm} onSubmit={(e) => {
+        <form ref={registerForm} onSubmit={(e) => {
             validateForm(e, registerForm, register, {organisation: organisation})
         }} noValidate>
             <fieldset disabled={(registerFeedback.inProgress || !organisations) && "disabled"}>

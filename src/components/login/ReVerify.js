@@ -25,7 +25,7 @@ const ReVerify = () => {
     }
 
     return (
-        <form className={"loginForm align-middle"} ref={reVerifyForm} onSubmit={(e) => {
+        <form ref={reVerifyForm} onSubmit={(e) => {
             validateForm(e, reVerifyForm, reVerify)
         }} noValidate>
             <fieldset disabled={reVerifyFeedback.inProgress && "disabled"}>

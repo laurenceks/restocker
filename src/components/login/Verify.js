@@ -55,7 +55,7 @@ const Verify = ({type}) => {
         }, []);
 
         return (
-            <div className="loginForm">
+            <div>
                 <h1 className="h3 mb-3 fw-normal">{type === "password" ? "Reset your password" : "Verify your account"}</h1>
                 {(type !== "password" || !paramsState.success) &&
                 <div className="my-3 w-100 d-flex justify-content-center">

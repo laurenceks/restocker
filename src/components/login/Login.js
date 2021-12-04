@@ -31,7 +31,7 @@ const Login = props => {
     }
 
     return (
-        <form className={"loginForm align-middle"} ref={loginForm} onSubmit={(e) => {
+        <form ref={loginForm} onSubmit={(e) => {
             validateForm(e, loginForm, login)
         }} noValidate>
             <fieldset disabled={loginFeedback?.inProgress && "disabled"}>
