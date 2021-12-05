@@ -30,7 +30,9 @@ function checkFunctionExists($table, $selectKey, $keyValues, $ignoreDeleted = fa
                 $k++;
             }
             $check->execute();
-            $result = $compareValues ? $check->fetchAll(PDO::FETCH_ASSOC)[0] === $keyValues[0]["value"] : count($check->fetchAll(PDO::FETCH_ASSOC)) > 0;
+            $response = $check->fetchAll(PDO::FETCH_ASSOC);
+            //TODO loop and compare all key-value pairs
+            $result = ($compareValues && isset($response[0])) ? $response[0][$keyValues[0]["key"]] === $keyValues[0]["value"] : count($response) > 0;
         }
     }
 
