@@ -29,8 +29,8 @@ const handleFeedback = (setStateFunctions, response, customOptions = {}, callbac
                 ...defaultState,
                 ...prevState,
                 show: true,
-                bodyText: response.feedback,
-                title: response.errorType === "listExists" ? "List already exists" : "Missing item"
+                bodyText: response.feedback || "An unknown error occurred",
+                title: response.title || "Error",
             }
         })
     }
