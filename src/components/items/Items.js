@@ -9,7 +9,7 @@ import ConfirmModal from "../Bootstrap/ConfirmModal";
 import handleFeedback from "../../functions/handleFeedback";
 import {GlobalAppContext} from "../../App";
 
-const Items = ({addTemplate}) => {
+const Items = () => {
         const addDataTemplate = {
             name: "",
             unit: "units",
@@ -25,6 +25,7 @@ const Items = ({addTemplate}) => {
         const [modalOptions, setModalOptions] = useState({
             show: false,
             deleteId: null,
+            itemName: null,
             bodyText: "",
             headerClass: "bg-danger text-light",
             yesButtonVariant: "danger"
@@ -67,6 +68,7 @@ const Items = ({addTemplate}) => {
                                             ...prevState,
                                             show: true,
                                             deleteId: item.id,
+                                            itemName: item.name,
                                             bodyText: `Are you sure you want to delete ${item.name}?\n\nThe item will also be removed from any lists containing it.`
                                         }
                                     })
@@ -158,10 +160,10 @@ const Items = ({addTemplate}) => {
             });
         }
 
-        const deleteItem = (id) => {
+        const deleteItem = (id, name) => {
             fetchJson("./php/items/deleteItem.php", {
                 method: "POST",
-                body: JSON.stringify({id: id}),
+                body: JSON.stringify({id: id, name: name}),
             }, (response) => {
                 handleFeedback(setStateFunctions, response);
                 setModalOptions(prevState => {
@@ -260,7 +262,7 @@ const Items = ({addTemplate}) => {
                             return {...prevState, show: false}
                         });
                     }}
-                    handleYes={() => deleteItem(modalOptions.deleteId)}
+                    handleYes={() => deleteItem(modalOptions.deleteId, modalOptions.itemName)}
                 />
             </div>
         );
