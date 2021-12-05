@@ -178,8 +178,11 @@ const Items = () => {
                 method: "POST",
                 body: JSON.stringify(form),
             }, (response) => {
-                handleFeedback(setStateFunctions, response);
-                getItems();
+                handleFeedback(setStateFunctions, response, null, () => {
+                    if (response.success || response.errorType !== "itemExists") {
+                        getItems();
+                    }
+                })
             });
         }
 
