@@ -16,7 +16,8 @@ const handleFeedback = (setStateFunctions, response, customOptions = {}, callbac
         setStateFunctions.completeToast((prevState => {
             return {
                 ...prevState,
-                title: response.feedback,
+                title: response.title || response.feedback || "Operation successful",
+                bodyText: response.title ? response.feedback : "The operation was completed successfully",
                 show: true,
                 ...customOptions,
             };
