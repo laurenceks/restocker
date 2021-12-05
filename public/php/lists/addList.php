@@ -7,7 +7,7 @@ require "../common/checkFunctionExists.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "errorType" => null);
+$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null, "errorType" => null);
 if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $input["name"])))) {
     //a list with that name already exists
     $output["errorType"] = "listExists";
@@ -27,7 +27,8 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
         $addListItem = addFunctionListItem($db->lastInsertId(), $input["itemId"], $input["quantity"], $_SESSION["user"]->organisationId, $_SESSION["user"]->userId);
         if ($addListItem["success"]) {
             $output["success"] = true;
-            $output["feedback"] = "List created";
+            $output["title"] = "List added";
+            $output["feedback"] = $input["name"] . " was added successfully";
         } else {
             $output["feedback"] = $addListItem["feedback"];
         }
