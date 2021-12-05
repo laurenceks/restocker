@@ -10,9 +10,11 @@ $output = array("success" => false, "feedback" => "An unknown error occurred", "
 
 if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["id"])))) {
     $output["errorType"] = "itemMissing";
+    $output["title"] = "Missing item";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
 } else if (checkFunctionExists("items", "name", array(array("key" => "name", "value" => $input["name"])), false, true)) {
     $output["errorType"] = "itemExists";
+    $output["title"] = "Item already exists";
     $output["feedback"] = "An item with that name already exists, please change the item name and try again";
 } else {
     try {

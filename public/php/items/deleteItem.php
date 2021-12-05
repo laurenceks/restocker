@@ -10,6 +10,7 @@ $output = array("success" => false, "feedback" => "An unknown error occurred", "
 
 if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["id"])))) {
     $output["errorType"] = "itemMissing";
+    $output["title"] = "Missing item";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
 } else {
     try {

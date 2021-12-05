@@ -10,6 +10,7 @@ $output = array("success" => false, "feedback" => "An unknown error occurred", "
 
 if (checkFunctionExists("items", "id", array(array("key" => "name", "value" => $input["inputAddItemName"])))) {
     $output["errorType"] = "itemExists";
+    $output["title"] = "Item already exists";
     $output["feedback"] = "An item with that name already exists, please change the item name and try again";
 } else {
     try {
