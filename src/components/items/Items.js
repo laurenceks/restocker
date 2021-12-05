@@ -1,19 +1,22 @@
 import FormInput from "../common/forms/FormInput";
-import {useEffect, useRef, useState} from "react"
+import {useContext, useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
 import fetchJson from "../../functions/fetchJson";
 import validateForm from "../../functions/formValidation";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
+import handleFeedback from "../../functions/handleFeedback";
+import {GlobalAppContext} from "../../App";
 
-const Items = () => {
+const Items = ({addTemplate}) => {
         const addDataTemplate = {
             name: "",
             unit: "units",
             warningLevel: 5
         }
 
+        const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
         const [addItemData, setAddItemData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
         //TODO add sort key to table headers on click
@@ -52,7 +55,7 @@ const Items = () => {
                                 handler: () => {
                                     setEditId(item.id)
                                 }
-                            } : {text:""},
+                            } : {text: ""},
                             !editId ? {
                                 type: "button",
                                 id: 1,
@@ -68,7 +71,7 @@ const Items = () => {
                                         }
                                     })
                                 }
-                            } :  {text:""}
+                            } : {text: ""}
                         ] : makeItemEditRow(item)
                     )
                 }
@@ -148,7 +151,8 @@ const Items = () => {
             fetchJson("./php/items/addItem.php", {
                 method: "POST",
                 body: JSON.stringify(form.values),
-            }, () => {
+            }, (response) => {
+                handleFeedback(setStateFunctions, response);
                 setAddItemData({...addDataTemplate});
                 getItems();
             });
@@ -158,7 +162,8 @@ const Items = () => {
             fetchJson("./php/items/deleteItem.php", {
                 method: "POST",
                 body: JSON.stringify({id: id}),
-            }, (x) => {
+            }, (response) => {
+                handleFeedback(setStateFunctions, response);
                 setModalOptions(prevState => {
                     return {...prevState, show: false}
                 })
@@ -170,7 +175,8 @@ const Items = () => {
             fetchJson("./php/items/editItem.php", {
                 method: "POST",
                 body: JSON.stringify(form),
-            }, () => {
+            }, (response) => {
+                handleFeedback(setStateFunctions, response);
                 getItems();
             });
         }
