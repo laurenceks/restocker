@@ -7,7 +7,7 @@ require "../common/fetchFunctions/fetchFunctionItems.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
+$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null, "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
 
 if ($input["transactionFormType"] !== "restock") {
     $currentItemsAtLocationByItemId = array();
@@ -26,10 +26,10 @@ if ($input["transactionFormType"] !== "restock") {
             earlyExit($output);
         } else if (!isset($currentItemsAtLocationByItemId["all"][$transaction["itemId"]])) {
             //item doesn't exist anymore
-            $output["missingItems"][] = array("id" => $transaction["itemId"],"name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]));
+            $output["missingItems"][] = array("id" => $transaction["itemId"], "name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]));
         } else if (!isset($currentItemsAtLocationByItemId[$input["locationId"]]) || !isset($currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]) || abs($transaction["quantity"]) > $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]) {
             //an item can't be withdrawn because it is out of stock
-            $output["outOfStockItems"][] = array("id" => $transaction["itemId"],"name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]);
+            $output["outOfStockItems"][] = array("id" => $transaction["itemId"], "name" => $transaction["itemName"], "requested" => abs($transaction["quantity"]), "current" => $currentItemsAtLocationByItemId[$input["locationId"]][$transaction["itemId"]]["currentStock"]);
         }
     }
     if (count($output["missingItems"]) > 0) {
@@ -68,7 +68,9 @@ foreach ($transactionQueries as $query) {
 }
 
 $output["success"] = true;
-$output["feedback"] = "Transactions complete";
+$output["title"] = "Transactions complete";
+//TODO update feedback message with each item
+$output["feedback"] = "Saved";
 
 echo json_encode($output);
 
