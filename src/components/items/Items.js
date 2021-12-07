@@ -19,8 +19,6 @@ const Items = () => {
         const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
         const [addItemData, setAddItemData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
-        //TODO add sort key to table headers on click
-        const [sortKey, setSortKey] = useState("name");
         const [itemList, setItemList] = useState([]);
         const [modalOptions, setModalOptions] = useState({
             show: false,
@@ -39,9 +37,7 @@ const Items = () => {
         }
 
         const makeItemRows = () => {
-            return itemList.map((x) => {
-                return {...x, sortKey: x[sortKey]}
-            }).sort(naturalSort).map(item => {
+            return itemList.map(item => {
                     return (
                         item.id !== editId ? [
                             item.id,
