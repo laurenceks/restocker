@@ -252,6 +252,7 @@ const Items = () => {
                     <Table
                         headers={["ID", "Name", "Current stock", {text: "Warning level", colspan: 3}]}
                         rows={makeItemRows(itemList)}
+                        defaultSortIndex={1}
                     />
                 </div>
                 <ConfirmModal

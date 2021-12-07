@@ -393,7 +393,10 @@ const Dashboard = () => {
                         <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Douse rate"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
                                    return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
-                               }).reverse().slice(0, 5)} fullWidth/>
+                               }).reverse().slice(0, 5)}
+                               fullWidth
+                               allowSorting={false}
+                        />
                     </div>
                 </div>
             </div>

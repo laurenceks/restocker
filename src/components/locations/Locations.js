@@ -196,6 +196,7 @@ const Locations = () => {
                     <Table
                         headers={["ID", {text: "Name", colspan: 3}]}
                         rows={makeLocationRows(locationList)}
+                        defaultSortIndex={1}
                     />
                 </div>
                 <ConfirmModal

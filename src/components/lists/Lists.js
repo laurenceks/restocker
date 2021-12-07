@@ -372,6 +372,7 @@ const Lists = () => {
                     <h2>All lists</h2>
                     <Table headers={["ID", "Name", "Item", "Quantity"]}
                            rows={listRows}
+                           allowSorting={false}
                            rowEnter={(e) => {
                                document.querySelectorAll(`.td-listId-${e.target.dataset.listid}`).forEach((x) => {
                                    x.classList.add("hover")
