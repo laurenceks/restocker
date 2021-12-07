@@ -13,7 +13,7 @@ const Table = ({
                    rowLeave,
                    defaultSortHeading,
                    defaultSortIndex,
-                    sortTable
+                    allowSorting
                }) => {
 
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
@@ -24,7 +24,7 @@ const Table = ({
     const [tableRows, setTableRows] = useState(rows);
 
     useEffect(() => {
-        if (sortTable) {
+        if (allowSorting) {
             const returnArray = [...rows].sort((a, b) => naturalSort(a[sortSettings.index].text || a[sortSettings.index], b[sortSettings.index].text || b[sortSettings.index]))
             setTableRows(sortSettings.ascending ? returnArray : returnArray.reverse());
         }else{
@@ -44,7 +44,7 @@ const Table = ({
                                 return (<th key={`${title}-th-${i}`}
                                             colSpan={x.colspan}
                                             rowSpan={x.rowspan}
-                                            className={`${sortTable && "cursor-pointer user-select-none"} ${x.className}`}
+                                            className={`${allowSorting && "cursor-pointer user-select-none"} ${x.className}`}
                                             onClick={() => {
                                                 setSortSettings(prevState => {
                                                     return {
@@ -89,7 +89,7 @@ Table.propTypes = {
     headers: PropTypes.array,
     rows: PropTypes.array,
     fullWidth: PropTypes.bool,
-    sortTable: PropTypes.bool,
+    allowSorting: PropTypes.bool,
     rowEnter: PropTypes.func,
     rowLeave: PropTypes.func,
     defaultSortIndex: PropTypes.number,
@@ -102,7 +102,7 @@ Table.defaultProps = {
     headers: [],
     rows: [],
     fullWidth: false,
-    sortTable: true,
+    allowSorting: true,
     rowEnter: null,
     rowLeave: null,
     defaultSortIndex: 0,
