@@ -11,6 +11,7 @@ import Profile from "./profile/Profile";
 import Lists from "./lists/Lists";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import CompleteToast from "./Bootstrap/CompleteToast";
+import Locations from "./locations/Locations";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -61,6 +62,9 @@ const Main = props => {
                     </Route>
                     <Route path={"/lists"}>
                         <Lists/>
+                    </Route>
+                    <Route path={"/locations"}>
+                        <Locations/>
                     </Route>
                     <Route path={"/profile"}>
                         <Profile/>
