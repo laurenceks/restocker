@@ -24,6 +24,8 @@ const Table = ({
     });
     const [tableRows, setTableRows] = useState(rows);
 
+    const sortTableRows = (a, b) => naturalSort(a[sortSettings.index].sortValue || a[sortSettings.index].text || a[sortSettings.index].props?.defaultValue || a[sortSettings.index], b[sortSettings.index].sortValue || b[sortSettings.index].text || b[sortSettings.index].props?.defaultValue || b[sortSettings.index])
+
     useEffect(() => {
         if (allowSorting) {
             let returnArray = [...rows];
@@ -32,7 +34,7 @@ const Table = ({
                 while (returnArray.length > 0) {
                     newSortArray.push(returnArray.splice(0, returnArray[0]?.[0]?.rowspan || 1))
                 }
-                newSortArray = newSortArray.sort((a, b) => naturalSort(a[0][sortSettings.index].text || a[0][sortSettings.index], b[0][sortSettings.index].text || b[0][sortSettings.index]));
+                newSortArray = newSortArray.sort(sortTableRows);
                 newSortArray = sortSettings.ascending ? newSortArray : newSortArray.reverse();
                 newSortArray = !length ? newSortArray : newSortArray.splice(0, length);
                 returnArray = [];
@@ -40,7 +42,8 @@ const Table = ({
                     returnArray.push(...x)
                 });
             } else {
-                returnArray = [...rows].sort((a, b) => naturalSort(a[sortSettings.index].text || a[sortSettings.index], b[sortSettings.index].text || b[sortSettings.index]));
+                console.log(rows)
+                returnArray = [...rows].sort(sortTableRows);
                 returnArray = sortSettings.ascending ? returnArray : returnArray.reverse();
                 returnArray = !length ? returnArray : returnArray.splice(0, length);
             }
