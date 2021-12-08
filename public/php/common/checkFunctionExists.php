@@ -1,5 +1,5 @@
 <?php
-function checkFunctionExists($table, $selectKey, $keyValues, $ignoreDeleted = false, $compareValues = false)
+function checkFunctionExists($table, $selectKey, $keyValues, $ignoreDeleted = false, $compareValues = false, $entryId = null)
 {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
@@ -24,10 +24,13 @@ function checkFunctionExists($table, $selectKey, $keyValues, $ignoreDeleted = fa
         }
 
         if ($j > 0) {
-            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($ignoreDeleted ? "" : " AND deleted = 0"));
+            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($ignoreDeleted ? "" : " AND deleted = 0") . ($entryId ? " AND id != :id" : ""));
             foreach ($keyValues as $pair) {
                 $check->bindValue(':value' . $k, $pair["value"]);
                 $k++;
+            }
+            if ($entryId) {
+                $check->bindValue(":id", $entryId);
             }
             $check->execute();
             $response = $check->fetchAll(PDO::FETCH_ASSOC);
