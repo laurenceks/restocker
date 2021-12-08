@@ -12,7 +12,7 @@ if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" =
     $output["errorType"] = "locationMissing";
     $output["title"] = "Missing location";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
-} else if (checkFunctionExists("locations", "name", array(array("key" => "name", "value" => $input["name"])), false, true)) {
+} else if (checkFunctionExists("locations", "name", array(array("key" => "name", "value" => $input["name"])), false, true, $input["id"])) {
     $output["errorType"] = "locationExists";
     $output["title"] = "Location already exists";
     $output["feedback"] = "A location with that name already exists, please change the location name and try again";

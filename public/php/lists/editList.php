@@ -10,9 +10,13 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = array("success" => false, "feedback" => "An unknown error occurred", "errorType" => null);
 
 if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $input["id"])))) {
-    //list doesn't exit
     $output["errorType"] = "listMissing";
-    $output["feedback"] = "This list you are trying to edit is missing - possibly due to deletion - please try again";
+    $output["title"] = "Missing list";
+    $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
+} else if (checkFunctionExists("lists", "name", array(array("key" => "name", "value" => $input["name"])), false, true, $input["id"])) {
+    $output["errorType"] = "listExists";
+    $output["title"] = "List already exists";
+    $output["feedback"] = "A list with that name already exists, please change the list name and try again";
 } else {
     try {
         //TODO test checks
