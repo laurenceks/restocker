@@ -13,7 +13,8 @@ const Table = ({
                    rowLeave,
                    defaultSortHeading,
                    defaultSortIndex,
-                    allowSorting
+                   allowSorting,
+                   length
                }) => {
 
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
@@ -25,9 +26,26 @@ const Table = ({
 
     useEffect(() => {
         if (allowSorting) {
-            const returnArray = [...rows].sort((a, b) => naturalSort(a[sortSettings.index].text || a[sortSettings.index], b[sortSettings.index].text || b[sortSettings.index]))
-            setTableRows(sortSettings.ascending ? returnArray : returnArray.reverse());
-        }else{
+            let returnArray = [...rows];
+            if (returnArray.some(x => x[sortSettings.index].rowspan)) {
+                let newSortArray = [];
+                while (returnArray.length > 0) {
+                    newSortArray.push(returnArray.splice(0, returnArray[0]?.[0]?.rowspan || 1))
+                }
+                newSortArray = newSortArray.sort((a, b) => naturalSort(a[0][sortSettings.index].text || a[0][sortSettings.index], b[0][sortSettings.index].text || b[0][sortSettings.index]));
+                newSortArray = sortSettings.ascending ? newSortArray : newSortArray.reverse();
+                newSortArray = !length ? newSortArray : newSortArray.splice(0, length);
+                returnArray = [];
+                newSortArray.forEach((x) => {
+                    returnArray.push(...x)
+                });
+            } else {
+                returnArray = [...rows].sort((a, b) => naturalSort(a[sortSettings.index].text || a[sortSettings.index], b[sortSettings.index].text || b[sortSettings.index]));
+                returnArray = sortSettings.ascending ? returnArray : returnArray.reverse();
+                returnArray = !length ? returnArray : returnArray.splice(0, length);
+            }
+            setTableRows(returnArray);
+        } else {
             setTableRows(rows)
         }
     }, [sortSettings, rows]);
@@ -93,6 +111,7 @@ Table.propTypes = {
     rowEnter: PropTypes.func,
     rowLeave: PropTypes.func,
     defaultSortIndex: PropTypes.number,
+    length: PropTypes.number,
 };
 
 Table.defaultProps = {
@@ -106,6 +125,7 @@ Table.defaultProps = {
     rowEnter: null,
     rowLeave: null,
     defaultSortIndex: 0,
+    length: null
 }
 
 export default Table;
