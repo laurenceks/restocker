@@ -207,8 +207,10 @@ const Lists = () => {
         }
 
         const makeInputCells = (x, y, i, cellTemplate = {}, startIndex = 0) => {
+            const sortTemplate = `${x.id}-${i}-`
             return [{
                 ...cellTemplate,
+                sortValue: `${sortTemplate}${x.items[i].itemName}`,
                 fragment: <FormItem id={`input-listId-${x.id}-itemId-${y.itemId}-name`}
                                     label={"Item"}
                                     invalidFeedback={"You must select an item from the list"}
@@ -235,6 +237,7 @@ const Lists = () => {
             }
                 , {
                     ...cellTemplate,
+                    sortValue: `${sortTemplate}${x.items[i]?.quantity || 0}`,
                     type: "input",
                     props: {
                         label: "Quantity",
@@ -254,6 +257,7 @@ const Lists = () => {
                 }, {
                     ...cellTemplate,
                     className: "align-middle " + cellTemplate.className,
+                    sortValue: `${sortTemplate}${x.items[i]?.unit || "units"}`,
                     text: x.items[i]?.unit || "units"
                 },
                 x.items.filter(x => !x.deleted).length > 1 ? {

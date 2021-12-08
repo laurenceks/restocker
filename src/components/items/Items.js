@@ -94,7 +94,8 @@ const Items = () => {
                         form: "editItemForm",
                         forceCase: "title"
                     },
-                    invalidFeedback: "You must specify a name"
+                    invalidFeedback: "You must specify a name",
+                    sortValue: item.name
                 }, {
                     type: "input",
                     props: {
@@ -105,7 +106,8 @@ const Items = () => {
                         form: "editItemForm",
                         forceCase: "lower"
                     },
-                    invalidFeedback: "You must specify a unit type"
+                    invalidFeedback: "You must specify a unit type",
+                    sortValue: `${item.currentStock} ${item.unit}`
                 }, {
                     type: "input",
                     props: {
@@ -115,7 +117,8 @@ const Items = () => {
                         defaultValue: item.warningLevel,
                         form: "editItemForm",
                     },
-                    invalidFeedback: "You must specify a warning level"
+                    invalidFeedback: "You must specify a warning level",
+                    sortValue: `${item.warningLevel} ${item.unit}`
                 }, {
                     type: "submit",
                     buttonClass: "btn-success",
