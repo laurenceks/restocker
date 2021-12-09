@@ -4,12 +4,21 @@ require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require_once "../common/updateCurrentStockLevel.php";
 require "../common/fetchFunctions/fetchFunctionItems.php";
+require "../common/checkFunctionExists.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
 $output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null, "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
-
-if ($input["transactionFormType"] !== "restock") {
+if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" => $input["locationId"])))) {
+    //location not found
+    $output["feedback"] = "The location your are attempting to " . ($input["transactionFormType"] === "restock" ? "restock" : "withdraw from") . " could not be found - possibly due to deletion - please try again";
+    $output["errorType"] = "missingLocation";
+    earlyExit($output);
+} else if ($input["transactionFormType"] === "transfer" && !checkFunctionExists("locations", "id", array(array("key" => "id", "value" => $input["destinationId"])))) {
+    $output["feedback"] = "The location your are attempting to send stock to could not be found - possibly due to deletion - please try again";
+    $output["errorType"] = "missingDestination";
+    earlyExit($output);
+} else if ($input["transactionFormType"] !== "restock") {
     $currentItemsAtLocationByItemId = array();
     foreach (fetchFunctionItems($_SESSION["user"]->organisationId, $input["locationId"]) as $row) {
         $currentItemsAtLocationByItemId[$row["locationId"]][$row["id"]] = $row;
@@ -33,11 +42,17 @@ if ($input["transactionFormType"] !== "restock") {
         }
     }
     if (count($output["missingItems"]) > 0) {
-        $output["feedback"] .= (count($output["outOfStockItems"]) === 1 ? "One" : "Some") . " of the items requested are missing - possibly due to deletion - please review your transaction and try again (stock levels have been refreshed)";
+        $output["feedback"] = (count($output["outOfStockItems"]) === 1 ? "one" : "Some") . " of the items requested are missing - possibly due to deletion - please review your transaction and try again (stock levels have been refreshed):\n\n";
+        foreach ($output["missingItems"] as $missingItem) {
+            $output["feedback"] .= "\t•" . $missingItem["name"] . " (ID " . $missingItem["id"] . ")\n";
+        }
         $output["errorTypes"][] = "missingItems";
         earlyExit($output);
     } else if (count($output["outOfStockItems"]) > 0) {
-        $output["feedback"] .= "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "One" : "some") . " of the items requested at the given location, please review your transaction and try again (stock levels have been refreshed)";
+        $output["feedback"] = "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "one" : "some") . " of the items requested at " . $input["locationName"] . ", please review your transaction and try again (stock levels have been refreshed):\n\n";
+        foreach ($output["outOfStockItems"] as $outOfStockItem) {
+            $output["feedback"] .= "\t• " . $outOfStockItem["name"] . " - " . $outOfStockItem["requested"] . " requested, " . $outOfStockItem["current"] . " available\n";
+        }
         $output["errorTypes"][] = "outOfStock";
         earlyExit($output);
     }
@@ -55,22 +70,25 @@ foreach ($input["transactionArray"] as $transaction) {
     $addTransaction->bindParam(":quantity", $transaction["quantity"]);
     $addTransaction->bindValue(":userId", $_SESSION["user"]->userId);
     $addTransaction->bindValue(":organisationId", $_SESSION["user"]->organisationId);
-    $transactionQueries[] = $addTransaction;
+    $transactionQueries[] = array("query" => $addTransaction, "feedback" => $transaction["itemName"] . ($transaction["quantity"] >= 0 ? " restocked at " : " withdrawn from ") . $transaction["locationName"] . "\n");
 }
 
-foreach ($transactionQueries as $query) {
+$transactionFeedback = "";
+
+foreach ($transactionQueries as $transactionQuery) {
     try {
-        $query->execute();
+        $transactionQuery["query"]->execute();
         updateCurrentStockLevel();
+        $transactionFeedback .= $transactionQuery["feedback"];
     } catch (PDOException $e) {
         echo $output["feedback"] = $e->getMessage();
+        earlyExit($output);
     }
 }
 
 $output["success"] = true;
 $output["title"] = "Transactions complete";
-//TODO update feedback message with each item
-$output["feedback"] = "Saved";
+$output["feedback"] = $input["transactionFormType"] === "transfer" ? ($input["transactionArray"][0]["itemName"] . " transferred from " . $input["locationName"] . " to " . $input["destinationName"]) : $transactionFeedback;
 
 echo json_encode($output);
 
