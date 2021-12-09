@@ -3,6 +3,16 @@ import {Toast, ToastContainer} from "react-bootstrap";
 import {useEffect, useState} from "react";
 import {IoCheckmarkCircleOutline} from "react-icons/all";
 
+const dividers = {
+    s: 1000,
+    m: 60000,
+    h: 3.6e+6,
+    d: 8.64e+7,
+    w: 6.048e+8,
+    mo: 2.628e+9,
+    y: 3.154e+10
+}
+
 function CompleteToast({show, title, timestamp, bodyText, headerClass, showStateChange}) {
     const [showState, setShowState] = useState(show);
     const [timestampUpdated, setTimestampUpdated] = useState(null);
@@ -12,30 +22,35 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, showState
     const calculateTimeDiff = (timeInMs) => {
         const diff = Date.now() - timeInMs;
         switch (true) {
-            case (diff < 1000):
+            case (diff < dividers.s):
                 return "Just now";
-            case (diff < 60000):
-                return Math.floor(diff / 1000) + "s";
-            case (diff < 3.6e+6):
-                return Math.floor(diff / 60000) + "m";
-            case (diff < 3.64e+6):
-                return Math.floor(diff / 3.6e+6) + "h";
-            case (diff < 3.048e+6):
-                return Math.floor(diff / 3.64e+6) + "d";
-            case (diff < 2.628e+9):
-                return Math.floor(diff / 3.048e+6) + "mo";
-            case (diff >= 2.628e+9):
-                return Math.floor(diff / 2.628e+9) + "y";
+            case (diff < dividers.m):
+                return Math.floor(diff / dividers.s) + "s";
+            case (diff < dividers.h):
+                return Math.floor(diff / dividers.m) + "m";
+            case (diff < dividers.d):
+                return Math.floor(diff / dividers.h) + "h";
+            case (diff < dividers.w):
+                return Math.floor(diff / dividers.d) + "d";
+            case (diff < dividers.mo):
+                return Math.floor(diff / dividers.w) + "w";
+            case (diff < dividers.y):
+                return Math.floor(diff / dividers.mo) + "mo";
+            case (diff >= dividers.y):
+                return Math.floor(diff / dividers.y) + "y";
             default:
                 return diff + "ms";
         }
     }
+    const timeUntilNext = (from, unit = "s") => {
+        let divider = dividers[unit];
+        return (Math.ceil(from / divider) * divider) - from;
+    }
 
     useEffect(() => {
         if (show) {
-            setTimestampText("Just now");
-            setTimestampUpdated(Date.now())
-            setTimestampState(Date.now());
+            setTimestampUpdated(Date.now());
+            setTimestampState(Date.now);
         }
         setShowState(show);
     }, [show]);
@@ -46,10 +61,13 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, showState
 
     useEffect(() => {
         if (showState) {
+            //timestamp has been updated and the toast is still showing - update the text to the current time difference
+            const timeDiff = calculateTimeDiff(timestampState);
+            setTimestampText(timeDiff);
             setTimeout(() => {
-                setTimestampUpdated(Date.now())
-                setTimestampText(calculateTimeDiff(timestampState))
-            }, 1000)
+                //trigger new update to timestamp text on the next second
+                setTimestampUpdated(Date.now());
+            }, timeUntilNext(Date.now(), "s"));
         }
     }, [timestampUpdated]);
 
@@ -59,8 +77,8 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, showState
                    onClose={() => setShowState(false)}
                    onClick={() => setShowState(false)}
                    show={showState}
-                   delay={3000}
-                   autohide
+                   // delay={3000}
+                // autohide
                    className="cursor-pointer">
                 <Toast.Header className={headerClass} closeButton={false}>
                     <IoCheckmarkCircleOutline className={"smallIcon me-2"}/>
