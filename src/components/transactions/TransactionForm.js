@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
-import {useEffect, useRef, useState} from "react"
+import {useContext, useEffect, useRef, useState} from "react"
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
@@ -9,6 +9,8 @@ import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
 import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
+import handleFeedback from "../../functions/handleFeedback";
+import {GlobalAppContext} from "../../App";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -24,7 +26,9 @@ const TransactionForm = ({formType}) => {
             this.displayQuantity = "";
             this.unit = "";
             this.locationId = (locationList?.length <= 1 ? locationList[0]?.id : selectedLocation[0]?.id) || null;
+            this.locationName = (locationList?.length <= 1 ? locationList[0]?.name : selectedLocation[0]?.name) || null;
             this.destinationId = (destinationList?.length <= 1 ? destinationList[0]?.id : selectedDestination[0]?.id) || null;
+            this.destinationName = (destinationList?.length <= 1 ? destinationList[0]?.name : selectedDestination[0]?.name) || null;
             this.transactionArray = [];
         }
     }
@@ -51,6 +55,7 @@ const TransactionForm = ({formType}) => {
         }
     });
     const transactionFormRef = useRef();
+    const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions;
 
     const getItems = (retainedSettings) => {
         fetchAllItems((x) => {
@@ -96,8 +101,10 @@ const TransactionForm = ({formType}) => {
         };
         const newOptions = {
             locationId: newData.location?.[0]?.id || transactionData.locationId,
+            locationName: newData.location?.[0]?.name || transactionData.locationName,
             selectedLocation: newData.location || transactionData.selectedLocation,
             destinationId: newData.destination?.[0]?.id || transactionData.destinationId,
+            destinationName: newData.destination?.[0]?.namer || transactionData.destinationName,
             selectedDestination: newData.destination || transactionData.selectedDestination,
             productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
             productName: newData.product?.[0]?.name || transactionData.productName,
@@ -179,27 +186,11 @@ const TransactionForm = ({formType}) => {
             body: JSON.stringify(transactionData),
         }, (x) => {
             setSubmitted(true);
+            handleFeedback(setStateFunctions, x, );
             if (x.success) {
                 setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation, transactionData.selectedDestination));
             } else {
                 setTransactionData({...transactionData, quantity: null, maxQty: null})
-                let errorBody = "Your transaction could not be completed due to the following errors:\n\n"
-                console.log(x)
-                if (x.errorTypes.includes("outOfStock")) {
-                    errorBody += `${x.outOfStockItems?.length === 1 ? "One" : "Some"} of the items you wanted to ${formType} are out of stock:\n${x.outOfStockItems.map((x) => {
-                        return `\n\t• ${x.name} (${x.requested} requested, ${x.current} available)`;
-                    }).join("")}`;
-                }
-                if (x.errorTypes.includes("missingItems")) {
-                    errorBody += `\n${x.missingItems?.length === 1 ? "One" : "Some"} of the items you wanted to ${formType} are no longer available (they have likely been deleted by an organisational admin):\n${x.missingItems.map((x) => {
-                        return `\n\t• ${x.name}`;
-                    }).join("")}`
-                }
-                setModalProps({
-                    ...modalProps,
-                    show: true,
-                    bodyText: errorBody + "\n\nPlease try again - the form has been updated with the latest options"
-                });
                 getItems();
             }
         });
