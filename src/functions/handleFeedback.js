@@ -1,4 +1,5 @@
-const handleFeedback = (setStateFunctions, response, customOptions = {}, callback = ()=>{}) => {
+const handleFeedback = (setStateFunctions, response, customOptions = {}, callback = () => {
+}) => {
     const defaultState = {
         headerClass: "bg-warning text-primary",
         yesButtonVariant: "primary",
@@ -13,15 +14,14 @@ const handleFeedback = (setStateFunctions, response, customOptions = {}, callbac
         }
     }
     if (response.success) {
-        setStateFunctions.completeToast((prevState => {
-            return {
-                ...prevState,
+        setStateFunctions.toasts(prevState => {
+            return [...prevState, {
                 title: response.title || response.feedback || "Operation successful",
                 bodyText: response.title ? response.feedback : "The operation was completed successfully",
-                show: true,
-                ...customOptions,
-            };
-        }))
+                id: `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`,
+                ...customOptions
+            }]
+        });
         callback(response);
     } else {
         setStateFunctions.acknowledgeModal(prevState => {
