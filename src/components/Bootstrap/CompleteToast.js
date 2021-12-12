@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import {Toast, ToastContainer} from "react-bootstrap";
+import {Toast} from "react-bootstrap";
 import {useContext, useEffect, useRef, useState} from "react";
 import {IoCheckmarkCircleOutline} from "react-icons/all";
 import {GlobalAppContext} from "../../App";
-import {log10} from "chart.js/helpers";
+import ToastTransition from "../common/transitions/ToastTransition";
 
 const dividers = {
     s: 1000,
@@ -53,6 +53,8 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
     const shownOnce = useRef(false);
     const deleteTimeout = useRef(null);
     const hovering = useRef(false);
+    const visible = useRef(false);
+    const toastNode = useRef();
 
     const close = () => {
         if (!hovering.current) {
@@ -60,32 +62,15 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
         }
     }
 
-    const setDeleteTimeout = () => {
-        if (shownOnce.current && !hovering.current) {
-            deleteTimeout.current = setTimeout(() => {
-                setToasts(prevState => prevState.filter(x => x.id !== id));
-            }, 2000)
-        }
-    }
-
-    useEffect(() => {
-        if (showState) {
-            setTimestampUpdated(Date.now());
-            setTimestampState(Date.now);
-        } else {
-            setDeleteTimeout();
-        }
-    }, [showState]);
-
     useEffect(() => {
         if (!showState) {
             setShowState(true);
             shownOnce.current = true;
         }
-    }, []);
+    }, [shownOnce.current]);
 
     useEffect(() => {
-        if (showState) {
+        if (visible.current) {
             //timestamp has been updated and the toast is still showing - update the text to the current time difference
             const timeDiff = calculateTimeDiff(timestampState);
             setTimestampText(timeDiff);
@@ -98,25 +83,41 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
 
     return (
         <Toast style={{whiteSpace: "pre-wrap"}}
+               ref={toastNode}
                onClose={close}
-               onClick={close}
+               onClick={() => {
+                   setShowState(false);
+               }}
                onMouseEnter={() => {
                    hovering.current = true;
                    if (deleteTimeout.current) {
                        clearTimeout(deleteTimeout.current);
                        deleteTimeout.current = null;
-                       setShowState(true);
                    }
+                   setShowState(true);
                }}
                onMouseLeave={() => {
                    hovering.current = false;
-                   setTimeout(close, 3000);
+                   deleteTimeout.current = setTimeout(close, 3000);
                }}
                show={showState}
-               delay={4000}
                autohide
+               delay={4000}
+               transition={ToastTransition}
                id={id}
-               className="cursor-pointer">
+               className={`cursor-pointer show`}
+               onEnter={() => {
+                   if (!visible.current) {
+                       visible.current = true;
+                       setTimestampUpdated(Date.now());
+                       setTimestampState(Date.now);
+                   }
+               }}
+               onExited={() => {
+                   visible.current = false;
+                   setToasts(prevState => prevState.filter(x => x.id !== id));
+               }}
+        >
             <Toast.Header className={headerClass} closeButton={false}>
                 <IoCheckmarkCircleOutline className={"smallIcon me-2"}/>
                 <p className="fs-5 my-0 me-auto">{title}</p>
