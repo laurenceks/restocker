@@ -77,7 +77,7 @@ const Dashboard = () => {
     const [dashboardLoadedOnce, setDashboardLoadedOnce] = useState(false);
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
     const [dashBoardSettings, setDashBoardSettings] = useState({
-        ratePeriod: null,
+        ratePeriod: 90,
         locationId: null,
         locationName: null
     });
@@ -422,7 +422,6 @@ const Dashboard = () => {
                 </div>
                 <div className={"col col-12 col-md-3"}>
                     <FormInput type={"number"} label={"Period (days)"}
-                               defaultValue={90}
                                value={dashBoardSettings.ratePeriod}
                                onChange={(id, val) => {
                                    setDashBoardSettings({...dashBoardSettings, ratePeriod: val})
