@@ -28,7 +28,7 @@ const Table = ({
     const sortTableRows = (a, b) => {
         const aIndex = sortSettings.index + (columnCount.current - a.length);
         const bIndex = sortSettings.index + (columnCount.current - b.length);
-        naturalSort(a[aIndex]?.sortValue || a[aIndex]?.text || a[aIndex]?.props?.defaultValue || a[aIndex], b[bIndex]?.sortValue || b[bIndex]?.text || b[bIndex]?.props?.defaultValue || b[bIndex]);
+        return naturalSort(a[aIndex]?.sortValue || a[aIndex]?.text || a[aIndex]?.props?.defaultValue || a[aIndex], b[bIndex]?.sortValue || b[bIndex]?.text || b[bIndex]?.props?.defaultValue || b[bIndex]);
     };
 
     useEffect(() => {
@@ -47,7 +47,7 @@ const Table = ({
                     sortedRows.push(...x)
                 });
             } else {
-                sortedRows = [...rows].sort(sortTableRows);
+                sortedRows = sortedRows.sort(sortTableRows);
                 sortedRows = sortSettings.ascending ? sortedRows : sortedRows.reverse();
             }
         }
