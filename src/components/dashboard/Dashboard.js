@@ -245,34 +245,36 @@ const Dashboard = () => {
                         douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all"),
                         stockPercentage: getRangeClass(newItemData.stockPercentage, dashboardRanges.stockLevel, "all")
                     }
-                    newDashboardData.itemsRows.push([newItemData.name, {
-                        text: newItemData.stockString,
-                        className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
-                    },
-                        {
-                            text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 1 : 0) + "%",
-                            sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
-                            className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
+                    if (newItemData.currentStock) {
+                        newDashboardData.itemsRows.push([newItemData.name, {
+                            text: newItemData.stockString,
+                            className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
                         },
-                        newItemData.burnRate ?
                             {
-                                text: <><span
-                                    className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
-                                sortValue: newItemData.burnRate,
-                                className: "dashboardStockTableCell"
-                            } : {
-                                className: "table-light"
+                                text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 1 : 0) + "%",
+                                sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
+                                className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
                             },
+                            newItemData.burnRate ?
+                                {
+                                    text: <><span
+                                        className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
+                                    sortValue: newItemData.burnRate,
+                                    className: "dashboardStockTableCell"
+                                } : {
+                                    className: "table-light"
+                                },
 
-                        newItemData.douseRate ?
-                            {
-                                text: <><span
-                                    className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>,
-                                sortValue: newItemData.douseRate,
-                                className: "dashboardStockTableCell"
-                            } : {
-                                className: "table-light"
-                            }])
+                            newItemData.douseRate ?
+                                {
+                                    text: <><span
+                                        className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>,
+                                    sortValue: newItemData.douseRate,
+                                    className: "dashboardStockTableCell"
+                                } : {
+                                    className: "table-light"
+                                }])
+                    }
                 }
             )
             newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + b.roundedStockPercentage, 0) / newDashboardData.itemsList.length;
