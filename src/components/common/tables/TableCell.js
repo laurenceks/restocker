@@ -41,7 +41,7 @@ const TableCell = ({className, content, align}) => {
             rowSpan={content.rowspan}
             {...content.cellData}
         >
-            {content || content === 0 ? content.fragment || renderCellContent(content) : ""}
+            {content.fragment ?? renderCellContent(content)}
         </td>
     );
 };

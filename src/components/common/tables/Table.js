@@ -28,7 +28,7 @@ const Table = ({
     const sortTableRows = (a, b) => {
         const aIndex = sortSettings.index + (columnCount.current - a.length);
         const bIndex = sortSettings.index + (columnCount.current - b.length);
-        return naturalSort(a[aIndex]?.sortValue || a[aIndex]?.text || a[aIndex]?.props?.defaultValue || a[aIndex], b[bIndex]?.sortValue || b[bIndex]?.text || b[bIndex]?.props?.defaultValue || b[bIndex]);
+        return naturalSort(a[aIndex]?.sortValue ?? a[aIndex]?.text ?? a[aIndex]?.props?.defaultValue ?? a[aIndex], b[bIndex]?.sortValue ?? b[bIndex]?.text ?? b[bIndex]?.props?.defaultValue ?? b[bIndex]);
     };
 
     useEffect(() => {
