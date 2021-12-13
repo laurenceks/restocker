@@ -15,12 +15,12 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
     const updateOutput = (element, invalidate = true) => {
         if (invalidate) {
             element.classList.add("is-invalid");
-            element.closest("div.loginInputWrap")?.classList.add("is-invalid");
+            element.closest("div.formInputWrap")?.classList.add("is-invalid");
             invalidInputs.push(element);
             formIsValid = false;
         } else {
             element.classList.remove("is-invalid");
-            element.closest("div.loginInputWrap")?.classList.remove("is-invalid");
+            element.closest("div.formInputWrap")?.classList.remove("is-invalid");
             validInputs.push(element);
             values[element.id] = element.value
         }

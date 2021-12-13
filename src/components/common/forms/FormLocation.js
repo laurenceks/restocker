@@ -56,7 +56,7 @@ const FormLocation = ({
 
 
     return (
-        <div className={"loginInputWrap"}>
+        <div className={"formInputWrap"}>
             <Typeahead
                 id={id}
                 form={form}

@@ -72,26 +72,26 @@ form.loginForm, div.loginForm {
     margin-top: clamp(50px, 10%, 100px);
 }
 
-div.loginFormInputGroup > div.loginInputWrap:first-of-type:not(:only-of-type) input,
-div.loginFormInputGroup > div.loginInputWrap:last-of-type input.is-invalid,
-div.loginInputWrap:only-of-type input.is-invalid:not(:only-of-type) {
+div.formInputGroup > div.formInputWrap:first-of-type:not(:only-of-type) input,
+div.formInputGroup > div.formInputWrap:last-of-type input.is-invalid,
+div.formInputWrap:only-of-type input.is-invalid:not(:only-of-type) {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
 
-div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type):not(:last-of-type):not(:only-child) input,
-div.loginFormInputGroup > div.loginInputWrap:not(:last-of-type) div.inputFeedbackTooltip {
+div.formInputGroup > div.formInputWrap:not(:first-of-type):not(:last-of-type):not(:only-child) input,
+div.formInputGroup > div.formInputWrap:not(:last-of-type) div.inputFeedbackTooltip {
     border-radius: 0 !important;
 }
 
-div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) input,
-div.loginFormInputGroup > div.loginInputWrap:not(:first-of-type) div.inputFeedbackTooltip {
+div.formInputGroup > div.formInputWrap:not(:first-of-type) input,
+div.formInputGroup > div.formInputWrap:not(:first-of-type) div.inputFeedbackTooltip {
     margin-top: -1px;
 }
 
-div.loginFormInputGroup > div.loginInputWrap:last-of-type:not(:only-child) input,
-div.loginFormInputGroup > div.loginInputWrap:last-of-type div.inputFeedbackTooltip,
-div.loginInputWrap:last-of-type div.inputFeedbackTooltip {
+div.formInputGroup > div.formInputWrap:last-of-type:not(:only-child) input,
+div.formInputGroup > div.formInputWrap:last-of-type div.inputFeedbackTooltip,
+div.formInputWrap:last-of-type div.inputFeedbackTooltip {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
@@ -138,7 +138,7 @@ div.inputFeedbackTooltip {
 }
 
 input.is-invalid ~ div.inputFeedbackTooltip,
-div.loginInputWrap.is-invalid > div.inputFeedbackTooltip {
+div.formInputWrap.is-invalid > div.inputFeedbackTooltip {
     max-height: 100px;
     padding-top: 1rem;
     padding-bottom: 1rem;

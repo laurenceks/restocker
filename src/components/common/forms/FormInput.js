@@ -24,7 +24,7 @@ const FormInput = ({
                    }) => {
 
     return (
-        <div className={"loginInputWrap"}>
+        <div className={"formInputWrap"}>
             {type === "typeahead" ?
                 <Typeahead
                     id={id}
