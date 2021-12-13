@@ -77,10 +77,12 @@ const Register = () => {
                                                "data-statename": "organisation"
                                            },
                                        allowNew: true,
-                                       onChange: (e) => setOrganisation(e[0] ? {
-                                           ...e[0],
-                                           organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
-                                       } : {}),
+                                       onChange: (e) => {
+                                           setOrganisation(e[0] ? {
+                                               ...e[0],
+                                               organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
+                                           } : {})
+                                       },
                                        onInputChange: (x, e) => {
                                            //TODO set input value to toTitleCase?
                                            //setOrganisation([]);
