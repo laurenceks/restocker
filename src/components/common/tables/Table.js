@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import TableCell from "./TableCell";
 import naturalSort from "../../../functions/naturalSort";
 import {IoArrowDown, IoArrowUp} from "react-icons/all";
+import ArrowIconTransition from "../transitions/ArrowIconTransition";
 
 const Table = ({
                    title,
@@ -82,8 +83,10 @@ const Table = ({
                                                 })
                                             }}
                                 >
-                                    {(showSortArrow && sortSettings.index === i) && (sortSettings.ascending ?
+                                    <ArrowIconTransition in={showSortArrow && (sortSettings.index === i)}>
+                                    {(sortSettings.ascending ?
                                         <IoArrowUp/> : <IoArrowDown/>)}
+                                    </ArrowIconTransition>
                                     {x.text || x}
                                 </th>)
                             }
