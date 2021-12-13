@@ -120,7 +120,7 @@ Table.propTypes = {
 
 Table.defaultProps = {
     defaultSortHeading: null,
-    title: "Users",
+    title: `table-${Date.now().toString(36)}`,
     tableClassName: null,
     headers: [],
     rows: [],
