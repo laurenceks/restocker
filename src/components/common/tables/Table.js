@@ -23,13 +23,18 @@ const Table = ({
         ascending: true
     });
     const [tableRows, setTableRows] = useState(rows);
+    const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
 
-    const sortTableRows = (a, b) => naturalSort(a[sortSettings.index].sortValue || a[sortSettings.index].text || a[sortSettings.index].props?.defaultValue || a[sortSettings.index], b[sortSettings.index].sortValue || b[sortSettings.index].text || b[sortSettings.index].props?.defaultValue || b[sortSettings.index])
+    const sortTableRows = (a, b) => {
+        const aIndex = sortSettings.index + (columnCount.current - a.length);
+        const bIndex = sortSettings.index + (columnCount.current - b.length);
+        naturalSort(a[aIndex]?.sortValue || a[aIndex]?.text || a[aIndex]?.props?.defaultValue || a[aIndex], b[bIndex]?.sortValue || b[bIndex]?.text || b[bIndex]?.props?.defaultValue || b[bIndex]);
+    };
 
     useEffect(() => {
         if (allowSorting) {
             let returnArray = [...rows];
-            if (returnArray.some(x => x[sortSettings.index].rowspan)) {
+            if (returnArray.some(x => x[sortSettings.index]?.rowspan)) {
                 let newSortArray = [];
                 while (returnArray.length > 0) {
                     newSortArray.push(returnArray.splice(0, returnArray[0]?.[0]?.rowspan || 1))
@@ -42,7 +47,6 @@ const Table = ({
                     returnArray.push(...x)
                 });
             } else {
-                console.log(rows)
                 returnArray = [...rows].sort(sortTableRows);
                 returnArray = sortSettings.ascending ? returnArray : returnArray.reverse();
                 returnArray = !length ? returnArray : returnArray.splice(0, length);
@@ -52,7 +56,6 @@ const Table = ({
             setTableRows(rows)
         }
     }, [sortSettings, rows]);
-
 
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
