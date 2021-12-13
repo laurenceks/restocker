@@ -14,6 +14,7 @@ const Table = ({
                    rowLeave,
                    defaultSortHeading,
                    defaultSortIndex,
+                   defaultSortDirection,
                    allowSorting,
                    length
                }) => {
@@ -21,8 +22,9 @@ const Table = ({
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
     const [sortSettings, setSortSettings] = useState({
         index: headerIndex >= 0 ? headerIndex : defaultSortIndex || 0,
-        ascending: true,
+        ascending: ["descending", "desc", "dsc", "d", 0, false].indexOf(defaultSortDirection) === -1,
     });
+    console.log(defaultSortDirection, sortSettings.ascending)
     const [showSortArrow, setShowSortArrow] = useState(false);
     const [tableRows, setTableRows] = useState(rows);
     const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
@@ -82,7 +84,7 @@ const Table = ({
                                             }}
                                 >
                                     {(showSortArrow && sortSettings.index === i) && (sortSettings.ascending ?
-                                        <IoArrowDown/> : <IoArrowUp/>)}
+                                        <IoArrowUp/> : <IoArrowDown/>)}
                                     {x.text || x}
                                 </th>)
                             }
