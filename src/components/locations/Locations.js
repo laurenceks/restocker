@@ -172,7 +172,7 @@ const Locations = () => {
                     <div className="row my-3">
                         <h2>Add new location</h2>
                         <div className="col-12 col-md-4 mb-3 mb-md-0">
-                            <div className="loginFormInputGroup">
+                            <div className="formInputGroup">
                                 <FormInput type={"text"}
                                            id={"inputAddLocationName"}
                                            label={"Name"}

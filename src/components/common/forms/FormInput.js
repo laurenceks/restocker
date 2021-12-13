@@ -34,7 +34,7 @@ const FormInput = ({
                 />
                 :
                 <div className="form-floating">
-                    <input type={type} className={`form-control loginInput${inputClass ? ` ${inputClass}` : ""}`}
+                    <input type={type} className={`form-control formInput${inputClass ? ` ${inputClass}` : ""}`}
                            id={id}
                            name={id}
                            placeholder={placeholder || label}

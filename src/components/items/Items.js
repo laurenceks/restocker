@@ -201,7 +201,7 @@ const Items = () => {
                     <div className="row my-3">
                         <h2>Add new item</h2>
                         <div className="col-12 col-md-4 mb-3 mb-md-0">
-                            <div className="loginFormInputGroup">
+                            <div className="formInputGroup">
                                 <FormInput type={"text"}
                                            id={"inputAddItemName"}
                                            label={"Name"}
@@ -216,7 +216,7 @@ const Items = () => {
                             </div>
                         </div>
                         <div className="col-12 col-md-4 mb-3  mb-md-0">
-                            <div className="loginFormInputGroup">
+                            <div className="formInputGroup">
                                 <FormInput type={"text"}
                                            id={"inputAddItemUnit"}
                                            label={"Base unit"}
@@ -231,7 +231,7 @@ const Items = () => {
                             </div>
                         </div>
                         <div className="col-12 col-md-2 mb-3  mb-md-0">
-                            <div className="loginFormInputGroup">
+                            <div className="formInputGroup">
                                 <FormInput type={"number"}
                                            id={"inputAddItemWarningLevel"}
                                            label={"Warning level"}

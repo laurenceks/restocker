@@ -43,7 +43,7 @@ const Register = () => {
             <fieldset disabled={(registerFeedback.inProgress || !organisations) && "disabled"}>
                 {!registerFeedback.success &&
                 <><h1 className="h3 mb-3 fw-normal">Register</h1>
-                    <div className="mb-3 loginFormInputGroup">
+                    <div className="mb-3 formInputGroup">
                         <FormInput type={"text"} placeholder={"John"} label={"First name"}
                                    id={"inputRegisterFirstName"}
                                    inputClass={""} invalidFeedback={"Please enter your first name"}/>
@@ -51,7 +51,7 @@ const Register = () => {
                                    id={"inputRegisterLastName"}
                                    inputClass={""} invalidFeedback={"Please enter your last name"}/>
                     </div>
-                    <div className="mb-3 loginFormInputGroup">
+                    <div className="mb-3 formInputGroup">
                         <FormInput type={"email"} placeholder={"you@example.com"} label={"Email address"}
                                    id={"inputRegisterEmail"}
                                    inputClass={""} invalidFeedback={"Please enter a valid email address"}/>
@@ -64,7 +64,7 @@ const Register = () => {
                                    id={"inputRegisterConfirmPassword"}
                                    inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                     </div>
-                    <div className="mb-3 loginFormInputGroup">
+                    <div className="mb-3 formInputGroup">
                         <FormInput type={"typeahead"}
                                    id={"inputRegisterOrganisationWrap"}
                                    typeaheadProps={{
@@ -73,7 +73,7 @@ const Register = () => {
                                                id: "inputRegisterOrganisation",
                                                useFloatingLabel: true,
                                                floatingLabelText: "Organisation",
-                                               className: "loginInput",
+                                               className: "formInput",
                                                "data-statename": "organisation"
                                            },
                                        allowNew: true,

@@ -35,7 +35,7 @@ const ResetPassword = ({token, selector}) => {
                 <fieldset disabled={resetPasswordFeedback.inProgress && "disabled"}>
                     {(!resetPasswordFeedback.success) &&
                     <div>
-                        <div className="mb-3 loginFormInputGroup">
+                        <div className="mb-3 formInputGroup">
                             <FormInput type={"password"} placeholder={"New password"} label={"New password"}
                                        id={"inputPasswordResetPassword"}
                                        inputClass={""}

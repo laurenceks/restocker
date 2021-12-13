@@ -36,7 +36,7 @@ const Login = props => {
         }} noValidate>
             <fieldset disabled={loginFeedback?.inProgress && "disabled"}>
                 <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
-                <div className="loginFormInputGroup mb-3">
+                <div className="formInputGroup mb-3">
                     <FormInput type={"email"} placeholder={"you@example.com"}
                                label={"Email address"}
                                id={"inputLoginEmail"}
