@@ -32,29 +32,27 @@ const Table = ({
     };
 
     useEffect(() => {
+        let sortedRows = [...rows];
         if (allowSorting) {
-            let returnArray = [...rows];
-            if (returnArray.some(x => x[sortSettings.index]?.rowspan)) {
+            if (sortedRows.some(x => x[sortSettings.index]?.rowspan)) {
                 let newSortArray = [];
-                while (returnArray.length > 0) {
-                    newSortArray.push(returnArray.splice(0, returnArray[0]?.[0]?.rowspan || 1))
+                while (sortedRows.length > 0) {
+                    newSortArray.push(sortedRows.splice(0, sortedRows[0]?.[0]?.rowspan || 1))
                 }
                 newSortArray = newSortArray.sort(sortTableRows);
                 newSortArray = sortSettings.ascending ? newSortArray : newSortArray.reverse();
                 newSortArray = !length ? newSortArray : newSortArray.splice(0, length);
-                returnArray = [];
+                sortedRows = [];
                 newSortArray.forEach((x) => {
-                    returnArray.push(...x)
+                    sortedRows.push(...x)
                 });
             } else {
-                returnArray = [...rows].sort(sortTableRows);
-                returnArray = sortSettings.ascending ? returnArray : returnArray.reverse();
-                returnArray = !length ? returnArray : returnArray.splice(0, length);
+                sortedRows = [...rows].sort(sortTableRows);
+                sortedRows = sortSettings.ascending ? sortedRows : sortedRows.reverse();
             }
-            setTableRows(returnArray);
-        } else {
-            setTableRows(rows)
         }
+        sortedRows = !length ? sortedRows : sortedRows.splice(0, length);
+        setTableRows(sortedRows);
     }, [sortSettings, rows]);
 
     return (
