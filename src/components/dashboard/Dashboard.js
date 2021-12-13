@@ -393,9 +393,9 @@ const Dashboard = () => {
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
                         <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Restock in"]}
-                               rows={dashboardData.itemsRows.sort((a, b) => {
-                                   return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
-                               }).reverse()}
+                               defaultSortDirection="desc"
+                               defaultSortHeading={"Burn rate"}
+                               rows={dashboardData.itemsRows}
                                length={5}
                                fullWidth
                         />
