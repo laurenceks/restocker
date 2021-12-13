@@ -198,11 +198,13 @@ const Dashboard = () => {
         }, (res) => {
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
+            console.log(res);
             res.rateData.forEach((x) => {
                     const rateDataForId = {
                         itemId: x.itemId,
                         days: x.days || 0,
                         unit: x.unit,
+                        totalRestocked: x.restocked || 0,
                         totalRestocked: x.restocked || 0,
                         totalWithdrawn: Math.abs(x.withdrawn) || 0,
                         withdrawRate: x.withdrawRate || 0,
@@ -218,12 +220,9 @@ const Dashboard = () => {
                         }
                     });
                     const newItemData = {
+                        ...x,
                         id: x.itemId,
-                        name: x.name,
-                        unit: x.unit,
-                        currentStock: x.currentStock,
                         stockString: `${x.currentStock} ${x.unit}`,
-                        warningLevel: x.warningLevel,
                         outOfStock: x.currentStock === 0,
                         belowWarningLevel: x.currentStock <= x.warningLevel,
                         stockPercentage: x.currentStock / (x.warningLevel || 1),
@@ -231,8 +230,7 @@ const Dashboard = () => {
                         burnRate: rateDataForId.burnRate,
                         douseRate: rateDataForId.douseRate,
                         withdrawRate: rateDataForId.withdrawRate,
-                        restockRate: rateDataForId.restockRate,
-                        lastTransaction: x.lastTransaction
+                        restockRate: rateDataForId.restockRate
                     };
                     newDashboardData.itemsStats.totalStock += newItemData.currentStock;
                     newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
@@ -265,14 +263,15 @@ const Dashboard = () => {
                                     className: "table-light"
                                 },
 
-                            newItemData.douseRate ?
+                            newItemData.belowWarningLevel   ?
                                 {
-                                    text: <><span
-                                        className={newItemDataClasses.douse.textClass + " me-1"}>{newItemDataClasses.douse.icon}</span>{newItemData.douseRate.toFixed(3)}</>,
-                                    sortValue: newItemData.douseRate,
-                                    className: "dashboardStockTableCell"
+                                    text: Math.floor(newItemData.daysUntilOutOfStock),
+                                    sortValue: Math.floor(newItemData.daysUntilOutOfStock),
+                                    className: "dashboardStockTableCell text-danger"
                                 } : {
-                                    className: "table-light"
+                                    text: Math.floor(newItemData.daysUntilBelowWarningLevel),
+                                    sortValue: Math.floor(newItemData.daysUntilBelowWarningLevel),
+                                    className: "dashboardStockTableCell text-warning"
                                 }])
                     }
                 }
@@ -392,7 +391,7 @@ const Dashboard = () => {
             <div className="row my-3">
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
-                        <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Douse rate"]}
+                        <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Days until restock"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
                                    return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
                                }).reverse()}
