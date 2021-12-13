@@ -198,13 +198,11 @@ const Dashboard = () => {
         }, (res) => {
             const rateCategories = ["withdraw", "restock", "burn", "douse"];
             const newDashboardData = new dashboardDataTemplate();
-            console.log(res);
             res.rateData.forEach((x) => {
                     const rateDataForId = {
                         itemId: x.itemId,
                         days: x.days || 0,
                         unit: x.unit,
-                        totalRestocked: x.restocked || 0,
                         totalRestocked: x.restocked || 0,
                         totalWithdrawn: Math.abs(x.withdrawn) || 0,
                         withdrawRate: x.withdrawRate || 0,
