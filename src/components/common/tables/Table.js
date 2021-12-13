@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
 import TableCell from "./TableCell";
 import naturalSort from "../../../functions/naturalSort";
+import {IoArrowDown, IoArrowUp} from "react-icons/all";
 
 const Table = ({
                    title,
@@ -20,8 +21,9 @@ const Table = ({
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
     const [sortSettings, setSortSettings] = useState({
         index: headerIndex >= 0 ? headerIndex : defaultSortIndex || 0,
-        ascending: true
+        ascending: true,
     });
+    const [showSortArrow, setShowSortArrow] = useState(false);
     const [tableRows, setTableRows] = useState(rows);
     const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
 
@@ -60,13 +62,16 @@ const Table = ({
             {(rows && rows.length > 0) ?
                 <table className={`table table-hover ${tableClassName}`}>
                     <thead>
-                    <tr>
+                    <tr onMouseEnter={() => setShowSortArrow(true)}
+                        onMouseLeave={() => setShowSortArrow(false)}
+                    >
                         {headers.map((x, i) => {
                             if (x) {
                                 return (<th key={`${title}-th-${i}`}
                                             colSpan={x.colspan}
                                             rowSpan={x.rowspan}
                                             className={`${allowSorting && "cursor-pointer user-select-none"} ${x.className}`}
+                                            data-index={i}
                                             onClick={() => {
                                                 setSortSettings(prevState => {
                                                     return {
@@ -76,7 +81,10 @@ const Table = ({
                                                 })
                                             }}
                                 >
-                                    {x.text || x}</th>)
+                                    {(showSortArrow && sortSettings.index === i) && (sortSettings.ascending ?
+                                        <IoArrowDown/> : <IoArrowUp/>)}
+                                    {x.text || x}
+                                </th>)
                             }
                         })}
                     </tr>
