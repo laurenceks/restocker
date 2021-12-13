@@ -64,7 +64,7 @@ div.main {
     max-width: 980px;
 }
 
-/*Login forms*/
+/*Forms*/
 
 form.loginForm, div.loginForm {
     width: 100%;
@@ -96,25 +96,25 @@ div.formInputWrap:last-of-type div.inputFeedbackTooltip {
     border-top-right-radius: 0 !important;
 }
 
-input.loginInput {
+input.formInput {
     transition: border-radius 200ms ease, border-width 200ms ease;
 }
 
-input.loginInput:focus {
+input.formInput:focus {
     position: relative;
     z-index: 1;
 }
 
-input.loginInput.is-invalid:focus {
+input.formInput.is-invalid:focus {
     box-shadow: none;
     border-width: 5px;
 }
 
-input.loginInput:focus ~ label {
+input.formInput:focus ~ label {
     z-index: 2;
 }
 
-input.loginInput.stackedInput, input.loginInput.stackedInput ~ div.inputFeedbackTooltip {
+input.formInput.stackedInput, input.formInput.stackedInput ~ div.inputFeedbackTooltip {
     margin-top: -1px;
 }
 
