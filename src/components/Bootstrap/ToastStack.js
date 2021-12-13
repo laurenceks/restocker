@@ -10,7 +10,7 @@ function ToastStack({toasts, position}) {
     }, [toasts]);
 
     return (
-        <ToastContainer className="p-3" position={position}>
+        <ToastContainer className="p-3 position-fixed" position={position}>
             {toasts.map((x, i) => {
                 return <CompleteToast key={"toast-" + x.id} {...x}/>
             })}
