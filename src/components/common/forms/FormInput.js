@@ -3,6 +3,13 @@ import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import {Typeahead} from "react-bootstrap-typeahead";
 import setCase from "../../../functions/setCase";
 
+const checkIfAncestorsHaveIsInvalidClass = (e) => {
+    //make sure invalid classes of parent wrap persists between focus and blurs
+    if (e.target.closest(".is-invalid")) {
+        e.target.classList.add("is-invalid")
+    }
+}
+
 const FormInput = ({
                        defaultValue,
                        disabled,
@@ -30,6 +37,8 @@ const FormInput = ({
                     id={id}
                     placeholder={placeholder || label}
                     form={form}
+                    onFocus={checkIfAncestorsHaveIsInvalidClass}
+                    onBlur={checkIfAncestorsHaveIsInvalidClass}
                     {...typeaheadProps}
                 />
                 :
