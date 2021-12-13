@@ -260,7 +260,8 @@ const Dashboard = () => {
                                     sortValue: newItemData.burnRate,
                                     className: "dashboardStockTableCell"
                                 } : {
-                                    className: "table-light"
+                                    className: "table-light",
+                                sortValue: 0
                                 },
 
                             newItemData.belowWarningLevel ?
