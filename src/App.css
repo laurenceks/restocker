@@ -89,7 +89,7 @@ div.formInputGroup > div.formInputWrap:not(:first-of-type) div.inputFeedbackTool
     margin-top: -1px;
 }
 
-div.formInputGroup > div.formInputWrap:last-of-type:not(:only-child) input,
+div.formInputGroup > div.formInputWrap:last-of-type:not(:only-of-type) input,
 div.formInputGroup > div.formInputWrap:last-of-type div.inputFeedbackTooltip,
 div.formInputWrap:last-of-type div.inputFeedbackTooltip {
     border-top-left-radius: 0 !important;
