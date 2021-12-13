@@ -413,7 +413,6 @@ const Dashboard = () => {
                     />
                 </div>
                 <div className={"col col-12 col-md-3"}>
-
                     <DashboardActionButton
                         text={"Restock"}
                         icon={<BsBoxArrowInRight/>}
