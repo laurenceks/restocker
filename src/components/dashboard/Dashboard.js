@@ -242,6 +242,8 @@ const Dashboard = () => {
                         stockPercentage: getRangeClass(newItemData.stockPercentage, dashboardRanges.stockLevel, "all")
                     }
                     if (newItemData.currentStock) {
+                        const daysUOOS = Math.floor(newItemData.daysUntilOutOfStock);
+                        const daysUBWL = Math.floor(newItemData.daysUntilBelowWarningLevel);
                         newDashboardData.itemsRows.push([newItemData.name, {
                             text: newItemData.stockString,
                             className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
@@ -261,15 +263,15 @@ const Dashboard = () => {
                                     className: "table-light"
                                 },
 
-                            newItemData.belowWarningLevel   ?
+                            newItemData.belowWarningLevel ?
                                 {
-                                    text: Math.floor(newItemData.daysUntilOutOfStock),
-                                    sortValue: Math.floor(newItemData.daysUntilOutOfStock),
-                                    className: "dashboardStockTableCell text-danger"
+                                    text: `${daysUOOS} day${daysUOOS !== 1 ? "s" : ""}`,
+                                    sortValue: daysUOOS,
+                                    className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-warning" : "text-danger"}`
                                 } : {
-                                    text: Math.floor(newItemData.daysUntilBelowWarningLevel),
-                                    sortValue: Math.floor(newItemData.daysUntilBelowWarningLevel),
-                                    className: "dashboardStockTableCell text-warning"
+                                    text: `${daysUBWL} day${daysUOOS !== 1 ? "s" : ""}`,
+                                    sortValue: daysUBWL,
+                                    className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-success" : "text-warning"}`
                                 }])
                     }
                 }
@@ -389,13 +391,12 @@ const Dashboard = () => {
             <div className="row my-3">
                 <div className="col">
                     <div className="d-flex align-items-center justify-content-center">
-                        <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Days until restock"]}
+                        <Table headers={["Name", "Current stock", <AiOutlinePercentage/>, "Burn rate", "Restock in"]}
                                rows={dashboardData.itemsRows.sort((a, b) => {
                                    return !a[2]?.sortValue || !a[2] || !a ? -1 : !b[2]?.sortValue || !b[2] || !b ? 1 : naturalSort(a[2]?.sortValue || a[2] || a, b[2]?.sortValue || b[2] || b)
                                }).reverse()}
                                length={5}
                                fullWidth
-                               allowSorting={false}
                         />
                     </div>
                 </div>
