@@ -74,7 +74,7 @@ form.loginForm, div.loginForm {
 
 div.loginFormInputGroup > div.loginInputWrap:first-of-type:not(:only-of-type) input,
 div.loginFormInputGroup > div.loginInputWrap:last-of-type input.is-invalid,
-div.loginInputWrap:only-of-type input.is-invalid:only-of-type {
+div.loginInputWrap:only-of-type input.is-invalid:not(:only-of-type) {
     border-bottom-right-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
