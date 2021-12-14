@@ -1,5 +1,6 @@
 import {useContext, useEffect, useState} from "react";
 import {GlobalAppContext} from "../App.js";
+import {variantPairings} from "../components/common/styles";
 
 export const useFeedback = (initialResponse) => {
     const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
@@ -16,7 +17,7 @@ export const useFeedback = (initialResponse) => {
                         ...response?.customOptions
                     }]
                 });
-                if(response.callback){
+                if (response.callback) {
                     response.callback(response);
                 }
             } else {
@@ -24,9 +25,11 @@ export const useFeedback = (initialResponse) => {
                     return {
                         ...defaultState,
                         ...prevState,
+                        headerClass: response?.customOptions?.variant ? `${variantPairings[response.customOptions.variant].bg} ${variantPairings[response.customOptions.variant].text}` : defaultState.headerClass,
                         show: true,
                         bodyText: response.feedback || "An unknown error occurred",
                         title: response.title || "Error",
+                        ...response?.customOptions
                     }
                 })
             }
@@ -34,7 +37,7 @@ export const useFeedback = (initialResponse) => {
     }, [response]);
 
     const defaultState = {
-        headerClass: "bg-warning text-primary",
+        headerClass: `${variantPairings.warning.bg} ${variantPairings.warning.text}`,
         yesButtonVariant: "primary",
         handleClick: () => {
             setStateFunctions.acknowledgeModal(prevState => {
@@ -43,7 +46,7 @@ export const useFeedback = (initialResponse) => {
                     show: false,
                 }
             })
-            if(response.callback){
+            if (response.callback) {
                 response.callback(response);
             }
         }
