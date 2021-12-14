@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import {Toast} from "react-bootstrap";
 import {useContext, useEffect, useRef, useState} from "react";
-import {IoCheckmarkCircleOutline} from "react-icons/all";
 import {GlobalAppContext} from "../../App";
 import ToastTransition from "../common/transitions/ToastTransition";
+import {variantPairings} from "../common/styles";
 
 const dividers = {
     s: 1000,
@@ -44,7 +44,7 @@ const timeUntilNext = (from, unit = "s") => {
     return (Math.ceil(from / divider) * divider) - from;
 }
 
-function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDeleteIds, id, deleteIds}) {
+function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, id, icon}) {
     const [showState, setShowState] = useState(show);
     const [timestampUpdated, setTimestampUpdated] = useState(null);
     const [timestampState, setTimestampState] = useState(timestamp);
@@ -55,6 +55,7 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
     const hovering = useRef(false);
     const visible = useRef(false);
     const toastNode = useRef();
+    const IconComponent = icon || variantPairings[variant].icon
 
     const close = () => {
         if (!hovering.current) {
@@ -118,8 +119,8 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
                    setToasts(prevState => prevState.filter(x => x.id !== id));
                }}
         >
-            <Toast.Header className={headerClass} closeButton={false}>
-                <IoCheckmarkCircleOutline className={"smallIcon me-2"}/>
+            <Toast.Header className={headerClass || `${variantPairings[variant].bg} ${variantPairings[variant].text}`} closeButton={false}>
+                <IconComponent className={"smallIcon me-2"}/>
                 <p className="fs-5 my-0 me-auto">{title}</p>
                 <small>{timestampText}</small>
             </Toast.Header>
@@ -132,22 +133,29 @@ function CompleteToast({show, title, timestamp, bodyText, headerClass, updateDel
 
 CompleteToast.propTypes = {
     show: PropTypes.bool,
+    timeStamp: PropTypes.number,
     handleClick: PropTypes.func,
     buttonText: PropTypes.string,
     buttonVariant: PropTypes.string,
     bodyText: PropTypes.string,
     headerClass: PropTypes.string,
-    title: PropTypes.string
+    id: PropTypes.string,
+    timeStampText: PropTypes.string,
+    title: PropTypes.string,
+    variant: PropTypes.string,
 };
 
 CompleteToast.defaultProps = {
     show: false,
     timestamp: Date.now(),
+    buttonVariant: "primary",
+    bodyText: "The operation was completed successfully",
+    headerClass: null,
+    icon:null,
+    id: `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`,
     timestampText: Date.now(),
     title: "Success",
-    bodyText: "The operation was completed successfully",
-    headerClass: "bg-success text-white",
-    buttonVariant: "primary"
+    variant: "success"
 }
 
 export default CompleteToast;
