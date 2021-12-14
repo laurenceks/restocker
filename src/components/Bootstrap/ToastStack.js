@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import {ToastContainer} from "react-bootstrap";
 import CompleteToast from "./CompleteToast";
-import {useContext, useEffect, useRef, useState} from "react";
-import {GlobalAppContext} from "../../App";
+import {useEffect} from "react";
 
 function ToastStack({toasts, position}) {
     useEffect(() => {
-        console.log(toasts);
     }, [toasts]);
 
     return (
