@@ -88,13 +88,13 @@ try {
     $output["chartItemData"] = $getChartItemData->fetchAll(PDO::FETCH_ASSOC);
 
     if ($validLocation || $validRatePeriod) {
-        $output["title"] = "Update complete";
         $output["feedback"] = "Now showing data for ";
         $output["feedback"] .= $validLocation ? ($input["locationName"] . " ") : "all locations ";
         $output["feedback"] .= $validRatePeriod ? ("in the last " . $input["ratePeriod"] . " day" . (intval($input["ratePeriod"]) === 1 ? "" : "s")) : "";
     } else {
         $output["feedback"] = "Now showing data for all locations over all time";
     }
+    $output["title"] = "Update complete";
     $output["success"] = true;
 
 } catch (PDOException $e) {
