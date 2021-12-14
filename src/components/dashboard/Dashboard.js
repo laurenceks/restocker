@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     AiOutlinePercentage,
@@ -15,16 +15,13 @@ import {
     MdShowChart
 } from "react-icons/all";
 import DashboardActionButton from "./DashboardActionButton";
-import fetchJson from "../../functions/fetchJson";
-import handleFeedback from "../../functions/handleFeedback";
 import Table from "../common/tables/Table";
-import naturalSort from "../../functions/naturalSort";
 import {Doughnut, Line} from "react-chartjs-2";
 import {bootstrapVariables, commonChartOptions} from "../common/styles";
 import deepmerge from "deepmerge";
 import FormInput from "../common/forms/FormInput";
 import FormLocation from "../common/forms/FormLocation";
-import {GlobalAppContext} from "../../App";
+import useFetch from "../../hooks/useFetch";
 
 const Dashboard = () => {
     class dashboardDataTemplate {
@@ -73,7 +70,7 @@ const Dashboard = () => {
         }
     }
 
-    const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
+    const getRates = useFetch();
     const [dashboardLoadedOnce, setDashboardLoadedOnce] = useState(false);
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
     const [dashBoardSettings, setDashBoardSettings] = useState({
@@ -191,128 +188,127 @@ const Dashboard = () => {
         return result && classType === "all" ? result : result?.[classType] ? result?.[classType] : null;
     }
 
-    const getRateData = () => {
-        fetchJson("./php/items/getRates.php", {
-            method: "POST",
-            body: JSON.stringify(dashBoardSettings)
-        }, (res) => {
-            const rateCategories = ["withdraw", "restock", "burn", "douse"];
-            const newDashboardData = new dashboardDataTemplate();
-            res.rateData.forEach((x) => {
-                    const rateDataForId = {
-                        itemId: x.itemId,
-                        days: x.days || 0,
-                        unit: x.unit,
-                        totalRestocked: x.restocked || 0,
-                        totalWithdrawn: Math.abs(x.withdrawn) || 0,
-                        withdrawRate: x.withdrawRate || 0,
-                        restockRate: x.restockRate || 0,
-                        burnRate: x.burnRate || x.withdrawRate || 0,
-                        douseRate: x.douseRate || x.restockRate || 0
-                    };
-                    newDashboardData.rates.allRates.push(rateDataForId);
-                    newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
-                    rateCategories.forEach((x) => {
-                        if (rateDataForId[x + "Rate"]) {
-                            newDashboardData.rates.figureArrays[x].push(rateDataForId[x + "Rate"]);
-                        }
-                    });
-                    const newItemData = {
-                        ...x,
-                        id: x.itemId,
-                        stockString: `${x.currentStock} ${x.unit}`,
-                        outOfStock: x.currentStock === 0,
-                        belowWarningLevel: x.currentStock <= x.warningLevel,
-                        stockPercentage: x.currentStock / (x.warningLevel || 1),
-                        roundedStockPercentage: Math.min(x.currentStock / (x.warningLevel || 1), 1),
-                        burnRate: rateDataForId.burnRate,
-                        douseRate: rateDataForId.douseRate,
-                        withdrawRate: rateDataForId.withdrawRate,
-                        restockRate: rateDataForId.restockRate
-                    };
-                    newDashboardData.itemsStats.totalStock += newItemData.currentStock;
-                    newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
-                    newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
-                    newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
-                    newDashboardData.items[x.itemId] = newItemData;
-                    newDashboardData.itemsList.push(newItemData);
-                    const newItemDataClasses = {
-                        burn: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "all"),
-                        douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all"),
-                        stockPercentage: getRangeClass(newItemData.stockPercentage, dashboardRanges.stockLevel, "all")
-                    }
-                    if (newItemData.currentStock) {
-                        const daysUOOS = Math.floor(newItemData.daysUntilOutOfStock);
-                        const daysUBWL = Math.floor(newItemData.daysUntilBelowWarningLevel);
-                        newDashboardData.itemsRows.push([newItemData.name, {
-                            text: newItemData.stockString,
-                            className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
-                        },
-                            {
-                                text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 1 : 0) + "%",
-                                sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
-                                className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
-                            },
-                            newItemData.burnRate ?
-                                {
-                                    text: <><span
-                                        className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
-                                    sortValue: newItemData.burnRate,
-                                    className: "dashboardStockTableCell"
-                                } : {
-                                    className: "table-light",
-                                sortValue: 0
-                                },
-
-                            newItemData.belowWarningLevel ?
-                                {
-                                    text: `${daysUOOS} day${daysUOOS !== 1 ? "s" : ""}`,
-                                    sortValue: daysUOOS,
-                                    className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-warning" : "text-danger"}`
-                                } : {
-                                    text: `${daysUBWL} day${daysUOOS !== 1 ? "s" : ""}`,
-                                    sortValue: daysUBWL,
-                                    className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-success" : "text-warning"}`
-                                }])
-                    }
-                }
-            )
-            newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + b.roundedStockPercentage, 0) / newDashboardData.itemsList.length;
-            rateCategories.forEach((x) => {
-                    newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
-                        return (a || 0) + (b || 0);
-                    }, 0) / newDashboardData.rates.figureArrays[x].length);
-                }
-            );
-            newDashboardData.tileClasses.burnRate = getRangeClass(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
-            newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
-            newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
-            newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.stockPercentage, dashboardRanges.stockLevel);
-            res.chartData.forEach((y) => {
-                    newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
-                    let outOfStockOnThisDate = 0;
-                    let belowWarningLevelOnThisDate = 0;
-                    res.chartItemData.filter(el => el.date === y.date).forEach((el) => {
-                        outOfStockOnThisDate += el.stockOnDate === 0 ? 1 : 0;
-                        belowWarningLevelOnThisDate += el.stockOnDate !== 0 && el.stockOnDate <= newDashboardData.items[el.itemId]?.warningLevel ? 1 : 0;
-                    })
-                    newDashboardData.chartData.line.data.outOfStock.push(outOfStockOnThisDate);
-                    newDashboardData.chartData.line.data.warningLevel.push(belowWarningLevelOnThisDate);
-                    newDashboardData.chartData.line.data.inStock.push(newDashboardData.itemsList.length - (outOfStockOnThisDate + belowWarningLevelOnThisDate));
-                }
-            );
-            setDashboardData(newDashboardData);
-            if (dashboardLoadedOnce) {
-                handleFeedback(setStateFunctions, res, {title: "Update complete", bodyText: res.feedback})
-            } else {
-                setDashboardLoadedOnce(true);
-            }
-        });
-    }
-
     useEffect(() => {
-        getRateData();
+        getRates({
+            type: "getRates",
+            options: {
+                method: "POST",
+                body: JSON.stringify(dashBoardSettings)
+            },
+            callback: (res) => {
+                const rateCategories = ["withdraw", "restock", "burn", "douse"];
+                const newDashboardData = new dashboardDataTemplate();
+                res.rateData.forEach((x) => {
+                        const rateDataForId = {
+                            itemId: x.itemId,
+                            days: x.days || 0,
+                            unit: x.unit,
+                            totalRestocked: x.restocked || 0,
+                            totalWithdrawn: Math.abs(x.withdrawn) || 0,
+                            withdrawRate: x.withdrawRate || 0,
+                            restockRate: x.restockRate || 0,
+                            burnRate: x.burnRate || x.withdrawRate || 0,
+                            douseRate: x.douseRate || x.restockRate || 0
+                        };
+                        newDashboardData.rates.allRates.push(rateDataForId);
+                        newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
+                        rateCategories.forEach((x) => {
+                            if (rateDataForId[x + "Rate"]) {
+                                newDashboardData.rates.figureArrays[x].push(rateDataForId[x + "Rate"]);
+                            }
+                        });
+                        const newItemData = {
+                            ...x,
+                            id: x.itemId,
+                            stockString: `${x.currentStock} ${x.unit}`,
+                            outOfStock: x.currentStock === 0,
+                            belowWarningLevel: x.currentStock <= x.warningLevel,
+                            stockPercentage: x.currentStock / (x.warningLevel || 1),
+                            roundedStockPercentage: Math.min(x.currentStock / (x.warningLevel || 1), 1),
+                            burnRate: rateDataForId.burnRate,
+                            douseRate: rateDataForId.douseRate,
+                            withdrawRate: rateDataForId.withdrawRate,
+                            restockRate: rateDataForId.restockRate
+                        };
+                        newDashboardData.itemsStats.totalStock += newItemData.currentStock;
+                        newDashboardData.itemsStats.inStock += (newItemData.outOfStock || newItemData.belowWarningLevel) ? 0 : 1;
+                        newDashboardData.itemsStats.outOfStock += newItemData.outOfStock ? 1 : 0;
+                        newDashboardData.itemsStats.belowWarningLevel += newItemData.belowWarningLevel ? 1 : 0;
+                        newDashboardData.items[x.itemId] = newItemData;
+                        newDashboardData.itemsList.push(newItemData);
+                        const newItemDataClasses = {
+                            burn: getRangeClass(newItemData.burnRate, dashboardRanges.burn, "all"),
+                            douse: getRangeClass(newItemData.douseRate, dashboardRanges.douse, "all"),
+                            stockPercentage: getRangeClass(newItemData.stockPercentage, dashboardRanges.stockLevel, "all")
+                        }
+                        if (newItemData.currentStock) {
+                            const daysUOOS = Math.floor(newItemData.daysUntilOutOfStock);
+                            const daysUBWL = Math.floor(newItemData.daysUntilBelowWarningLevel);
+                            newDashboardData.itemsRows.push([newItemData.name, {
+                                text: newItemData.stockString,
+                                className: `${newItemData.currentStock === 0 ? "text-danger" : newItemData.belowWarningLevel ? "text-warning" : null}`
+                            },
+                                {
+                                    text: ((newItemData.roundedStockPercentage) * 100).toFixed(newItemData.roundedStockPercentage < 0.1 ? 1 : 0) + "%",
+                                    sortValue: Math.min((newItemData.currentStock / newItemData.warningLevel), 1),
+                                    className: "dashboardStockTableCell " + newItemDataClasses.stockPercentage.textClass
+                                },
+                                newItemData.burnRate ?
+                                    {
+                                        text: <><span
+                                            className={newItemDataClasses.burn.textClass + " me-1"}>{newItemDataClasses.burn.icon}</span>{newItemData.burnRate.toFixed(3)}</>,
+                                        sortValue: newItemData.burnRate,
+                                        className: "dashboardStockTableCell"
+                                    } : {
+                                        className: "table-light",
+                                        sortValue: 0
+                                    },
+
+                                newItemData.belowWarningLevel ?
+                                    {
+                                        text: `${daysUOOS} day${daysUOOS !== 1 ? "s" : ""}`,
+                                        sortValue: daysUOOS,
+                                        className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-warning" : "text-danger"}`
+                                    } : {
+                                        text: `${daysUBWL} day${daysUOOS !== 1 ? "s" : ""}`,
+                                        sortValue: daysUBWL,
+                                        className: `dashboardStockTableCell ${newItemData.daysUntilOutOfStock > 7 ? "text-success" : "text-warning"}`
+                                    }])
+                        }
+                    }
+                )
+                newDashboardData.itemsStats.stockPercentage = newDashboardData.itemsList.reduce((a, b) => a + b.roundedStockPercentage, 0) / newDashboardData.itemsList.length;
+                rateCategories.forEach((x) => {
+                        newDashboardData.rates.averageRates[x] = (newDashboardData.rates.figureArrays[x].reduce((a, b) => {
+                            return (a || 0) + (b || 0);
+                        }, 0) / newDashboardData.rates.figureArrays[x].length);
+                    }
+                );
+                newDashboardData.tileClasses.burnRate = getRangeClass(newDashboardData.rates.averageRates.burn, dashboardRanges.burn)
+                newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
+                newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
+                newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.stockPercentage, dashboardRanges.stockLevel);
+                res.chartData.forEach((y) => {
+                        newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
+                        let outOfStockOnThisDate = 0;
+                        let belowWarningLevelOnThisDate = 0;
+                        res.chartItemData.filter(el => el.date === y.date).forEach((el) => {
+                            outOfStockOnThisDate += el.stockOnDate === 0 ? 1 : 0;
+                            belowWarningLevelOnThisDate += el.stockOnDate !== 0 && el.stockOnDate <= newDashboardData.items[el.itemId]?.warningLevel ? 1 : 0;
+                        })
+                        newDashboardData.chartData.line.data.outOfStock.push(outOfStockOnThisDate);
+                        newDashboardData.chartData.line.data.warningLevel.push(belowWarningLevelOnThisDate);
+                        newDashboardData.chartData.line.data.inStock.push(newDashboardData.itemsList.length - (outOfStockOnThisDate + belowWarningLevelOnThisDate));
+                    }
+                );
+                setDashboardData(newDashboardData);
+                if (!dashboardLoadedOnce) {
+                    setDashboardLoadedOnce(true);
+                }
+            }
+        })
     }, [dashBoardSettings]);
+
     return (
         <div className="container">
             <div className="row my-3 gy-3">
