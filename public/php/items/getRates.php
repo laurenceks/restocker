@@ -2,7 +2,7 @@
 require "../security/userLoginSecurityCheck.php";
 require "../common/db.php";
 
-$output = array("rateData" => array(), "success" => false, "feedback" => "An unknown error occurred");
+$output = array("rateData" => array(), "success" => false, "feedback" => "An unknown error occurred", "title" => "Error");
 $input = json_decode(file_get_contents('php://input'), true);
 
 $validLocation = isset($input["locationId"]) && is_int($input["locationId"]);
