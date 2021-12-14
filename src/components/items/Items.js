@@ -1,13 +1,9 @@
+import {useEffect, useRef, useState} from "react"
+import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
-import {useContext, useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
-import fetchJson from "../../functions/fetchJson";
-import validateForm from "../../functions/formValidation";
-import fetchAllItems from "../../functions/fetchAllItems";
-import naturalSort from "../../functions/naturalSort";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
-import handleFeedback from "../../functions/handleFeedback";
-import {GlobalAppContext} from "../../App";
+import validateForm from "../../functions/formValidation";
 
 const Items = () => {
         const addDataTemplate = {
@@ -16,7 +12,7 @@ const Items = () => {
             warningLevel: 5
         }
 
-        const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
+        const fetchHook = useFetch();
         const [addItemData, setAddItemData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
         const [itemList, setItemList] = useState([]);
@@ -28,12 +24,19 @@ const Items = () => {
             headerClass: "bg-danger text-light",
             yesButtonVariant: "danger"
         });
-
         const addItemForm = useRef();
+        const itemsLoadedOnce = useRef(false);
 
         const getItems = () => {
             setEditId(null);
-            fetchAllItems((result) => setItemList(result.items))
+            fetchHook({
+                type: "getItems",
+                dontHandleFeedback: !itemsLoadedOnce.current,
+                callback: (result) => {
+                    itemsLoadedOnce.current = true;
+                    setItemList(result.items)
+                }
+            });
         }
 
         const makeItemRows = () => {
@@ -149,39 +152,47 @@ const Items = () => {
         }
 
         const addItem = (form) => {
-            fetchJson("./php/items/addItem.php", {
-                method: "POST",
-                body: JSON.stringify(form.values),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response);
-                setAddItemData({...addDataTemplate});
-                getItems();
+            fetchHook({
+                type: "addItem",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify(form.values),
+                },
+                callback: (response) => {
+                    setAddItemData({...addDataTemplate});
+                    getItems();
+                }
             });
         }
 
         const deleteItem = (id, name) => {
-            fetchJson("./php/items/deleteItem.php", {
-                method: "POST",
-                body: JSON.stringify({id: id, name: name}),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response);
-                setModalOptions(prevState => {
-                    return {...prevState, show: false}
-                })
-                getItems();
+            fetchHook({
+                type: "deleteItem",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify({id: id, name: name}),
+                },
+                callback: () => {
+                    setModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    })
+                    getItems();
+                }
             });
         }
 
         const editItem = (form) => {
-            fetchJson("./php/items/editItem.php", {
-                method: "POST",
-                body: JSON.stringify(form),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response, null, () => {
+            fetchHook({
+                type: "editItem",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify(form),
+                },
+                callback: (response) => {
                     if (response.success || response.errorType !== "itemExists") {
                         getItems();
                     }
-                })
+                }
             });
         }
 

@@ -1,19 +1,16 @@
+import {useEffect, useRef, useState} from "react"
+import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
-import {useContext, useEffect, useRef, useState} from "react"
 import Table from "../common/tables/Table";
-import fetchJson from "../../functions/fetchJson";
-import validateForm from "../../functions/formValidation";
-import naturalSort from "../../functions/naturalSort";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
-import handleFeedback from "../../functions/handleFeedback";
-import {GlobalAppContext} from "../../App";
+import validateForm from "../../functions/formValidation";
+import {callback} from "chart.js/helpers";
 
 const Locations = () => {
         const addDataTemplate = {
             name: ""
         }
 
-        const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
         const [addLocationData, setAddLocationData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
         const [locationList, setLocationList] = useState([]);
@@ -25,14 +22,20 @@ const Locations = () => {
             headerClass: "bg-danger text-light",
             yesButtonVariant: "danger"
         });
-
+        const fetchHook = useFetch();
+        const locationsLoadedOnce = useRef(false);
         const addLocationForm = useRef();
 
         const getLocations = () => {
             setEditId(null);
-            fetchJson("./php/locations/getAllLocations.php", {
-                method: "GET"
-            }, (result) => setLocationList(result.locations));
+            fetchHook({
+                type: "getLocations",
+                dontHandleFeedback: !locationsLoadedOnce.current,
+                callback: (result) => {
+                    locationsLoadedOnce.current = true;
+                    setLocationList(result.locations)
+                }
+            });
         }
 
         const makeLocationRows = () => {
@@ -120,39 +123,45 @@ const Locations = () => {
         }
 
         const addLocation = (form) => {
-            fetchJson("./php/locations/addLocation.php", {
-                method: "POST",
-                body: JSON.stringify(form.values),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response);
-                setAddLocationData({...addDataTemplate});
-                getLocations();
+            fetchHook({
+                type: "getLocations",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify(form.values)
+                }
+                , callback: () => {
+                    setAddLocationData({...addDataTemplate});
+                    getLocations();
+                }
             });
         }
 
         const deleteLocation = (id, name) => {
-            fetchJson("./php/locations/deleteLocation.php", {
-                method: "POST",
-                body: JSON.stringify({id: id, name: name}),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response);
-                setModalOptions(prevState => {
-                    return {...prevState, show: false}
-                })
-                getLocations();
+            fetchHook({
+                type: "deleteLocation",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify({id: id, name: name}),
+                }, callback: (response) => {
+                    setModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    })
+                    getLocations()
+                }
             });
         }
 
         const editLocation = (form) => {
-            fetchJson("./php/locations/editLocation.php", {
-                method: "POST",
-                body: JSON.stringify(form),
-            }, (response) => {
-                handleFeedback(setStateFunctions, response, null, () => {
+            fetchHook({
+                type: "editLocation",
+                options: {
+                    method: "POST",
+                    body: JSON.stringify(form),
+                }, callback: (response) => {
                     if (response.success || response.errorType !== "locationExists") {
                         getLocations();
                     }
-                })
+                }
             });
         }
 
