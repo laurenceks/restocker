@@ -2,8 +2,10 @@
 require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require "../common/db.php";
+require "../common/feedbackTemplate.php";
 
-$output = array("items" => array());
+$output = array_merge($feedbackTemplate, array("items" => array()));
+
 $getAllItems = $db->prepare("
         SELECT * FROM items
         WHERE organisationId = :organisationId
@@ -11,6 +13,9 @@ $getAllItems = $db->prepare("
         ");
 $getAllItems->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllItems->execute();
+$output["success"] = true;
+$output["title"] = "Items updated";
+$output["feedback"] = "Items data has been refreshed";
 $output["items"] = $getAllItems->fetchAll(PDO::FETCH_ASSOC);
 
 echo json_encode($output);

@@ -56,7 +56,8 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
             }
         }
         $output["success"] = true;
-        $output["feedback"] = $input["name"] . " updated";
+        $output["title"] = "List updated";
+        $output["feedback"] = $input["name"] . " was updated successfully";
     } catch (PDOException $e) {
         echo $output["feedback"] = $e->getMessage();
     }

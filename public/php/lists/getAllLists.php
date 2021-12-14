@@ -2,8 +2,10 @@
 require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require "../common/db.php";
+require "../common/feedbackTemplate.php";
 
-$output = array("listRows" => array(), "lists" => array());
+$output = array_merge($feedbackTemplate, array("listRows" => array(), "lists" => array()));
+
 $getAllLists = $db->prepare("
         SELECT lists.id,
        lists.name,
@@ -40,5 +42,8 @@ foreach ($allLists as $row) {
     $previousRow = $row;
 };
 
+$output["success"] = true;
+$output["title"] = "Lists updated";
+$output["feedback"] = "Lists data has been refreshed";
 
 echo json_encode($output);
