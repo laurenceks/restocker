@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import DashboardStatTile from "./DashboardStatTile";
 import {
     AiOutlinePercentage,
@@ -71,7 +71,7 @@ const Dashboard = () => {
     }
 
     const getRates = useFetch();
-    const [dashboardLoadedOnce, setDashboardLoadedOnce] = useState(false);
+    const dashboardLoadedOnce = useRef(false);
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
     const [dashBoardSettings, setDashBoardSettings] = useState({
         ratePeriod: 90,
@@ -195,6 +195,7 @@ const Dashboard = () => {
                 method: "POST",
                 body: JSON.stringify(dashBoardSettings)
             },
+            dontHandleFeedback: !dashboardLoadedOnce.current,
             callback: (res) => {
                 const rateCategories = ["withdraw", "restock", "burn", "douse"];
                 const newDashboardData = new dashboardDataTemplate();
@@ -302,8 +303,8 @@ const Dashboard = () => {
                     }
                 );
                 setDashboardData(newDashboardData);
-                if (!dashboardLoadedOnce) {
-                    setDashboardLoadedOnce(true);
+                if (!dashboardLoadedOnce.current) {
+                    dashboardLoadedOnce.current = true;
                 }
             }
         })
