@@ -26,6 +26,7 @@ const Table = ({
         ascending: ["descending", "desc", "dsc", "d", "down", "bigToSmall", "largeToSmall", "ZtoA", 0, false].indexOf(defaultSortDirection) === -1,
     });
     const [showSortArrow, setShowSortArrow] = useState(false);
+    const [currentHeadingHoverIndex, setCurrentHeadingHoverIndex] = useState(null);
     const [tableRows, setTableRows] = useState(rows);
     const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
 
@@ -72,8 +73,9 @@ const Table = ({
                                 return (<th key={`${title}-th-${i}`}
                                             colSpan={x.colspan}
                                             rowSpan={x.rowspan}
-                                            className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className}`}
+                                            className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className || ""}`}
                                             data-index={i}
+                                            onMouseEnter={(e) => setCurrentHeadingHoverIndex(parseInt(e.target.dataset.index))}
                                             onClick={() => {
                                                 setSortSettings(prevState => {
                                                     return {
@@ -84,9 +86,14 @@ const Table = ({
                                             }}
                                 >
                                     <div className="d-flex flex-row align-items-center">
-                                        <ArrowIconTransition in={showSortArrow && (sortSettings.index === i)}>
+                                        <ArrowIconTransition
+                                            in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
+                                            colourVariant={sortSettings.index !== i && "secondary"}
+                                        >
                                             {(sortSettings.ascending ?
-                                                <IoArrowUp className="d-block"/> : <IoArrowDown className="d-block"/>)}
+                                                <IoArrowUp
+                                                    className="d-block"/> :
+                                                <IoArrowDown className="d-block"/>)}
                                         </ArrowIconTransition>
                                         <div>{x.text || x}</div>
                                     </div>
@@ -114,7 +121,7 @@ const Table = ({
                     </tbody>
                 </table>
                 :
-                <p className="p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}</div>
+                <p className=" p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}</div>
     );
 };
 

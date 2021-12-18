@@ -1,9 +1,10 @@
-import {Transition} from 'react-transition-group';
 import {useEffect, useState} from "react";
+import PropTypes from "prop-types";
+import {Transition} from 'react-transition-group';
 
 const duration = 400;
 
-const ArrowIconTransition = ({in: inProp, children, onEnter, onExited}) => {
+const ArrowIconTransition = ({in: inProp, children, onEnter, onExited, colourVariant}) => {
     const width = 16;
     const defaultStyle = {
         transition: `opacity ${duration}ms cubic-bezier(0.25, 1, 0.5, 1), max-width ${duration}ms cubic-bezier(0.25, 1, 0.5, 1)`,
@@ -43,12 +44,27 @@ const ArrowIconTransition = ({in: inProp, children, onEnter, onExited}) => {
                     ...defaultStyle,
                     ...transitionStyles[state]
                 }}
+                     className={colourVariant && `text-${colourVariant}`}
                 >
                     {children}
                 </div>
             )}
         </Transition>
     )
+}
+
+ArrowIconTransition.propTypes = {
+    colourVariant: PropTypes.string,
+    in: PropTypes.bool,
+    onEnter: PropTypes.func,
+    onExited: PropTypes.func,
+};
+
+ArrowIconTransition.defaultProps = {
+    colourVariant: null,
+    in: false,
+    onEnter: undefined,
+    onExited: undefined,
 }
 
 export default ArrowIconTransition;
