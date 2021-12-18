@@ -37,7 +37,7 @@ const Lists = () => {
         show: false,
         deleteId: null,
         bodyText: "",
-        headerClass: "bg-danger text-light",
+        headerClass: "bg-danger text-white",
         yesButtonVariant: "danger"
     });
     const addListForm = useRef();
