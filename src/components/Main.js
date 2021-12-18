@@ -12,14 +12,25 @@ import Lists from "./lists/Lists";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import Locations from "./locations/Locations";
 import ToastStack from "./Bootstrap/ToastStack";
+import ConfirmModal from "./Bootstrap/ConfirmModal";
+import {variantPairings} from "./common/styles";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
     const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({show: false});
+    const [confirmModalOptions, setConfirmModalOptions] = useState({
+        show: false,
+        deleteId: null,
+        targetName: null,
+        bodyText: "",
+        headerClass: variantPairings.danger.header,
+        yesButtonVariant: "danger"
+    });
     const [toasts, setToasts] = useState([]);
 
     globalAppContext.setStateFunctions = {
         acknowledgeModal: setAcknowledgeModalOptions,
+        confirmModal: setConfirmModalOptions,
         toasts: setToasts,
     };
 
@@ -71,6 +82,7 @@ const Main = props => {
             </div>
             <AcknowledgeModal {...acknowledgeModalOptions}/>
             <ToastStack toasts={toasts}/>
+            <ConfirmModal {...confirmModalOptions}/>
         </div>
     );
 };
