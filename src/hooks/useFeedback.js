@@ -25,7 +25,7 @@ export const useFeedback = (initialResponse) => {
                     return {
                         ...defaultState,
                         ...prevState,
-                        headerClass: response?.customOptions?.variant ? `${variantPairings[response.customOptions.variant].bg} ${variantPairings[response.customOptions.variant].text}` : defaultState.headerClass,
+                        headerClass: response?.customOptions?.variant ? variantPairings[response.customOptions.variant].header : defaultState.headerClass,
                         show: true,
                         bodyText: response.feedback || "An unknown error occurred",
                         title: response.title || "Error",
@@ -37,7 +37,7 @@ export const useFeedback = (initialResponse) => {
     }, [response]);
 
     const defaultState = {
-        headerClass: `${variantPairings.warning.bg} ${variantPairings.warning.text}`,
+        headerClass: variantPairings.warning.header,
         yesButtonVariant: "primary",
         handleClick: () => {
             setStateFunctions.acknowledgeModal(prevState => {
