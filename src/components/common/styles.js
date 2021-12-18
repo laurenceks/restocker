@@ -25,6 +25,8 @@ const variantPairings = {
     }
 }
 
+Object.keys(variantPairings).forEach(x => variantPairings[x].header = `${variantPairings[x].bg || ""} ${variantPairings[x].text || ""}`)
+
 const commonChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
