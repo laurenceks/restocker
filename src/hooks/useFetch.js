@@ -31,21 +31,44 @@ const fetchOptions = {
 export const useFetch = () => {
 
     const handleFeedback = useFeedback();
-    const setToast = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
+    const setToasts = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
+    const controller = new AbortController();
+    const {signal} = controller;
+    let slowFetchToastId = null
 
     return ({type, options = {}, callback = null, feedbackOptions = {}, dontHandleFeedback = false}) => {
         const slowFetchTimeout = setTimeout(() => {
-            setToast(prevState => {
+            slowFetchToastId = `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`;
+            setToasts(prevState => {
                 return [...prevState, {
                     title: "Still loading",
-                    bodyText: "The server is taking a long time to respond - your data will load when ready",
+                    bodyText: "The server is taking a long time to respond - your data will load when ready or click here to cancel",
                     variant: "warning",
-                    id: `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`,
+                    id: slowFetchToastId,
+                    autoHide: false,
+                    onClick: () => {
+                        controller.abort();
+                        console.log("Abort! " + options?.body)
+                        setToasts(prevState => {
+                            return [...prevState, {
+                                title: "Request aborted",
+                                bodyText: "You cancelled the request to the server - the operation was not completed",
+                                variant: "danger",
+                                id: `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`,
+                            }]
+                        })
+                    }
                 }]
             })
         }, 2000)
-        fetchJson(fetchOptions[type].url, {method: fetchOptions[type].method, ...options}, (response) => {
+        fetchJson(fetchOptions[type].url, {
+            signal: signal,
+            method: fetchOptions[type].method, ...options
+        }, (response) => {
             clearTimeout(slowFetchTimeout);
+            if (slowFetchToastId) {
+                setToasts(prevState => prevState.filter(x => x.id !== slowFetchToastId));
+            }
             if (callback) {
                 callback(response, handleFeedback);
                 if (!dontHandleFeedback) {
