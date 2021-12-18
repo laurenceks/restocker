@@ -165,7 +165,6 @@ const Items = () => {
         }
 
         const deleteItem = (id, name) => {
-            console.log(name);
             fetchHook({
                 type: "deleteItem",
                 options: {

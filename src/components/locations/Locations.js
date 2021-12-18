@@ -1,10 +1,10 @@
-import {useEffect, useRef, useState} from "react"
+import {useContext, useEffect, useRef, useState} from "react"
 import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
 import Table from "../common/tables/Table";
 import ConfirmModal from "../Bootstrap/ConfirmModal";
 import validateForm from "../../functions/formValidation";
-import {callback} from "chart.js/helpers";
+import {GlobalAppContext} from "../../App";
 
 const Locations = () => {
         const addDataTemplate = {
@@ -14,14 +14,7 @@ const Locations = () => {
         const [addLocationData, setAddLocationData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
         const [locationList, setLocationList] = useState([]);
-        const [modalOptions, setModalOptions] = useState({
-            show: false,
-            deleteId: null,
-            locationName: null,
-            bodyText: "",
-            headerClass: "bg-danger text-light",
-            yesButtonVariant: "danger"
-        });
+        const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
         const fetchHook = useFetch();
         const locationsLoadedOnce = useRef(false);
         const addLocationForm = useRef();
@@ -64,8 +57,14 @@ const Locations = () => {
                                             ...prevState,
                                             show: true,
                                             deleteId: location.id,
-                                            locationName: location.name,
-                                            bodyText: `Are you sure you want to delete ${location.name}?\n\n${location.currentStock ? `There ${location.currentStock > 1 ? "are" : "is"} currently ${location.currentStock || 0} item${location.currentStock === 1 ? "" : "s"} at ${location.name} and you will not be able to alter stock once the location is deleted.` : "This location does not currently have any stock."}`
+                                            targetName: location.name,
+                                            bodyText: `Are you sure you want to delete ${location.name}?\n\n${location.currentStock ? `There ${location.currentStock > 1 ? "are" : "is"} currently ${location.currentStock || 0} item${location.currentStock === 1 ? "" : "s"} at ${location.name} and you will not be able to alter stock once the location is deleted.` : "This location does not currently have any stock."}`,
+                                            handleNo: () => {
+                                                setModalOptions(prevState => {
+                                                    return {...prevState, show: false}
+                                                })
+                                            },
+                                            handleYes: () => deleteLocation(location.id, location.name)
                                         }
                                     })
                                 }
@@ -208,15 +207,6 @@ const Locations = () => {
                         defaultSortIndex={1}
                     />
                 </div>
-                <ConfirmModal
-                    {...modalOptions}
-                    handleNo={() => {
-                        setModalOptions(prevState => {
-                            return {...prevState, show: false}
-                        });
-                    }}
-                    handleYes={() => deleteLocation(modalOptions.deleteId, modalOptions.locationName)}
-                />
             </div>
         );
     }

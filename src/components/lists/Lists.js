@@ -1,11 +1,11 @@
-import {Fragment, useEffect, useRef, useState} from "react"
+import {Fragment, useContext, useEffect, useRef, useState} from "react"
 import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
 import FormItem from "../common/forms/FormItem";
 import Table from "../common/tables/Table";
-import ConfirmModal from "../Bootstrap/ConfirmModal";
 import validateForm from "../../functions/formValidation";
 import naturalSort from "../../functions/naturalSort";
+import {GlobalAppContext} from "../../App";
 
 const Lists = () => {
     class addDataTemplate {
@@ -33,13 +33,7 @@ const Lists = () => {
     const [editData, setEditData] = useState(new editDataTemplate());
     const [listList, setListList] = useState([]);
     const [listRows, setListRows] = useState([]);
-    const [confirmModalOptions, setConfirmModalOptions] = useState({
-        show: false,
-        deleteId: null,
-        bodyText: "",
-        headerClass: "bg-danger text-white",
-        yesButtonVariant: "danger"
-    });
+    const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
     const addListForm = useRef();
     const listsLoadedOnce = useRef(false);
     const editedListRef = useRef(editData);
@@ -116,12 +110,19 @@ const Lists = () => {
                         rowspan: x.items.filter(x => !x.deleted).length,
                         className: "text-center " + cellTemplate.className,
                         handler: () => {
-                            setConfirmModalOptions(prevState => {
+                            setModalOptions(prevState => {
                                 return {
                                     ...prevState,
                                     show: true,
                                     deleteId: x.id,
-                                    bodyText: `Are you sure you want to delete ${x.name}?`
+                                    targetName: x.name,
+                                    bodyText: `Are you sure you want to delete ${x.name}?\n\nThe item will also be removed from any lists containing it.`,
+                                    handleNo: () => {
+                                        setModalOptions(prevState => {
+                                            return {...prevState, show: false}
+                                        })
+                                    },
+                                    handleYes: () => deleteList(x.id, x.name)
                                 }
                             })
                         }
@@ -301,15 +302,15 @@ const Lists = () => {
         });
     };
 
-    const deleteList = (id) => {
+    const deleteList = (id, name) => {
         fetchHook({
             type: "deleteList",
             options: {
                 method: "POST",
-                body: JSON.stringify({id: id}),
+                body: JSON.stringify({id: id, name: name}),
             },
             callback: (x) => {
-                setConfirmModalOptions(prevState => {
+                setModalOptions(prevState => {
                     return {...prevState, show: false}
                 })
                 getLists();
@@ -395,15 +396,6 @@ const Lists = () => {
                            })
                        }}/>
             </div>
-            <ConfirmModal
-                {...confirmModalOptions}
-                handleNo={() => {
-                    setConfirmModalOptions(prevState => {
-                        return {...prevState, show: false}
-                    });
-                }}
-                handleYes={() => deleteList(confirmModalOptions.deleteId)}
-            />
         </div>
     );
 }
