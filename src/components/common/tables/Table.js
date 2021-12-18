@@ -72,7 +72,7 @@ const Table = ({
                                 return (<th key={`${title}-th-${i}`}
                                             colSpan={x.colspan}
                                             rowSpan={x.rowspan}
-                                            className={`${allowSorting && "cursor-pointer user-select-none"} ${x.className}`}
+                                            className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className}`}
                                             data-index={i}
                                             onClick={() => {
                                                 setSortSettings(prevState => {
@@ -83,11 +83,13 @@ const Table = ({
                                                 })
                                             }}
                                 >
-                                    <ArrowIconTransition in={showSortArrow && (sortSettings.index === i)}>
-                                    {(sortSettings.ascending ?
-                                        <IoArrowUp/> : <IoArrowDown/>)}
-                                    </ArrowIconTransition>
-                                    {x.text || x}
+                                    <div className="d-flex flex-row align-items-center">
+                                        <ArrowIconTransition in={showSortArrow && (sortSettings.index === i)}>
+                                            {(sortSettings.ascending ?
+                                                <IoArrowUp className="d-block"/> : <IoArrowDown className="d-block"/>)}
+                                        </ArrowIconTransition>
+                                        <div>{x.text || x}</div>
+                                    </div>
                                 </th>)
                             }
                         })}
