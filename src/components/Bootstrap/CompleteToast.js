@@ -44,7 +44,7 @@ const timeUntilNext = (from, unit = "s") => {
     return (Math.ceil(from / divider) * divider) - from;
 }
 
-function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, id, icon}) {
+function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, id, icon, autoHide, onClick}) {
     const [showState, setShowState] = useState(show);
     const [timestampUpdated, setTimestampUpdated] = useState(null);
     const [timestampState, setTimestampState] = useState(timestamp);
@@ -90,6 +90,9 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
                onClick={() => {
                    clicked.current = true;
                    setShowState(false);
+                   if(onClick){
+                       onClick();
+                   }
                }}
                onMouseEnter={() => {
                    if (!clicked.current) {
@@ -104,12 +107,14 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
                onMouseLeave={() => {
                    if (!clicked.current) {
                        hovering.current = false;
-                       deleteTimeout.current = setTimeout(close, 3000);
+                       if (autoHide) {
+                           deleteTimeout.current = setTimeout(close, 3000);
+                       }
                    }
                }}
                show={showState}
-               autohide
-               delay={4000}
+               autohide={autoHide}
+               delay={autoHide ? 4000 : null}
                transition={ToastTransition}
                id={id}
                className={`cursor-pointer show`}
@@ -139,6 +144,7 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
 }
 
 CompleteToast.propTypes = {
+    autoHide: PropTypes.bool,
     show: PropTypes.bool,
     timeStamp: PropTypes.number,
     handleClick: PropTypes.func,
@@ -153,6 +159,7 @@ CompleteToast.propTypes = {
 };
 
 CompleteToast.defaultProps = {
+    autoHide: true,
     show: false,
     timestamp: Date.now(),
     buttonVariant: "primary",
