@@ -1,9 +1,9 @@
-import {useEffect, useRef, useState} from "react"
+import {useContext, useEffect, useRef, useState} from "react"
 import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
 import Table from "../common/tables/Table";
-import ConfirmModal from "../Bootstrap/ConfirmModal";
 import validateForm from "../../functions/formValidation";
+import {GlobalAppContext} from "../../App";
 
 const Items = () => {
         const addDataTemplate = {
@@ -13,17 +13,10 @@ const Items = () => {
         }
 
         const fetchHook = useFetch();
+        const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
         const [addItemData, setAddItemData] = useState({...addDataTemplate});
         const [editId, setEditId] = useState(null);
         const [itemList, setItemList] = useState([]);
-        const [modalOptions, setModalOptions] = useState({
-            show: false,
-            deleteId: null,
-            itemName: null,
-            bodyText: "",
-            headerClass: "bg-danger text-light",
-            yesButtonVariant: "danger"
-        });
         const addItemForm = useRef();
         const itemsLoadedOnce = useRef(false);
 
@@ -67,8 +60,14 @@ const Items = () => {
                                             ...prevState,
                                             show: true,
                                             deleteId: item.id,
-                                            itemName: item.name,
-                                            bodyText: `Are you sure you want to delete ${item.name}?\n\nThe item will also be removed from any lists containing it.`
+                                            targetName: item.name,
+                                            bodyText: `Are you sure you want to delete ${item.name}?\n\nThe item will also be removed from any lists containing it.`,
+                                            handleNo: () => {
+                                                setModalOptions(prevState => {
+                                                    return {...prevState, show: false}
+                                                })
+                                            },
+                                            handleYes: () => deleteItem(item.id, item.name)
                                         }
                                     })
                                 }
@@ -166,6 +165,7 @@ const Items = () => {
         }
 
         const deleteItem = (id, name) => {
+            console.log(name);
             fetchHook({
                 type: "deleteItem",
                 options: {
@@ -269,15 +269,6 @@ const Items = () => {
                         defaultSortIndex={1}
                     />
                 </div>
-                <ConfirmModal
-                    {...modalOptions}
-                    handleNo={() => {
-                        setModalOptions(prevState => {
-                            return {...prevState, show: false}
-                        });
-                    }}
-                    handleYes={() => deleteItem(modalOptions.deleteId, modalOptions.itemName)}
-                />
             </div>
         );
     }
