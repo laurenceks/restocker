@@ -54,6 +54,7 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
     const deleteTimeout = useRef(null);
     const hovering = useRef(false);
     const visible = useRef(false);
+    const clicked = useRef(false);
     const toastNode = useRef();
     const IconComponent = icon || variantPairings[variant].icon
 
@@ -87,19 +88,24 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
                ref={toastNode}
                onClose={close}
                onClick={() => {
+                   clicked.current = true;
                    setShowState(false);
                }}
                onMouseEnter={() => {
-                   hovering.current = true;
-                   if (deleteTimeout.current) {
-                       clearTimeout(deleteTimeout.current);
-                       deleteTimeout.current = null;
+                   if (!clicked.current) {
+                       hovering.current = true;
+                       if (deleteTimeout.current) {
+                           clearTimeout(deleteTimeout.current);
+                           deleteTimeout.current = null;
+                       }
+                       setShowState(true);
                    }
-                   setShowState(true);
                }}
                onMouseLeave={() => {
-                   hovering.current = false;
-                   deleteTimeout.current = setTimeout(close, 3000);
+                   if (!clicked.current) {
+                       hovering.current = false;
+                       deleteTimeout.current = setTimeout(close, 3000);
+                   }
                }}
                show={showState}
                autohide
@@ -119,7 +125,8 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
                    setToasts(prevState => prevState.filter(x => x.id !== id));
                }}
         >
-            <Toast.Header className={headerClass || `${variantPairings[variant].bg} ${variantPairings[variant].text}`} closeButton={false}>
+            <Toast.Header className={headerClass || `${variantPairings[variant].bg} ${variantPairings[variant].text}`}
+                          closeButton={false}>
                 <IconComponent className={"smallIcon me-2"}/>
                 <p className="fs-5 my-0 me-auto">{title}</p>
                 <small>{timestampText}</small>
@@ -151,7 +158,7 @@ CompleteToast.defaultProps = {
     buttonVariant: "primary",
     bodyText: "The operation was completed successfully",
     headerClass: null,
-    icon:null,
+    icon: null,
     id: `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`,
     timestampText: Date.now(),
     title: "Success",
