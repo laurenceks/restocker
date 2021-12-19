@@ -29,9 +29,9 @@ const Table = ({
     const [showSortArrow, setShowSortArrow] = useState(false);
     const [currentHeadingHoverIndex, setCurrentHeadingHoverIndex] = useState(null);
     const [tableRows, setTableRows] = useState(rows);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
-    const pageCount = Math.ceil(tableRows.length / maxRowCount) || null;
+    const pageCount = maxRowCount ? Math.ceil(tableRows.length / maxRowCount) || null : null;
     const pageNumbers = pageCount ? [...Array(pageCount).keys()].map(x => ++x) : [];
 
     const sortTableRows = (a, b) => {
@@ -108,7 +108,7 @@ const Table = ({
                         </tr>
                         </thead>
                         <tbody>
-                        {[...tableRows].splice(currentPage * maxRowCount, maxRowCount).map((x, i) => {
+                        {[...tableRows].splice(currentPageIndex * (maxRowCount || 0), maxRowCount || tableRows.length).map((x, i) => {
                             return (
                                 <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
                                     {x.map((y, j) => {
@@ -125,26 +125,26 @@ const Table = ({
                         })}
                         </tbody>
                     </table>
-                    {tableRows.length > maxRowCount &&
+                    {(tableRows.length > maxRowCount && maxRowCount) &&
                     <nav aria-label="Table pages">
                         <ul className="pagination justify-content-center">
-                            <li className={`page-item ${currentPage === 0 ? "disabled" : "cursor-pointer"}`}>
+                            <li className={`page-item user-select-none ${currentPageIndex === 0 ? "disabled" : "cursor-pointer"}`}>
                                 <a className="page-link"
                                    aria-label="Previous"
-                                   onClick={() => setCurrentPage(prevState => Math.min(0, --prevState))}
+                                   onClick={() => setCurrentPageIndex(prevState => Math.max(0, --prevState))}
                                 >
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                             {pageNumbers.map((x, i) => {
                                 return <li key={`table-${title}-page-${i + 1}`}
-                                           className={`page-item  ${currentPage === i ? "disabled" : "cursor-pointer"}`}>
-                                    <a className="page-link" onClick={() => setCurrentPage(i)}>{x}</a></li>
+                                           className={`page-item user-select-none ${currentPageIndex === i ? "active" : "cursor-pointer"}`}>
+                                    <a className="page-link" onClick={i !== currentPageIndex && (() => setCurrentPageIndex(i))}>{x}</a></li>
                             })}
-                            <li className={`page-item ${currentPage === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
+                            <li className={`page-item user-select-none ${currentPageIndex === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
                                 <a className="page-link"
                                    aria-label="Next"
-                                   onClick={() => setCurrentPage(prevState => Math.min(pageCount - 1, ++prevState))}
+                                   onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount - 1, ++prevState))}
                                 >
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
