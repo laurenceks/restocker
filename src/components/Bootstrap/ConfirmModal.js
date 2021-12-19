@@ -1,7 +1,23 @@
+import {useContext, useEffect} from "react";
 import PropTypes from 'prop-types';
 import {Button, Modal} from "react-bootstrap";
+import {GlobalAppContext} from "../../App";
 
-const ConfirmModal = ({show, title, bodyText, handleYes, handleNo, yesText, noText, headerClass, yesButtonVariant, noButtonVariant}) => {
+const ConfirmModal = ({
+                          show,
+                          title,
+                          bodyText,
+                          handleYes,
+                          handleNo,
+                          yesText,
+                          noText,
+                          headerClass,
+                          yesButtonVariant,
+                          noButtonVariant
+                      }) => {
+
+    const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
+
     return (
         <Modal show={show} onHide={handleNo} backdrop="static" aria-labelledby="contained-modal-title-vcenter"
                centered>
@@ -10,7 +26,11 @@ const ConfirmModal = ({show, title, bodyText, handleYes, handleNo, yesText, noTe
             </Modal.Header>
             <div style={{whiteSpace: "pre-wrap"}}><Modal.Body>{bodyText}</Modal.Body></div>
             <Modal.Footer>
-                <Button variant={noButtonVariant} onClick={handleNo}>
+                <Button variant={noButtonVariant} onClick={handleNo || (() => {
+                    setModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    })
+                })}>
                     {noText}
                 </Button>
                 <Button variant={yesButtonVariant} onClick={handleYes}>
@@ -37,9 +57,7 @@ ConfirmModal.propTypes = {
 ConfirmModal.defaultProps = {
     show: false,
     headerClass: null,
-    handleNo: (e) => {
-        console.log("No/cancel clicked, but no handler passed")
-    },
+    handleNo: null,
     handleYes: (e) => {
         console.log("Yes clicked, but no handler passed")
     },
