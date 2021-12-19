@@ -78,6 +78,7 @@ const Register = () => {
                                            },
                                        allowNew: true,
                                        onChange: (e) => {
+                                           if(e[0] && (organisations))
                                            setOrganisation(e[0] ? {
                                                ...e[0],
                                                organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
