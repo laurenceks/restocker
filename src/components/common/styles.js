@@ -16,16 +16,24 @@ const variantPairings = {
     warning: {
         icon: IoWarningOutline,
         text: "text-black",
-        bg: "bg-warning",
+        bg: "bg-warning"
     },
     danger: {
         icon: IoCloseCircleOutline,
         text: "text-white",
         bg: "bg-danger",
+    },
+    primary: {
+        icon: IoCloseCircleOutline,
+        text: "text-white",
+        bg: "bg-primary",
     }
 }
 
-Object.keys(variantPairings).forEach(x => variantPairings[x].header = `${variantPairings[x].bg || ""} ${variantPairings[x].text || ""}`)
+Object.keys(variantPairings).forEach(x => {
+    variantPairings[x].header = `${variantPairings[x].bg || ""} ${variantPairings[x].text || ""}`
+    variantPairings[x].button = `btn-${x} ${variantPairings[x].text || ""}`
+})
 
 const commonChartOptions = {
     responsive: true,
