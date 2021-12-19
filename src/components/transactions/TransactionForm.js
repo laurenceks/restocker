@@ -181,7 +181,6 @@ const TransactionForm = ({formType}) => {
         //disable form submission until complete
         setSubmitDisabled(true);
         fetchJson("./php/items/addTransaction.php", {
-
             method: "POST",
             body: JSON.stringify(transactionData),
         }, (x) => {
