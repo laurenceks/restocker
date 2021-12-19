@@ -6,7 +6,7 @@ const fetchJson = (url, options, successHandler, errorHandler = null) => {
         successHandler(x);
     }).catch((e) => {
         console.error(e.error || e);
-        if (e.errorMessage || e.text || e.feedback || e.feedbackText || e.error) {
+        if (e.errorMessage || e.feedback || e.error) {
             console.error("The following text was returned by the server which caused the above error" + e.text || e.error);
         }
         if (errorHandler) {
