@@ -123,7 +123,7 @@ const Locations = () => {
 
         const addLocation = (form) => {
             fetchHook({
-                type: "getLocations",
+                type: "addLocation",
                 options: {
                     method: "POST",
                     body: JSON.stringify(form.values)
