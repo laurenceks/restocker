@@ -9,6 +9,7 @@ const Table = ({
                    title,
                    headers,
                    rows,
+                   maxRowCount,
                    tableClassName,
                    fullWidth,
                    rowEnter,
@@ -28,7 +29,10 @@ const Table = ({
     const [showSortArrow, setShowSortArrow] = useState(false);
     const [currentHeadingHoverIndex, setCurrentHeadingHoverIndex] = useState(null);
     const [tableRows, setTableRows] = useState(rows);
+    const [currentPage, setCurrentPage] = useState(0);
     const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
+    const pageCount = Math.ceil(tableRows.length / maxRowCount) || null;
+    const pageNumbers = pageCount ? [...Array(pageCount).keys()].map(x => ++x) : [];
 
     const sortTableRows = (a, b) => {
         const aIndex = sortSettings.index + (columnCount.current - a.length);
@@ -63,65 +67,95 @@ const Table = ({
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
             {(rows && rows.length > 0) ?
-                <table className={`table table-hover ${tableClassName}`}>
-                    <thead>
-                    <tr onMouseEnter={() => setShowSortArrow(true)}
-                        onMouseLeave={() => setShowSortArrow(false)}
-                    >
-                        {headers.map((x, i) => {
-                            if (x) {
-                                return (<th key={`${title}-th-${i}`}
-                                            colSpan={x.colspan}
-                                            rowSpan={x.rowspan}
-                                            className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className || ""}`}
-                                            data-index={i}
-                                            onMouseEnter={(e) => setCurrentHeadingHoverIndex(parseInt(e.target.dataset.index))}
-                                            onClick={() => {
-                                                setSortSettings(prevState => {
-                                                    return {
-                                                        ascending: i === prevState.index ? !prevState.ascending : true,
-                                                        index: i
-                                                    }
-                                                })
-                                            }}
-                                >
-                                    <div className="d-flex flex-row align-items-center">
-                                        <ArrowIconTransition
-                                            in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
-                                            colourVariant={sortSettings.index !== i && "secondary"}
-                                        >
-                                            {(sortSettings.ascending ?
-                                                <IoArrowUp
-                                                    className="d-block"/> :
-                                                <IoArrowDown className="d-block"/>)}
-                                        </ArrowIconTransition>
-                                        <div>{x.text || x}</div>
-                                    </div>
-                                </th>)
-                            }
+                <>
+                    <table className={`table table-hover ${tableClassName}`}>
+                        <thead>
+                        <tr onMouseEnter={() => setShowSortArrow(true)}
+                            onMouseLeave={() => setShowSortArrow(false)}
+                        >
+                            {headers.map((x, i) => {
+                                if (x) {
+                                    return (<th key={`${title}-th-${i}`}
+                                                colSpan={x.colspan}
+                                                rowSpan={x.rowspan}
+                                                className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className || ""}`}
+                                                data-index={i}
+                                                onMouseEnter={(e) => setCurrentHeadingHoverIndex(parseInt(e.target.dataset.index))}
+                                                onClick={() => {
+                                                    setSortSettings(prevState => {
+                                                        return {
+                                                            ascending: i === prevState.index ? !prevState.ascending : true,
+                                                            index: i
+                                                        }
+                                                    })
+                                                }}
+                                    >
+                                        <div className="d-flex flex-row align-items-center">
+                                            <ArrowIconTransition
+                                                in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
+                                                colourVariant={sortSettings.index !== i && "secondary"}
+                                            >
+                                                {(sortSettings.ascending ?
+                                                    <IoArrowUp
+                                                        className="d-block"/> :
+                                                    <IoArrowDown className="d-block"/>)}
+                                            </ArrowIconTransition>
+                                            <div>{x.text || x}</div>
+                                        </div>
+                                    </th>)
+                                }
+                            })}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {[...tableRows].splice(currentPage * maxRowCount, maxRowCount).map((x, i) => {
+                            return (
+                                <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
+                                    {x.map((y, j) => {
+                                        if (y || y === 0) {
+                                            return <TableCell key={`${title}-tr-${i}-td-${j}`}
+                                                              content={y}
+                                                              className={y?.className}
+                                                              align={y?.cellAlignClass}
+                                            />
+                                        }
+                                    })}
+                                </tr>
+                            )
                         })}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {tableRows.map((x, i) => {
-                        return (
-                            <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
-                                {x.map((y, j) => {
-                                    if (y || y === 0) {
-                                        return <TableCell key={`${title}-tr-${i}-td-${j}`}
-                                                          content={y}
-                                                          className={y?.className}
-                                                          align={y?.cellAlignClass}
-                                        />
-                                    }
-                                })}
-                            </tr>
-                        )
-                    })}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                    {tableRows.length > maxRowCount &&
+                    <nav aria-label="Table pages">
+                        <ul className="pagination justify-content-center">
+                            <li className={`page-item ${currentPage === 0 ? "disabled" : "cursor-pointer"}`}>
+                                <a className="page-link"
+                                   aria-label="Previous"
+                                   onClick={() => setCurrentPage(prevState => Math.min(0, --prevState))}
+                                >
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {pageNumbers.map((x, i) => {
+                                return <li key={`table-${title}-page-${i + 1}`}
+                                           className={`page-item  ${currentPage === i ? "disabled" : "cursor-pointer"}`}>
+                                    <a className="page-link" onClick={() => setCurrentPage(i)}>{x}</a></li>
+                            })}
+                            <li className={`page-item ${currentPage === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
+                                <a className="page-link"
+                                   aria-label="Next"
+                                   onClick={() => setCurrentPage(prevState => Math.min(pageCount - 1, ++prevState))}
+                                >
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    }
+                </>
                 :
-                <p className=" p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}</div>
+                <p className=" p-3 my-3 bg-light text-dark rounded-3 text-center">No data to display</p>}
+        </div>
     );
 };
 
@@ -136,6 +170,7 @@ Table.propTypes = {
     rowEnter: PropTypes.func,
     rowLeave: PropTypes.func,
     defaultSortIndex: PropTypes.number,
+    maxRowCount: PropTypes.number,
     length: PropTypes.number,
 };
 
@@ -150,6 +185,7 @@ Table.defaultProps = {
     rowEnter: null,
     rowLeave: null,
     defaultSortIndex: 0,
+    maxRowCount: 10,
     length: null
 }
 
