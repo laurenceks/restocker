@@ -27,9 +27,14 @@ try {
         $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
         $makeUserAdmin = $db->prepare("UPDATE users_info SET admin = 1, superAdmin = 0 WHERE userId = :userId");
         $makeUserAdmin->bindParam(':userId', $input["userId"]);
-        $output = simpleExecuteOutput($makeUserAdmin->execute());
+        $output["title"] = "User promoted";
+        $output["feedback"] = $input["userFullName"] . " is now an admin";
+        $output = simpleExecuteOutput($makeUserAdmin, $output);
     } else {
+        $output["title"] = "Forbidden";
         $output["feedback"] = "A super admin can only renounce their own super admin rights";
+        $output["errorMessage"] = "A super admin can only renounce their own super admin rights";
+        $output["errorType"] = "targetIsSuperAdmin";
     }
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);

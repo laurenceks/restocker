@@ -20,7 +20,9 @@ try {
     $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
     $makeUserSuperAdmin = $db->prepare("UPDATE users_info SET superAdmin = 1 WHERE userId = :userId");
     $makeUserSuperAdmin->bindParam(':userId', $input["userId"]);
-    $output = simpleExecuteOutput($makeUserSuperAdmin->execute());
+    $output["title"] = "User promoted";
+    $output["feedback"] = $input["userFullName"] . " is now an admin";
+    $output = simpleExecuteOutput($makeUserSuperAdmin, $output);
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }

@@ -7,7 +7,7 @@ require "../security/userSameOrganisationAsTargetCheck.php";
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
 
-$getAllUsers = $db->prepare("UPDATE users_info SET suspended = 1 WHERE id = :userId");
-$getAllUsers->bindParam(':userId', $input["userId"]);
+$suspendUser = $db->prepare("UPDATE users_info SET suspended = 1 WHERE userId = :userId");
+$suspendUser->bindParam(':userId', $input["userId"]);
 
-echo json_encode(simpleExecuteOutput($getAllUsers->execute()), $input["name"] . " has been suspended");
+echo json_encode(simpleExecuteOutput($suspendUser, array("title" => "User suspended", "feedback" => $input["userFullName"] . " has been suspended")));

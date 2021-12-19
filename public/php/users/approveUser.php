@@ -7,7 +7,7 @@ require "../security/userSameOrganisationAsTargetCheck.php";
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
 
-$getAllUsers = $db->prepare("UPDATE users_info SET approved = 1 WHERE userId = :userId");
-$getAllUsers->bindParam(':userId', $input["userId"]);
+$approveUser = $db->prepare("UPDATE users_info SET approved = 1 WHERE userId = :userId");
+$approveUser->bindParam(':userId', $input["userId"]);
 
-echo json_encode(simpleExecuteOutput($getAllUsers->execute(), $input["name"] . " is now approved"));
+echo json_encode(simpleExecuteOutput($approveUser, array("title" => "User approved", "feedback" => $input["userFullName"] . " has been approved")));

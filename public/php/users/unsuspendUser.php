@@ -8,7 +8,7 @@ require "../security/userSameOrganisationAsTargetCheck.php";
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
 
-$getAllUsers = $db->prepare("UPDATE users_info SET suspended = 0 WHERE id = :userId");
-$getAllUsers->bindParam(':userId', $input["userId"]);
+$unsuspendUser = $db->prepare("UPDATE users_info SET suspended = 0 WHERE userId = :userId");
+$unsuspendUser->bindParam(':userId', $input["userId"]);
 
-echo json_encode(simpleExecuteOutput($getAllUsers->execute()), $input["name"] . " is now active again");
+echo json_encode(simpleExecuteOutput($unsuspendUser, array("title" => "User restored", "feedback" => $input["userFullName"] . " has been restored")));

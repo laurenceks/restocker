@@ -20,7 +20,9 @@ try {
     $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
     $makeAdminUser = $db->prepare("UPDATE users_info SET admin = 0, superAdmin = 0 WHERE userId = :userId");
     $makeAdminUser->bindParam(':userId', $input["userId"]);
-    $output = simpleExecuteOutput($makeAdminUser->execute());
+    $output["title"] = "User demoted";
+    $output["feedback"] = $input["userFullName"] . " is now a normal user";
+    $output = simpleExecuteOutput($makeAdminUser, $output);
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }

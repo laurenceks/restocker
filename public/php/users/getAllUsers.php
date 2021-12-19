@@ -19,6 +19,9 @@ try {
             WHERE users_info.organisationId = :organisationId");
     $getAllUsers->bindValue(':organisationId', $_SESSION["user"]->organisationId);
     $getAllUsers->execute();
+    $output["success"] = true;
+    $output["title"] = "Users updated";
+    $output["feedback"] = "Users data has been refreshed";
     $output["users"] = $getAllUsers->fetchAll(PDO::FETCH_ASSOC);
     if ($auth->hasRole(\Delight\Auth\Role::SUPER_ADMIN)) {
         $isSuperAdminAndThereIsMoreThanOne = $db->prepare("SELECT COUNT(*) as result FROM `users_info` WHERE `superAdmin` = 1 AND `organisationId` = :organisationId");

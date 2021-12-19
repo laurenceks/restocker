@@ -1,7 +1,7 @@
 <?php
 $feedbackTemplate = array(
     "success" => false,
-    "title" => "error",
+    "title" => "Error",
     "feedback" => "An unknown error occurred",
     "errorMessage" => null,
     "errorTypes" => array(),

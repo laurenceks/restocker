@@ -14,7 +14,7 @@ $output = $feedbackTemplate;
 try {
     $auth->admin()->addRoleForUserById(1, \Delight\Auth\Role::SUPER_ADMIN);
     $makeUserSuperAdmin = $db->prepare("UPDATE users_info SET admin = 1, superAdmin = 1 WHERE userId = 1");
-    $output = simpleExecuteOutput($makeUserSuperAdmin->execute());
+    $output = simpleExecuteOutput($makeUserSuperAdmin);
 } catch (\Delight\Auth\UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
