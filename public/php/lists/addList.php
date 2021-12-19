@@ -31,7 +31,7 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
         $addList->bindValue(":uid1", $_SESSION["user"]->userId);
         $addList->bindValue(":uid2", $_SESSION["user"]->userId);
         $addList->execute();
-        $addListItem = addFunctionListItem($db->lastInsertId(), $input["itemId"], $input["quantity"], $_SESSION["user"]->organisationId, $_SESSION["user"]->userId);
+        $addListItem = addFunctionListItem($db->lastInsertId(), $input["itemId"],$input["itemName"], $input["quantity"], $_SESSION["user"]->organisationId, $_SESSION["user"]->userId);
         if ($addListItem["success"]) {
             $output["success"] = true;
             $output["title"] = "List added";
