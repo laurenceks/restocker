@@ -3,7 +3,7 @@ function addFunctionListItem($listId, $itemId, $itemName, $quantity, $organisati
 {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
-    if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $item["itemId"])))) {
+    if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $itemId)))) {
         //item no longer exists
         return array("success" => false,
             "feedback" => $itemName . " could not be found - possibly due to deletion - please try again",
