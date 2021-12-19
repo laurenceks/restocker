@@ -19,21 +19,21 @@ const fetchOptions = {
     getUsers: {url: "./php/users/getAllUsers.php", method: "GET"},
     deleteUser: {url: "./php/users/deleteUser.php", method: "POST"},
     approveUser: {url: "./php/users/approveUser.php", method: "POST"},
-    makeUserAdmin: {url: "./php/users/deleteUser.php", method: "POST"},
+    makeUserAdmin: {url: "./php/users/makeUserAdmin.php", method: "POST"},
+    makeUserSuperAdmin: {url: "./php/users/makeUserSuperAdmin.php", method: "POST"},
     makeAdminUser: {url: "./php/users/makeAdminUser.php", method: "POST"},
     manuallyVerifyUser: {url: "./php/users/manuallyVerifyUser.php", method: "POST"},
     suspendUser: {url: "./php/users/suspendUser.php", method: "POST"},
     unsuspendUser: {url: "./php/users/unsuspendUser.php", method: "POST"},
     getItemsAndLocations: {url: "./php/items/getAllItemsAndLocations.php", method: "GET"},
     getRates: {url: "./php/items/getRates.php", method: "POST"},
+
 }
 
 export const useFetch = () => {
-
+    let controller = new AbortController();
     const handleFeedback = useFeedback();
     const setToasts = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
-    const controller = new AbortController();
-    const {signal} = controller;
     let slowFetchToastId = null
 
     return ({type, options = {}, callback = null, feedbackOptions = {}, dontHandleFeedback = false}) => {
@@ -48,6 +48,7 @@ export const useFetch = () => {
                     autoHide: false,
                     onClick: () => {
                         controller.abort();
+                        controller = new AbortController();
                         console.log("Abort! " + options?.body)
                         setToasts(prevState => {
                             return [...prevState, {
@@ -62,8 +63,9 @@ export const useFetch = () => {
             })
         }, 2000)
         fetchJson(fetchOptions[type].url, {
-            signal: signal,
-            method: fetchOptions[type].method, ...options
+            signal: controller.signal,
+            method: fetchOptions[type].method,
+            ...options
         }, (response) => {
             clearTimeout(slowFetchTimeout);
             if (slowFetchToastId) {
