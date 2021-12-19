@@ -10,4 +10,4 @@ targetHasSameOrganisationAsCurrentUser($input["userId"]);
 $getAllUsers = $db->prepare("UPDATE users_info SET suspended = 1 WHERE id = :userId");
 $getAllUsers->bindParam(':userId', $input["userId"]);
 
-echo json_encode(simpleExecuteOutput($getAllUsers->execute()));
+echo json_encode(simpleExecuteOutput($getAllUsers->execute()), $input["name"] . " has been suspended");

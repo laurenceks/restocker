@@ -1,10 +1,11 @@
 <?php
-function simpleExecuteOutput($exe)
+    require "../common/feedbackTemplate.php";
+function simpleExecuteOutput($exe, $feedbackMessage)
 {
-    $output = array("success" => false, "feedback" => "An error occurred", "errorCode" => null);
+    $output = array_merge($feedbackTemplate, array("errorCode" => null));
     if ($exe) {
         $output["success"] = true;
-        $output["feedback"] = "Executed successfully";
+        $output["feedback"] = $feedbackMessage || "Executed successfully";
     }
     return $output;
 }

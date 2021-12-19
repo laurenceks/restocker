@@ -3,19 +3,22 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require "../common/checkFunctionExists.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null);
+$output = $feedbackTemplate;
 
 if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["id"])))) {
-    $output["errorType"] = "itemMissing";
-    $output["title"] = "Missing item";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
+    $output["errorMessage"] = $input["name"] . " could not be found";
+    $output["title"] = "Missing item";
+    $output["errorType"] = "itemMissing";
 } else if (checkFunctionExists("items", "name", array(array("key" => "name", "value" => $input["name"])), false, true, $input["id"])) {
-    $output["errorType"] = "itemExists";
-    $output["title"] = "Item already exists";
     $output["feedback"] = "An item with that name already exists, please change the item name and try again";
+    $output["errorMessage"] = "An item with that name already exists";
+    $output["title"] = "Item already exists";
+    $output["errorType"] = "itemExists";
 } else {
     try {
         $editItem = $db->prepare("UPDATE items SET name = :name, unit = :unit,warningLevel = :warningLevel, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
@@ -29,9 +32,8 @@ if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $i
         $output["success"] = true;
         $output["title"] = "Item updated";
         $output["feedback"] = $input["name"] . " was updated successfully";
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }
 

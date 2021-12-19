@@ -5,17 +5,24 @@ require_once "../common/db.php";
 require "addFunctionListItem.php";
 require "../common/checkFunctionExists.php";
 
+require "../common/feedbackTemplate.php";
+
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null, "errorType" => null);
+$output = $feedbackTemplate;
+
 if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $input["name"])))) {
     //a list with that name already exists
-    $output["errorType"] = "listExists";
     $output["feedback"] = "A list with that name already exists, please change the list name and try again";
+    $output["title"] = "List exists";
+    $output["errorMessage"] = "A list with that name already exists";
+    $output["errorType"] = "listExists";
 } else if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["itemId"])))) {
     //that item doesn't exist
-    $output["errorType"] = "missingItem";
     $output["feedback"] = $input["itemName"] . " could not be found - possibly due to deletion - please try again";
+    $output["title"] = "Missing item";
+    $output["errorMessage"] = input["itemName"] . " could not be found";
+    $output["errorType"] = "missingItem";
 } else {
     try {
         $addList = $db->prepare("INSERT INTO lists (organisationId, name, createdBy, editedBy) VALUES (:organisationId,:name, :uid1, :uid2)");
@@ -30,11 +37,11 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
             $output["title"] = "List added";
             $output["feedback"] = $input["name"] . " was added successfully";
         } else {
-            $output["feedback"] = $addListItem["feedback"];
+            $output["feedback"] = $addListItem;
         }
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
+
     }
 }
 echo json_encode($output);

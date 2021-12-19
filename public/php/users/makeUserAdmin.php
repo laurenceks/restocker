@@ -4,22 +4,22 @@ require "../security/userAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
 require "../security/userSameOrganisationAsTargetCheck.php";
+require_once "../common/db.php";
+require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
-
-require_once "../common/db.php";
 
 $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 $targetIsSuperAdmin = false;
 
 try {
     $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 try {
     if (!$targetIsSuperAdmin || ($targetIsSuperAdmin && (int)$input["userId"] === $auth->getUserId())) {
@@ -32,7 +32,7 @@ try {
         $output["feedback"] = "A super admin can only renounce their own super admin rights";
     }
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 
 echo json_encode($output);

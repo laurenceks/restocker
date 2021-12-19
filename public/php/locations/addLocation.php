@@ -4,14 +4,17 @@ require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require "../common/checkFunctionExists.php";
 
+require "../common/feedbackTemplate.php";
+
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null);
+$output = $feedbackTemplate;
 
 if (checkFunctionExists("locations", "id", array(array("key" => "name", "value" => $input["inputAddLocationName"])))) {
-    $output["errorType"] = "locationExists";
-    $output["title"] = "Location already exists";
     $output["feedback"] = "A location with that name already exists, please change the location name and try again";
+    $output["title"] = "Location already exists";
+    $output["errorMessage"] = "Location already exists";
+    $output["errorType"] = "locationExists";
 } else {
     try {
         $addLocation = $db->prepare("INSERT INTO locations (organisationId, name, createdBy, editedBy) VALUES (:organisationId,:name, :uid1, :uid2)");
@@ -23,9 +26,8 @@ if (checkFunctionExists("locations", "id", array(array("key" => "name", "value" 
         $output["success"] = true;
         $output["title"] = "Location added";
         $output["feedback"] = $input["inputAddLocationName"] . " was added successfully";
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }
 

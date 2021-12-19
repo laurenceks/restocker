@@ -3,15 +3,16 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require "../common/checkFunctionExists.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null);
+$output = $feedbackTemplate;
 
 if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $input["id"])))) {
-    $output["errorType"] = "itemMissing";
-    $output["title"] = "Missing item";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
+    $output["title"] = "Missing item";
+    $output["errorType"] = "itemMissing";
 } else {
     try {
         $deleteItem = $db->prepare("UPDATE items SET deleted = 1, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
@@ -22,9 +23,8 @@ if (!checkFunctionExists("items", "id", array(array("key" => "id", "value" => $i
         $output["success"] = true;
         $output["title"] = "Item deleted";
         $output["feedback"] = $input["name"] . " was deleted successfully";
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }
 

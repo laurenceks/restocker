@@ -27,11 +27,17 @@ try {
     $output["feedback"] = "Password reset email sent, please check " . $input["inputForgotEmail"] . " for a recovery link";
 } catch (\Delight\Auth\InvalidEmailException $e) {
     $output["feedback"] = "Unknown email address, please check for typos or register";
+    $output["errorMessage"] = "Unknown email address";
     $output["keepFormActive"] = true;
+    $output["errorType"] = "unknownEmail";
 } catch (\Delight\Auth\EmailNotVerifiedException $e) {
     $output["feedback"] = "Email not verified";
+    $output["errorMessage"] = "Email not verified";
+    $output["errorType"] = "unverifiedEmail";
 } catch (\Delight\Auth\TooManyRequestsException $e) {
     $output["feedback"] = "There have been too many requests, please try again later";
+    $output["errorMessage"] = "Too many requests";
+    $output["errorType"] = "tooManyRequests";
 }
 
 echo json_encode($output);

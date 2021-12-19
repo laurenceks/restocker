@@ -12,8 +12,7 @@ function updateCurrentStockLevel()
         $updateCurrentStock->execute();
         $output["success"] = true;
         $output["feedback"] = "Stock levels updated";
-    } catch
-    (PDOException $e) {
+    } catch (PDOException $e) {
         return $output["feedback"] = $e->getMessage();
     }
     return json_encode($output);

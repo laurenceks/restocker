@@ -11,4 +11,4 @@ targetHasSameOrganisationAsCurrentUser($input["userId"]);
 $getAllUsers = $db->prepare("UPDATE users_info SET suspended = 0 WHERE id = :userId");
 $getAllUsers->bindParam(':userId', $input["userId"]);
 
-echo json_encode(simpleExecuteOutput($getAllUsers->execute()));
+echo json_encode(simpleExecuteOutput($getAllUsers->execute()), $input["name"] . " is now active again");

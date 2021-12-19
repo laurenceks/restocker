@@ -3,15 +3,17 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require "../common/checkFunctionExists.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null);
+$output = $feedbackTemplate;
 
 if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" => $input["id"])))) {
-    $output["errorType"] = "locationMissing";
-    $output["title"] = "Missing location";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
+    $output["title"] = "Missing location";
+    $output["errorMessage"] = $input["name"] . " could not be found";
+    $output["errorType"] = "locationMissing";
 } else {
     try {
         $deleteLocation = $db->prepare("UPDATE locations SET deleted = 1, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
@@ -22,9 +24,8 @@ if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" =
         $output["success"] = true;
         $output["title"] = "Location deleted";
         $output["feedback"] = $input["name"] . " was deleted successfully";
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }
 

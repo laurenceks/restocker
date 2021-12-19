@@ -3,10 +3,11 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require "../common/checkFunctionExists.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null);
+$output = $feedbackTemplate;
 
 if (checkFunctionExists("items", "id", array(array("key" => "name", "value" => $input["inputAddItemName"])))) {
     $output["errorType"] = "itemExists";
@@ -25,9 +26,8 @@ if (checkFunctionExists("items", "id", array(array("key" => "name", "value" => $
         $output["success"] = true;
         $output["title"] = "Item added";
         $output["feedback"] = $input["inputAddItemName"] . " was added successfully";
-    } catch
-    (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }
 

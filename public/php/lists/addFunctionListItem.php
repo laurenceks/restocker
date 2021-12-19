@@ -14,6 +14,10 @@ function addFunctionListItem($listId, $itemId, $quantity, $organisationId, $user
         $addList->execute();
         return array("success" => true, "feedback" => "Item added to list");
     } catch (PDOException $e) {
-        return array("success" => false, "feedback" => $e->getMessage());
+        return array("success" => false,
+            "feedback" => $e->getMessage(),
+            "errorMessage" => $e->getMessage(),
+            "errorType" => array($e->getCode()),
+            "errorTypes" => array("queryError"));
     }
 }

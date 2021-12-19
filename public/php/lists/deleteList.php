@@ -2,10 +2,11 @@
 require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 
 try {
     $deleteList = $db->prepare("UPDATE lists SET deleted = 1, editedBy = :uid WHERE id = :id AND organisationId = :organisationId");
@@ -21,10 +22,12 @@ try {
     $deleteListItems->execute();
 
     $output["success"] = true;
-    $output["feedback"] = "List deleted";
+    $output["feedback"] = $input["name"] . " was deleted successfully";
 } catch
 (PDOException $e) {
     echo $output["feedback"] = $e->getMessage();
+    $output["errorMessage"] = $e->getMessage();
+    $output["errorType"] = "queryError";
 }
 
 echo json_encode($output);

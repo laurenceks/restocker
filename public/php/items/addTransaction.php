@@ -5,17 +5,23 @@ require_once "../common/db.php";
 require_once "../common/updateCurrentStockLevel.php";
 require "../common/fetchFunctions/fetchFunctionItems.php";
 require "../common/checkFunctionExists.php";
+require "../common/feedbackTemplate.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "title" => null, "outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array(), "errorTypes" => array());
+$output = array_merge($feedbackTemplate, array("outOfStockItems" => array(), "missingItems" => array(), "missingLocations" => array()));
+
 if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" => $input["locationId"])))) {
     //location not found
     $output["feedback"] = "The location your are attempting to " . ($input["transactionFormType"] === "restock" ? "restock" : "withdraw from") . " could not be found - possibly due to deletion - please try again";
+    $output["errorMessage"] = "Location not found";
     $output["errorType"] = "missingLocation";
+    $output["errorTypes"][] = "missingLocation";
     earlyExit($output);
 } else if ($input["transactionFormType"] === "transfer" && !checkFunctionExists("locations", "id", array(array("key" => "id", "value" => $input["destinationId"])))) {
     $output["feedback"] = "The location your are attempting to send stock to could not be found - possibly due to deletion - please try again";
+    $output["errorMessage"] = "Destination not found";
+    $output["errorTypes"][] = "missingDestination";
     $output["errorType"] = "missingDestination";
     earlyExit($output);
 } else if ($input["transactionFormType"] !== "restock") {
@@ -31,6 +37,8 @@ if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" =
         if (!$transaction["itemId"]) {
             //invalid item Id
             $output["feedback"] = "Invalid itemId passed";
+            $output["errorMessage"] = "Invalid itemId passed";
+            $output["errorTypes"][] = "invalidItemId";
             $output["errorTypes"][] = "invalidItemId";
             earlyExit($output);
         } else if (!isset($currentItemsAtLocationByItemId["all"][$transaction["itemId"]])) {
@@ -50,10 +58,11 @@ if (!checkFunctionExists("locations", "id", array(array("key" => "id", "value" =
         earlyExit($output);
     } else if (count($output["outOfStockItems"]) > 0) {
         $output["feedback"] = "There is insufficient stock for " . (count($output["outOfStockItems"]) === 1 ? "one" : "some") . " of the items requested at " . $input["locationName"] . ", please review your transaction and try again (stock levels have been refreshed):\n\n";
+        $output["errorMessage"] = "Insufficient stock";
+        $output["errorTypes"][] = "outOfStock";
         foreach ($output["outOfStockItems"] as $outOfStockItem) {
             $output["feedback"] .= "\t• " . $outOfStockItem["name"] . " - " . $outOfStockItem["requested"] . " requested, " . $outOfStockItem["current"] . " available\n";
         }
-        $output["errorTypes"][] = "outOfStock";
         earlyExit($output);
     }
 }
@@ -81,7 +90,10 @@ foreach ($transactionQueries as $transactionQuery) {
         updateCurrentStockLevel();
         $transactionFeedback .= $transactionQuery["feedback"];
     } catch (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+        $output["feedback"] = $e->getMessage();
+        $output["errorMessage"] = $e->getMessage();
+        $output["errorTypes"][] = "queryError";
+        $output["errorType"] = "queryError";
         earlyExit($output);
     }
 }

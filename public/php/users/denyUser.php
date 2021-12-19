@@ -4,16 +4,15 @@ require "../security/userAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 require "../security/userSameOrganisationAsTargetCheck.php";
 require '../vendor/autoload.php';
+require "../common/db.php";
+require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
 
-require_once "../common/db.php";
-
 $auth = new Auth($db);
-
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 
 try {
     $auth->admin()->deleteUserById($input["userId"]);
@@ -24,16 +23,22 @@ try {
         $denyUser->bindParam(':userId', $input["userId"]);
         if ($denyUser->execute()) {
             $output["success"] = true;
+            $output["title"] = "Approval request denied";
             $output["feedback"] = "User approval request denied and account deleted";
         } else {
+            //TODO make these more specific
             $output["feedback"] = "Unable to deny approval request";
+            $output["errorMessage"] = "Unable to deny approval request";
+            $output["errorType"] = "unableToDeny";
         }
     } else {
         $output["feedback"] = "Unable to deny approval request";
+        $output["errorMessage"] = "Unable to deny approval request";
+        $output["errorType"] = "unableToDeny";
     }
 
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 
 echo json_encode($output);

@@ -98,7 +98,10 @@ try {
     $output["success"] = true;
 
 } catch (PDOException $e) {
+    $output["errorTypes"][] = "queryError";
     $output["feedback"] = $e->getMessage();
+    $output["errorMessage"] = $e->getMessage();
+    $output["errorType"] = $e->getCode();
 }
 
 echo json_encode($output);

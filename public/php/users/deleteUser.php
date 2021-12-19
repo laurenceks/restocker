@@ -2,16 +2,18 @@
 require "../security/userLoginSecurityCheck.php";
 require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
+require_once "../common/db.php";
+require "../common/feedbackTemplate.php";
+
+$input = json_decode(file_get_contents('php://input'), true);
+
 
 use Delight\Auth\Auth;
 
-require_once "../common/db.php";
-
 $auth = new Auth($db);
 
-
 $input = json_decode(file_get_contents('php://input'), true);
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 $targetIsSuperAdmin = false;
 $targetIsAdmin = false;
 $currentIsSuperAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::SUPER_ADMIN);
@@ -23,12 +25,12 @@ if (!$sameUser) {
 try {
     $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 try {
     $targetIsAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::ADMIN);
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 
 try {
@@ -51,21 +53,31 @@ try {
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $output = simpleExecuteOutput($deleteUserFromDb->execute());
         } catch (\Delight\Auth\UnknownIdException $e) {
-            $output["feedback"] = "Unknown user ID passed";
+            $output = array_merge($output, $unknownUserIdOutput);
         }
     } else {
+        $output["title"] = "Forbidden";
         if ($targetIsSuperAdmin) {
             $output["feedback"] = "A super admin can only delete themselves or be deleted once demoted";
+            $output["errorMessage"] = "A super admin can only delete themselves or be deleted once demoted";
+            $output["errorType"] = "targetIsSuperAdmin";
         } else if ($targetIsAdmin && !$currentIsSuperAdmin) {
             $output["feedback"] = "An admin can only be deleted by a super admin or themselves";
+            $output["title"] = "Forbidden";
+            $output["errorMessage"] = "An admin can only be deleted by a super admin or themselves";
+            $output["errorType"] = "targetIsSuperAdminAndUserIsNotSuperAdmin";
         } else if (!$currentIsAdmin && !$currentIsSuperAdmin && !$sameUser) {
             $output["feedback"] = "Admin rights are needed to delete users other than yourself";
+            $output["errorMessage"] = "Admin rights are needed to delete users other than yourself";
+            $output["errorType"] = "userIsNotAdmin";
         } else {
             $output["feedback"] = "An unknown permissions error occurred";
+            $output["errorMessage"] = "An unknown permissions error occurred";
+            $output["errorType"] = "unknownPermissionsError";
         }
     }
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 
 echo json_encode($output);

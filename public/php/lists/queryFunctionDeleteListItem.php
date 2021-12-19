@@ -11,6 +11,10 @@ function addFunctionListItem($id, $organisationId, $userId)
         $deleteListItems->execute();
         return array("success" => true, "feedback" => "Item deleted from list");
     } catch (PDOException $e) {
-        return array("success" => false, "feedback" => $e->getMessage());
+        return array("success" => false,
+            "feedback" => $e->getMessage(),
+            "errorMessage" => $e->getMessage(),
+            "errorType" => array($e->getCode()),
+            "errorTypes" => array("queryError"));
     }
 }

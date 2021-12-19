@@ -5,18 +5,22 @@ require_once "../common/db.php";
 require "addFunctionListItem.php";
 require "../common/checkFunctionExists.php";
 
+require "../common/feedbackTemplate.php";
+
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "errorType" => null);
+$output = $feedbackTemplate;
 
 if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $input["id"])))) {
-    $output["errorType"] = "listMissing";
-    $output["title"] = "Missing list";
     $output["feedback"] = $input["name"] . " could not be found - possibly due to deletion - please try again";
+    $output["title"] = "Missing list";
+    $output["errorMessage"] = $input["name"] . " could not be found";
+    $output["errorType"] = "listMissing";
 } else if (checkFunctionExists("lists", "name", array(array("key" => "name", "value" => $input["name"])), false, true, $input["id"])) {
-    $output["errorType"] = "listExists";
     $output["title"] = "List already exists";
     $output["feedback"] = "A list with that name already exists, please change the list name and try again";
+    $output["errorMessage"] = "List already exists";
+    $output["errorType"] = "listExists";
 } else {
     try {
         //TODO test checks
@@ -51,7 +55,10 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                         $editListItem->execute();
                     }
                 } catch (PDOException $e) {
-                    echo $output["feedback"] = $e->getMessage();
+                    $output["errorTypes"][] = "queryError";
+                    $output["feedback"] = $e->getMessage();
+                    $output["errorMessage"] = $e->getMessage();
+                    $output["errorType"] = $e->getCode();
                 }
             }
         }
@@ -59,7 +66,10 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
         $output["title"] = "List updated";
         $output["feedback"] = $input["name"] . " was updated successfully";
     } catch (PDOException $e) {
-        echo $output["feedback"] = $e->getMessage();
+        $output["errorTypes"][] = "queryError";
+        $output["feedback"] = $e->getMessage();
+        $output["errorMessage"] = $e->getMessage();
+        $output["errorType"] = $e->getCode();
     }
 }
 echo json_encode($output);

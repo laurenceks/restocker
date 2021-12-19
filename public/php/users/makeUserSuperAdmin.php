@@ -4,6 +4,7 @@ require "../security/userSuperAdminRightsCheck.php";
 require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
 require "../security/userSameOrganisationAsTargetCheck.php";
+require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
 
@@ -13,7 +14,7 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 targetHasSameOrganisationAsCurrentUser($input["userId"]);
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 
 try {
     $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
@@ -21,7 +22,7 @@ try {
     $makeUserSuperAdmin->bindParam(':userId', $input["userId"]);
     $output = simpleExecuteOutput($makeUserSuperAdmin->execute());
 } catch (\Delight\Auth\UnknownIdException $e) {
-    $output["feedback"] = "Unknown user ID passed";
+    $output = array_merge($output, $unknownUserIdOutput);
 }
 
 echo json_encode($output);

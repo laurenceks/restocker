@@ -7,6 +7,6 @@ try {
     //make sure retrieved numbers and null aren't converted to strings
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
-} catch(PDOException $e) {
+} catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
