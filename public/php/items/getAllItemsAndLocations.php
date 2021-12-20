@@ -32,7 +32,7 @@ foreach ($lists as $row) {
             $prev["currentStock"] = min($prev["currentStock"], floor($row["currentStock"] / $row["quantity"]));
         }
     } else {
-        $rowStart = array("id" => $row["id"], "name" => $row["listName"], "locationId" => $row["locationId"], "currentStock" => floor($row["currentStock"] / $row["quantity"]), "items" => array(array_slice($row, 3)));
+        $rowStart = array("id" => $row["id"], "name" => $row["listName"], "locationId" => $row["locationId"], "currentStock" => floor($row["currentStock"] / ($row["quantity"] || 1)), "items" => array(array_slice($row, 3)));
         $output["lists"][] = $rowStart;
         $output["listsByLocationId"][$row["locationId"]][] = $rowStart;
         $output["listsByLocationThenListId"][$row["locationId"]][$row["id"]] = $rowStart;
