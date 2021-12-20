@@ -11,11 +11,9 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                    items.currentStock,
                                    items.warningLevel
                             FROM   items
-                                   LEFT JOIN transactions
-                                          ON items.id = transactions.itemid
                             WHERE items.deleted = 0
                             AND items.organisationId = :organisationId1
-                            GROUP  BY transactions.itemid
+                            GROUP  BY items.id
                             UNION
                             SELECT items.id,
                                    items.name,
@@ -31,8 +29,8 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                    AND transactions.organisationid = :organisationId3'
                                     . "\n" . $locationWhere . "\n" .
                                     'GROUP  BY items.id,
-                                      transactions.locationid
-                            ORDER  BY locationid,
+                                      transactions.locationId
+                            ORDER  BY locationId,
                                       id; ');
     $getAllItems->bindValue(':organisationId1', $organisationId);
     $getAllItems->bindValue(':organisationId2', $organisationId);
