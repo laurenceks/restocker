@@ -3,7 +3,6 @@ import FormInput from "../common/forms/FormInput";
 import {useContext, useEffect, useRef, useState} from "react"
 import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
-import fetchJson from "../../functions/fetchJson";
 import naturalSort from "../../functions/naturalSort";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
@@ -11,6 +10,7 @@ import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 import handleFeedback from "../../functions/handleFeedback";
 import {GlobalAppContext} from "../../App";
+import useFetch from "../../hooks/useFetch";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -33,7 +33,7 @@ const TransactionForm = ({formType}) => {
         }
     }
 
-    //initialise location list before template class
+    const fetchHook = useFetch();
     const [locationList, setLocationList] = useState([]);
     const [locationsLoadedOnce, setLocationsLoadedOnce] = useState(false);
     const [destinationList, setDestinationList] = useState([]);
@@ -58,9 +58,14 @@ const TransactionForm = ({formType}) => {
     const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions;
 
     const getItems = (retainedSettings) => {
-        fetchAllItems((x) => {
-            processItems(x, retainedSettings)
-        }, true)
+        fetchHook({
+            type: "getItemsAndLocations",
+            dontHandleFeedback: !locationsLoadedOnce,
+            retainedSettings,
+            callback: (response) => {
+                processItems(response, response.retainedSettings)
+            }
+        })
     }
 
     const processItems = (x, retainedSettings = {}) => {
@@ -169,7 +174,7 @@ const TransactionForm = ({formType}) => {
             itemName: x?.itemName || newOptions.productName,
             quantity: transactionQty,
             postTransactionQuantity: postTransactionQuantity,
-            postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newProductData.itemsByLocationThenItemId[newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
+            postTransactionQuantityClassName: postTransactionQuantity <= 0 ? "table-danger" : postTransactionQuantity <= newProductData.itemsByLocationThenItemId[formType === "restock" ? "all" : newOptions.locationId]?.[transactionProductId]?.warningLevel ? "table-warning" : null,
             locationId: x?.locationId || newOptions.locationId,
             locationName: x?.locationName || newOptions.selectedLocation?.[0]?.name,
             type: transactionQty < 0 ? "withdraw" : "restock",
@@ -180,17 +185,18 @@ const TransactionForm = ({formType}) => {
     const commitTransaction = (e) => {
         //disable form submission until complete
         setSubmitDisabled(true);
-        fetchJson("./php/items/addTransaction.php", {
-            method: "POST",
-            body: JSON.stringify(transactionData),
-        }, (x) => {
-            setSubmitted(true);
-            handleFeedback(setStateFunctions, x, );
-            if (x.success) {
-                setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation, transactionData.selectedDestination));
-            } else {
-                setTransactionData({...transactionData, quantity: null, maxQty: null})
-                getItems();
+        fetchHook({
+            type: "addTransaction", options: {
+                method: "POST",
+                body: JSON.stringify(transactionData),
+            }, callback: (x) => {
+                setSubmitted(true);
+                if (x.success) {
+                    setTransactionData(new transactionDataTemplate(productType, transactionData.selectedLocation, transactionData.selectedDestination));
+                } else {
+                    setTransactionData({...transactionData, quantity: null, maxQty: null})
+                    getItems();
+                }
             }
         });
     }
