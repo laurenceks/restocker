@@ -17,8 +17,6 @@ const Stock = () => {
         }
     }
 
-    //TODO add sort key to table headers on click
-    const [sortKey, setSortKey] = useState("name");
     const [stockList, setStockList] = useState(new stockTableTemplate());
 
     const getItems = () => {
@@ -26,10 +24,11 @@ const Stock = () => {
     }
 
     const processItems = (x) => {
+        //TODO remodel data structure to use sort properly
         const newStockList = new stockTableTemplate();
         x.items.map((x) => {
-            return {...x, sortKey: x[sortKey]}
-        }).sort(naturalSort).forEach((item, index) => {
+            return {...x, sortKey: "name"}
+        }).sort(naturalSort).forEach((item) => {
                 newStockList.all.rows.push(
                     [
                         item.id,
