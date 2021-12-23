@@ -25,6 +25,19 @@ const InputCheckboxGroup = ({boxes, type, name, onChange, state}) => {
     );
 };
 
-InputCheckboxGroup.propTypes = {};
+InputCheckboxGroup.propTypes = {
+    type: PropTypes.string,
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    boxes: PropTypes.array
+};
+
+InputCheckboxGroup.defaultProps = {
+    type: "radio",
+    name: "radioGroup" + Math.random()*100000,
+    boxes: []
+};
+
+
 
 export default InputCheckboxGroup;
