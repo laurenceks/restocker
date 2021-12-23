@@ -314,7 +314,7 @@ const Dashboard = () => {
         <div className="container">
             <div className="row my-3 gy-3">
                 <DashboardStatTile title={"Mean stock"}
-                                   number={dashboardData.itemsStats.stockPercentage ? (Math.round(dashboardData.itemsStats.stockPercentage * 1000) / 10).toFixed(dashboardData.itemsStats.stockPercentage < 0.1 ? 1 : 0) + "%" || "N/A" : "N/A"}
+                                   number={dashboardData.itemsStats.stockPercentage ? (Math.round(dashboardData.itemsStats.stockPercentage * 1000) / 10).toFixed(dashboardData.itemsStats.stockPercentage < 0.1 ? 1 : 0) + "%" : "N/A"}
                                    colourClass={dashboardData.tileClasses.stockLevel}
                                    icon={<MdShowChart/>}/>
                 <DashboardStatTile title={"Burn rate"}
