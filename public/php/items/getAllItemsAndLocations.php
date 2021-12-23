@@ -40,6 +40,9 @@ foreach ($lists as $row) {
     $previousRow = $row;
 };
 
+$output["success"] = true;
+$output["title"] = "Items updated";
+$output["feedback"] = "The items, lists and locations data has been updated";
 $output["locations"] = fetchFunctionLocations($_SESSION["user"]->organisationId);
 
 echo json_encode($output);
