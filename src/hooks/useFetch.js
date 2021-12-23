@@ -27,7 +27,7 @@ const fetchOptions = {
     unsuspendUser: {url: "./php/users/unsuspendUser.php", method: "POST"},
     getItemsAndLocations: {url: "./php/items/getAllItemsAndLocations.php", method: "GET"},
     getRates: {url: "./php/items/getRates.php", method: "POST"},
-
+    addTransaction: {url: "./php/items/addTransaction.php", method: "POST"},
 }
 
 export const useFetch = () => {
@@ -36,7 +36,7 @@ export const useFetch = () => {
     const setToasts = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
     let slowFetchToastId = null
 
-    return ({type, options = {}, callback = null, feedbackOptions = {}, dontHandleFeedback = false}) => {
+    return ({type, options = {}, callback = null, feedbackOptions = {}, dontHandleFeedback = false, retainedSettings = {}}) => {
         const slowFetchTimeout = setTimeout(() => {
             slowFetchToastId = `${Date.now().toString(36)}${Math.floor(Number.MAX_SAFE_INTEGER * Math.random()).toString(36)}`;
             setToasts(prevState => {
@@ -72,7 +72,7 @@ export const useFetch = () => {
                 setToasts(prevState => prevState.filter(x => x.id !== slowFetchToastId));
             }
             if (callback) {
-                callback(response, handleFeedback);
+                callback({...response, retainedSettings}, handleFeedback);
                 if (!dontHandleFeedback) {
                     handleFeedback({...response, customOptions: feedbackOptions})
                 }
