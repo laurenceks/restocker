@@ -24,29 +24,29 @@ const TopNav = ({user}) => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink exact={true} to={"/"} className="nav-link rounded-3 mx-1">Home</NavLink>
+                            <NavLink exact={true} to={"/"} className="nav-link rounded-3 mx-1 px-2">Home</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/stock"} className="nav-link rounded-3 mx-1">Stock</NavLink>
+                            <NavLink to={"/stock"} className="nav-link rounded-3 mx-1 px-2">Stock</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/withdraw"} className="nav-link rounded-3 mx-1">Withdraw</NavLink>
+                            <NavLink to={"/withdraw"} className="nav-link rounded-3 mx-1 px-2">Withdraw</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/restock"} className="nav-link rounded-3 mx-1">Restock</NavLink>
+                            <NavLink to={"/restock"} className="nav-link rounded-3 mx-1 px-2">Restock</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1">Transfer</NavLink>
+                            <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1 px-2">Transfer</NavLink>
                         </li>
                         {(user?.admin || user?.superAdmin) &&
-                        <li className="nav-item dropdown">
+                        <li className="nav-item dropdown mx-1">
                             <div
                                 className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
                                 id="adminDropdown"
                                 role="button"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
-                                <p className="m-0">Admin</p>
+                                <p className="m-0 px-2">Admin</p>
                             </div>
                             <ul className="dropdown-menu" aria-labelledby="adminDropdown">
                                 <li><NavLink className="dropdown-item" to={"/items"}>Items</NavLink></li>
