@@ -53,7 +53,6 @@ const TransactionForm = ({formType}) => {
         }
     });
     const transactionFormRef = useRef();
-    const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions;
 
     const getItems = (retainedSettings) => {
         fetchHook({
