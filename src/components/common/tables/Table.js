@@ -74,8 +74,7 @@ const Table = ({
                             onMouseLeave={() => setShowSortArrow(false)}
                         >
                             {headers.map((x, i) => {
-                                if (x) {
-                                    return (<th key={`${title}-th-${i}`}
+                                return x ? (<th key={`${title}-th-${i}`}
                                                 colSpan={x.colspan}
                                                 rowSpan={x.rowspan}
                                                 className={`${allowSorting && " cursor-pointer user-select-none"} ${x.className || ""}`}
@@ -89,21 +88,20 @@ const Table = ({
                                                         }
                                                     })
                                                 }}
-                                    >
-                                        <div className="d-flex flex-row align-items-center">
-                                            <ArrowIconTransition
-                                                in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
-                                                colourVariant={sortSettings.index !== i && "secondary"}
-                                            >
-                                                {(sortSettings.ascending ?
-                                                    <IoArrowUp
-                                                        className="d-block"/> :
-                                                    <IoArrowDown className="d-block"/>)}
-                                            </ArrowIconTransition>
-                                            <div>{x.text || x}</div>
-                                        </div>
-                                    </th>)
-                                }
+                                >
+                                    <div className="d-flex flex-row align-items-center">
+                                        <ArrowIconTransition
+                                            in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
+                                            colourVariant={sortSettings.index !== i && "secondary"}
+                                        >
+                                            {(sortSettings.ascending ?
+                                                <IoArrowUp
+                                                    className="d-block"/> :
+                                                <IoArrowDown className="d-block"/>)}
+                                        </ArrowIconTransition>
+                                        <div>{x.text || x}</div>
+                                    </div>
+                                </th>) : null
                             })}
                         </tr>
                         </thead>
@@ -112,13 +110,13 @@ const Table = ({
                             return (
                                 <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
                                     {x.map((y, j) => {
-                                        if (y || y === 0) {
-                                            return <TableCell key={`${title}-tr-${i}-td-${j}`}
-                                                              content={y}
-                                                              className={y?.className}
-                                                              align={y?.cellAlignClass}
+                                        return y || y === 0 ?
+                                            <TableCell key={`${title}-tr-${i}-td-${j}`}
+                                                       content={y}
+                                                       className={y?.className}
+                                                       align={y?.cellAlignClass}
                                             />
-                                        }
+                                            : null
                                     })}
                                 </tr>
                             )
@@ -129,25 +127,26 @@ const Table = ({
                     <nav aria-label="Table pages">
                         <ul className="pagination justify-content-center">
                             <li className={`page-item user-select-none ${currentPageIndex === 0 ? "disabled" : "cursor-pointer"}`}>
-                                <a className="page-link"
+                                <button className="page-link"
                                    aria-label="Previous"
                                    onClick={() => setCurrentPageIndex(prevState => Math.max(0, --prevState))}
                                 >
                                     <span aria-hidden="true">&laquo;</span>
-                                </a>
+                                </button>
                             </li>
                             {pageNumbers.map((x, i) => {
                                 return <li key={`table-${title}-page-${i + 1}`}
                                            className={`page-item user-select-none ${currentPageIndex === i ? "active" : "cursor-pointer"}`}>
-                                    <a className="page-link" onClick={i !== currentPageIndex && (() => setCurrentPageIndex(i))}>{x}</a></li>
+                                    <button className="page-link"
+                                       onClick={i !== currentPageIndex ? (() => setCurrentPageIndex(i)) : null}>{x}</button></li>
                             })}
                             <li className={`page-item user-select-none ${currentPageIndex === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
-                                <a className="page-link"
+                                <button className="page-link"
                                    aria-label="Next"
                                    onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount - 1, ++prevState))}
                                 >
                                     <span aria-hidden="true">&raquo;</span>
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </nav>
