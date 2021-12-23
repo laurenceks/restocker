@@ -1,5 +1,5 @@
 import TableSection from "../common/tables/TableSection";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
 

@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
 import {useContext, useEffect, useRef, useState} from "react"
-import fetchAllItems from "../../functions/fetchAllItems";
 import validateForm from "../../functions/formValidation";
 import naturalSort from "../../functions/naturalSort";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
 import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
-import handleFeedback from "../../functions/handleFeedback";
 import {GlobalAppContext} from "../../App";
 import useFetch from "../../hooks/useFetch";
 

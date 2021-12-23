@@ -2,7 +2,6 @@ import {useContext, useEffect, useRef, useState} from "react"
 import useFetch from "../../hooks/useFetch";
 import FormInput from "../common/forms/FormInput";
 import Table from "../common/tables/Table";
-import ConfirmModal from "../Bootstrap/ConfirmModal";
 import validateForm from "../../functions/formValidation";
 import {GlobalAppContext} from "../../App";
 

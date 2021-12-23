@@ -1,5 +1,5 @@
 import FormInput from "../common/forms/FormInput";
-import {useContext, useEffect, useRef, useState} from "react"
+import {useContext, useRef, useState} from "react"
 import validateForm from "../../functions/formValidation";
 import fetchJson from "../../functions/fetchJson";
 import {GlobalAppContext} from "../../App";
