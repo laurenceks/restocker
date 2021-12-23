@@ -38,6 +38,7 @@ const FormLocation = ({
     useEffect(() => {
         if (locationsLoadedOnce) {
             setSelectedState(selected);
+            onChange(locations)
         }
     }, [selected]);
 
