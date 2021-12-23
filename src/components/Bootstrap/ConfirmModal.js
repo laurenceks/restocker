@@ -1,7 +1,8 @@
-import {useContext, useEffect} from "react";
+import {useContext, useEffect, useState} from "react";
 import PropTypes from 'prop-types';
 import {Button, Modal} from "react-bootstrap";
 import {GlobalAppContext} from "../../App";
+import {variantPairings} from "../common/styles";
 
 const ConfirmModal = ({
                           show,
@@ -13,13 +14,23 @@ const ConfirmModal = ({
                           noText,
                           headerClass,
                           yesButtonVariant,
-                          noButtonVariant
+                          noButtonVariant,
                       }) => {
 
     const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
+    const [lastExited, setLastExited] = useState(null);
+
+    useEffect(() => {
+        //reset options once not visible
+        setModalOptions({})
+    }, [lastExited]);
 
     return (
-        <Modal show={show} onHide={handleNo} backdrop="static" aria-labelledby="contained-modal-title-vcenter"
+        <Modal show={show}
+               onHide={handleNo}
+               onExited={() => setLastExited(Date.now())}
+               backdrop="static"
+               aria-labelledby="contained-modal-title-vcenter"
                centered>
             <Modal.Header className={headerClass}>
                 <Modal.Title>{title}</Modal.Title>
@@ -56,7 +67,7 @@ ConfirmModal.propTypes = {
 
 ConfirmModal.defaultProps = {
     show: false,
-    headerClass: null,
+    headerClass: variantPairings.danger.header,
     handleNo: null,
     handleYes: (e) => {
         console.log("Yes clicked, but no handler passed")
@@ -66,7 +77,7 @@ ConfirmModal.defaultProps = {
     noButtonVariant: "secondary",
     title: "Are you sure?",
     yesText: "Yes",
-    yesButtonVariant: "primary",
+    yesButtonVariant: "danger",
 }
 
 export default ConfirmModal;

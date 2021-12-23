@@ -18,14 +18,7 @@ import {variantPairings} from "./common/styles";
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
     const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({show: false});
-    const [confirmModalOptions, setConfirmModalOptions] = useState({
-        show: false,
-        deleteId: null,
-        targetName: null,
-        bodyText: "",
-        headerClass: variantPairings.danger.header,
-        yesButtonVariant: "danger"
-    });
+    const [confirmModalOptions, setConfirmModalOptions] = useState({});
     const [toasts, setToasts] = useState([]);
 
     globalAppContext.setStateFunctions = {
