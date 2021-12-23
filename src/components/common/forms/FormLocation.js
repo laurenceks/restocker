@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import PropTypes from 'prop-types';
 import {Typeahead} from "react-bootstrap-typeahead";
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
-import fetchAllItems from "../../../functions/fetchAllItems";
 import naturalSort from "../../../functions/naturalSort";
 import fetchAllLocations from "../../../functions/fetchAllLocations";
 
