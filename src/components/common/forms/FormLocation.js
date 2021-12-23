@@ -41,6 +41,12 @@ const FormLocation = ({
         }
     }, [selected]);
 
+    useEffect(() => {
+        if (locationsLoadedOnce && locations.length === 1) {
+            setSelectedState([locations[0]]);
+        }
+    }, [locations]);
+
     const getLocations = () => {
         fetchAllLocations((x) => {
             setLocationsLoadedOnce(true);
