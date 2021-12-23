@@ -10,7 +10,7 @@ SELECT
   *, 
   (
     SELECT 
-      CAST(SUM(transactions.quantity) AS INTEGER)
+      CAST(SUM(transactions.quantity) AS UNSIGNED)
     FROM 
       transactions 
     WHERE 

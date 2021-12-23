@@ -206,10 +206,10 @@ const Dashboard = () => {
                             unit: x.unit,
                             totalRestocked: x.restocked || 0,
                             totalWithdrawn: Math.abs(x.withdrawn) || 0,
-                            withdrawRate: x.withdrawRate || 0,
-                            restockRate: x.restockRate || 0,
-                            burnRate: x.burnRate || x.withdrawRate || 0,
-                            douseRate: x.douseRate || x.restockRate || 0
+                            withdrawRate: Number(x.withdrawRate || 0),
+                            restockRate: Number(x.restockRate || 0),
+                            burnRate: Number(x.burnRate || x.withdrawRate || 0),
+                            douseRate: Number(x.douseRate || x.restockRate || 0)
                         };
                         newDashboardData.rates.allRates.push(rateDataForId);
                         newDashboardData.rates.ratesById[x.itemId] = rateDataForId;
