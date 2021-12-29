@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types';
 import FormInput from "../common/forms/FormInput";
-import {useContext, useEffect, useRef, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import validateForm from "../../functions/formValidation";
 import naturalSort from "../../functions/naturalSort";
 import InputCheckboxGroup from "../common/forms/InputCheckboxGroup";
 import Table from "../common/tables/Table";
 import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
-import {GlobalAppContext} from "../../App";
 import useFetch from "../../hooks/useFetch";
 
 const TransactionForm = ({formType}) => {
@@ -86,10 +85,12 @@ const TransactionForm = ({formType}) => {
     }
 
     const filterLocationList = (locations = destinationList || [], itemsByLocationId = productData?.itemsByLocationId || [], listsByLocationId = productData?.listsByLocationId || [], forceItem = false) => {
-        return formType === "restock" ? locations : locations.filter((l) => {
+        return (formType === "restock" ? locations : locations.filter((l) => {
             //if not a restock form, filter out any location without stock
             const productReferenceList = (productType === "item" || forceItem) ? itemsByLocationId : listsByLocationId;
             return productReferenceList[l.id] && (productReferenceList[l.id]).some((x) => x.currentStock > 0);
+        })).filter((x) => {
+            return (x.id !== transactionData.destinationId) || (formType !== "transfer");
         })
     }
 
@@ -102,15 +103,15 @@ const TransactionForm = ({formType}) => {
             destination: newData.destination || (destinationList.length === 1 ? destinationList : transactionData.selectedDestination) || [],
         };
         const newOptions = {
-            locationId: newData.location?.[0]?.id || transactionData.locationId,
-            locationName: newData.location?.[0]?.name || transactionData.locationName,
-            selectedLocation: newData.location || transactionData.selectedLocation,
-            destinationId: newData.destination?.[0]?.id || transactionData.destinationId,
-            destinationName: newData.destination?.[0]?.namer || transactionData.destinationName,
-            selectedDestination: newData.destination || transactionData.selectedDestination,
+            locationId: newData.location?.[0]?.id|| null,
+            locationName: newData.location?.[0]?.name|| null,
+            selectedLocation: newData.location,
+            destinationId: newData.destination?.[0]?.id|| null,
+            destinationName: newData.destination?.[0]?.name || null,
+            selectedDestination: newData.destination,
             productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
-            productName: newData.product?.[0]?.name || transactionData.productName,
-            unit: newData.product?.[0]?.unit || transactionData.unit,
+            productName: newData.product?.[0]?.name|| null,
+            unit: newData.product?.[0]?.unit || null,
             quantity: newData.quantity || transactionData.quantity || 0,
             displayQuantity: newData.displayQuantity === "" ? "" : newData.displayQuantity || transactionData.displayQuantity || "",
             transactionFormType: formType
@@ -344,6 +345,8 @@ const TransactionForm = ({formType}) => {
                                 selected: transactionData.selectedLocation
                             }}
                         />
+
+
                     </div>
                 </div>
                 {formType === "transfer" &&
@@ -367,7 +370,7 @@ const TransactionForm = ({formType}) => {
                                     updateOptions({destination: e});
                                 },
                                 labelKey: "name",
-                                options: destinationList.sort((a, b) => {
+                                options: destinationList.filter(x => x.id !== transactionData.locationId).sort((a, b) => {
                                     return naturalSort(a.name, b.name)
                                 }),
                                 selected: transactionData.selectedDestination
