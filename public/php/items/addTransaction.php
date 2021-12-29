@@ -1,6 +1,5 @@
 <?php
 require "../security/userLoginSecurityCheck.php";
-require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
 require_once "../common/updateCurrentStockLevel.php";
 require "../common/fetchFunctions/fetchFunctionItems.php";
@@ -75,7 +74,7 @@ foreach ($input["transactionArray"] as $transaction) {
     $transactionFormType = $input["transactionFormType"] || $transaction["quantity"] < 0 ? "withdraw" : "restock";
     $addTransaction->bindParam(":type", $transactionFormType);
     $addTransaction->bindParam(":locationId", $transaction["locationId"]);
-    $addTransaction->bindParam(":isTransfer", $transaction["isTransfer"]);
+    $addTransaction->bindvalue(":isTransfer", intval($transaction["isTransfer"]));
     $addTransaction->bindParam(":quantity", $transaction["quantity"]);
     $addTransaction->bindValue(":userId", $_SESSION["user"]->userId);
     $addTransaction->bindValue(":organisationId", $_SESSION["user"]->organisationId);

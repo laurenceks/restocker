@@ -1,6 +1,5 @@
 <?php
 require "../security/userLoginSecurityCheck.php";
-require "../security/userAdminRightsCheck.php";
 require "../common/db.php";
 require "../common/feedbackTemplate.php";
 

@@ -1,6 +1,5 @@
 <?php
 require "../security/userLoginSecurityCheck.php";
-require "../security/userAdminRightsCheck.php";
 require "../common/db.php";
 require "../common/feedbackTemplate.php";
 
@@ -10,7 +9,7 @@ SELECT
   *, 
   (
     SELECT 
-      CAST(SUM(transactions.quantity) AS UNSIGNED)
+      CAST(SUM(transactions.quantity) AS SIGNED)
     FROM 
       transactions 
     WHERE 
