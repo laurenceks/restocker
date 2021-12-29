@@ -14,7 +14,7 @@ const TopNav = ({user}) => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
             <div className="container-fluid">
                 <NavLink to={"/"} className="navbar-brand">
-                    <img alt="Restocker logo" src="/img/logoNav.svg" style={{height: "35px"}}/>
+                    <img alt="Restocker logo" src="./img/logoNav.svg" style={{height: "35px"}}/>
                 </NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"

@@ -10,7 +10,7 @@ const NotAuthorised = () => {
     return (
         <Switch>
             <div className="loginForm align-middle">
-                <img src="/img/logo.svg" alt="Restocker logo" className="w-100 p-3 mb-4"/>
+                <img src="./img/logo.svg" alt="Restocker logo" className="w-100 p-3 mb-4"/>
                 <Route path="/verify">
                     <Verify/>
                 </Route>
