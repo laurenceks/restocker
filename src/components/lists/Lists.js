@@ -202,7 +202,10 @@ const Lists = () => {
             ...cellTemplate,
             colspan: 3,
             fragment: <Fragment>
-                <button className="btn btn-success me-3" onClick={() => editList(editedListRef.current)}>Save</button>
+                <button className="btn btn-success me-3"
+                        onClick={(e) => validateForm(e, `.form-listId-${currentList.id}`, () => editList(editedListRef.current))}>
+                    Save
+                </button>
                 <button className="btn btn-danger" onClick={() => getLists()}>Cancel</button>
             </Fragment>,
             className: cellTemplate.className,
@@ -216,6 +219,7 @@ const Lists = () => {
             ...cellTemplate,
             sortValue: `${sortTemplate}${x.items[i].itemName}`,
             fragment: <FormItem id={`input-listId-${x.id}-itemId-${y.itemId}-name`}
+                                inputClass={`form-listId-${x.id}`}
                                 label={"Item"}
                                 invalidFeedback={"You must select an item from the list"}
                                 defaultSelected={[{...x.items[i], name: x.items[i].itemName, id: x.items[i].itemId}]}
@@ -247,6 +251,7 @@ const Lists = () => {
                     label: "Quantity",
                     type: "Number",
                     id: `input-listId-${x.id}-itemId-${y.itemId}-quantity`,
+                    inputClass: `form-listId-${x.id}`,
                     defaultValue: x.items[i]?.quantity || null,
                     onChange: (e, v) => {
                         x.items.splice(i, 1, {
@@ -260,7 +265,7 @@ const Lists = () => {
                 }
             }, {
                 ...cellTemplate,
-                className: "align-middle " + cellTemplate.className,
+                className: `align-middle ${cellTemplate.className}`,
                 sortValue: `${sortTemplate}${x.items[i]?.unit || "units"}`,
                 text: x.items[i]?.unit || "units"
             },
