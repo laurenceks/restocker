@@ -10,7 +10,7 @@ const validateForm = (e, formRef, callBack, typeaheadStates = {}, passwordRequir
     const passIds = {};
     const formInputs = Array.isArray(formRef) ? formRef.map(x => {
         return document.getElementById(x);
-    }) : formRef.current.querySelectorAll("input:not(.rbt-input-hint), textarea");
+    }) : typeof(formRef) === "string" ? document.querySelectorAll(formRef) : formRef.current.querySelectorAll("input:not(.rbt-input-hint), textarea");
 
     const updateOutput = (element, invalidate = true) => {
         if (invalidate) {
