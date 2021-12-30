@@ -9,7 +9,9 @@ import ResetPassword from "./ResetPassword";
 const Verify = ({type}) => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
         const [paramsState, setParamsState] = useState({
-            validParams: false, validationInProgress: false, params: {
+            validParams: false,
+            validationInProgress: false,
+            params: {
                 token: params.get("token"),
                 selector: params.get("selector")
             }
@@ -63,7 +65,8 @@ const Verify = ({type}) => {
                 </div>}
                 {(type === "password" && paramsState.success) ?
                     <ResetPassword token={paramsState.params.token} selector={paramsState.params.selector}/> :
-                    <LoginFeedback marginTop={false} feedbackClass={paramsState.feedbackClass}
+                    <LoginFeedback marginTop={false}
+                                   feedbackClass={paramsState.feedbackClass}
                                    feedbackText={paramsState.feedback}/>}
                 {(!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify") &&
                 <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
