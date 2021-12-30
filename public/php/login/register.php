@@ -15,7 +15,7 @@ $output = array("success" => false, "feedback" => "An unknown error occurred", "
 try {
     $userId = $auth->register($input['inputRegisterEmail'], $input['inputRegisterPassword'], null, function ($selector, $token) use ($input, &$output) {
         require_once "../common/sendSmtpMail.php";
-        require_once "verify/verificationEmail.php";
+        require_once "loginEmail/composeVerificationEmail.php";
 
         $emailParams = composeVerificationEmail($selector, $token, $input["inputRegisterFirstName"]);
         $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], "Verify your Restocker account", $emailParams["message"], $emailParams["messageAlt"]);

@@ -14,7 +14,7 @@ $output = array("success" => false, "feedback" => "An unknown error occurred", "
 try {
     $auth->resendConfirmationForEmail($input["inputReVerifyEmail"], function ($selector, $token) use ($input, &$output) {
         require_once "../../common/sendSmtpMail.php";
-        require_once "verificationEmail.php";
+        require_once "../loginEmail/composeVerificationEmail.php";
         require "../../common/getUserInfo.php";
         require "../../common/getUserIdFromSelector.php";
         $name = getUserInfo(getUserIdFromSelector($selector, "users_confirmations"))->firstName;

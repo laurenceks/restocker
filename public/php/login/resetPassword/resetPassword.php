@@ -15,12 +15,35 @@ if (!$input || !$input['selector'] || !$input['token']) {
     $output["feedback"] = "Parameters did not reach server";
 } else {
     try {
-        $auth->resetPassword($input['selector'], $input['token'], $input['inputPasswordResetPassword']);
+        require_once "../../common/getUserInfo.php";
+        require_once "../../common/getUserIdFromSelector.php";
 
-        //TODO send email notifying of password reset
+        $userDetails = getUserInfo(getUserIdFromSelector($input['selector'], "users_resets"));
 
-        $output["feedback"] = 'Password has been reset';
-        $output["success"] = true;
+        if ($userDetails) {
+
+            $auth->resetPassword($input['selector'], $input['token'], $input['inputPasswordResetPassword']);
+
+            require_once "../../common/sendSmtpMail.php";
+            require_once "../loginEmail/composeLoginEmail.php";
+
+            $emailParams = composeLoginEmail(array(
+                "headline" => "Restocker password reset",
+                "subheadline" => "Your password has been reset, " . $userDetails->firstName,
+                "body" => "Your account password has been reset. If this wasn't you, click the button below and then \"Forgot password\" change your password again.",
+                "buttonText" => "Login",
+                "alt" => "Your Restocker account password has been reset",
+                "url" => "/#/login",
+            ));
+            $mailToSend = composeSmtpMail($userDetails->email, $userDetails->firstName . " " . $userDetails->lastName, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
+            $output["mail"] = sendSmtpMail($mailToSend);
+            $output["feedback"] = 'Password has been reset';
+            $output["success"] = true;
+        } else {
+            $output["feedback"] = 'Selector could not be matched to a user';
+            $output["errorMessage"] = "Invalid selector";
+            $output["errorType"] = "invalidSelector";
+        }
     } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
         $output["feedback"] = "Invalid token";
         $output["errorMessage"] = "Invalid token";
