@@ -58,6 +58,7 @@ const FormItem = ({
             useFloatingLabel: true,
             id: id,
             floatingLabelText: label,
+            className: inputClass
         },
         options: items,
         ...typeaheadProps
@@ -72,10 +73,11 @@ const FormItem = ({
                 disabled={disabled || !itemsLoadedOnce || typeaheadProps?.options?.length <= 1}
                 options={typeaheadProps.options}
                 selected={selectedState}
+                //TODO don't allow new
                 onChange={(e) => {
                     setSelectedState(e);
                     if (onChange) {
-                        onChange(e)
+                        onChange(e);
                     }
                 }}
                 labelKey={labelKey}
