@@ -11,8 +11,8 @@ function getUserIdFromSelector($selector, $table)
             $getUserId = $db->prepare("SELECT $userField FROM $table WHERE `selector`=:selector");
             $getUserId->bindParam(':selector', $selector);
             $getUserId->execute();
-            return $getUserId->fetch(PDO::FETCH_ASSOC)[$userField];
-
+            $getUserId = $getUserId->fetch(PDO::FETCH_ASSOC);
+            return $getUserId ? $getUserId[$userField] : false;
         } catch (PDOException $e) {
             return $e;
         }
