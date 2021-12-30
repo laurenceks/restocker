@@ -1,16 +1,20 @@
 import PropTypes from 'prop-types';
 import {Button, Modal} from "react-bootstrap";
 
-const AcknowledgeModal = ({show, title, bodyText, handleClick, buttonText, headerClass, buttonVariant}) => {
+const AcknowledgeModal = ({show, title, bodyText, handleClick, buttonText, headerClass, buttonVariant, breakWords}) => {
     return (
-        <Modal show={show} onHide={handleClick} backdrop="static" aria-labelledby="contained-modal-title-vcenter"
-               centered>
+        <Modal show={show}
+               onHide={handleClick}
+               backdrop="static"
+               aria-labelledby="contained-modal-title-vcenter"
+               centered
+        >
             <Modal.Header className={headerClass}>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-            <div style={{whiteSpace: "pre-wrap"}}><Modal.Body>{bodyText}</Modal.Body></div>
+            <div style={{whiteSpace: breakWords ? "pre-line" : "pre-wrap", wordBreak: breakWords ? "break-word" : ""}}><Modal.Body>{bodyText}</Modal.Body></div>
             <Modal.Footer>
-                <Button variant="primary" onClick={handleClick}>
+                <Button variant={buttonVariant} onClick={handleClick}>
                     {buttonText}
                 </Button>
             </Modal.Footer>
@@ -20,6 +24,7 @@ const AcknowledgeModal = ({show, title, bodyText, handleClick, buttonText, heade
 
 AcknowledgeModal.propTypes = {
     show: PropTypes.bool,
+    breakWords: PropTypes.bool,
     handleClick: PropTypes.func,
     buttonText: PropTypes.string,
     buttonVariant: PropTypes.string,
@@ -30,6 +35,7 @@ AcknowledgeModal.propTypes = {
 
 AcknowledgeModal.defaultProps = {
     show: false,
+    breakWords: false,
     handleClick: (e) => {
         console.log("Button clicked, but no handler passed")
     },
