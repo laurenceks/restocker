@@ -28,7 +28,7 @@ foreach ($lists as $row) {
             &$output["listsByLocationThenListId"][$row["locationId"]][$row["id"]]);
         foreach ($listsTypes as &$prev) {
             $prev["items"][] = $rowItem;
-            $prev["currentStock"] = min($prev["currentStock"], floor($row["currentStock"] / $row["quantity"]));
+            $prev["currentStock"] = min($prev["currentStock"], floor($row["currentStock"] / ($row["quantity"] || 1)));
         }
     } else {
         $rowStart = array("id" => $row["id"], "name" => $row["listName"], "locationId" => $row["locationId"], "currentStock" => floor($row["currentStock"] / ($row["quantity"] || 1)), "items" => array(array_slice($row, 3)));
