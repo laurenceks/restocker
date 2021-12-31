@@ -8,7 +8,6 @@ $output = array_merge($feedbackTemplate, array("items" => array()));
 $getAllItems = $db->prepare("
         SELECT * FROM items
         WHERE organisationId = :organisationId
-        AND deleted = 0
         ");
 $getAllItems->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllItems->execute();
