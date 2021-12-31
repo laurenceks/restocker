@@ -18,7 +18,7 @@ const Users = () => {
             };
             this.active = {headers: ["Name", "Email", {colspan: 4, text: "Permissions"}], rows: []};
             this.unapproved = {headers: ["Name", {colspan: 3, text: "Email"}], rows: []};
-            this.unverified = {headers: ["Name", "Email", ""], rows: []}
+            this.unverified = {headers: ["Name", "Email", {colspan: 2, text: ""}], rows: []}
             this.suspended = {headers: ["Name", {colspan: 3, text: "Email"}], rows: []}
         }
     }
@@ -164,6 +164,26 @@ const Users = () => {
                                     user.email,
                                     {
                                         type: "button",
+                                        text: "Deny and delete",
+                                        buttonClass: `${variantPairings.danger.button} btn-sm`,
+                                        id: user.userId,
+                                        className: "text-center buttonCell",
+                                        handler: () => {
+                                            setModalOptions((prevState, e) => {
+                                                return {
+                                                    ...prevState,
+                                                    ...defaultConfirmOptions,
+                                                    bodyText: `This will deny ${userFullName}'s request and delete their account`,
+                                                    handleYes: () => changeUserStatus({
+                                                        userFullName,
+                                                        id: user.userId
+                                                    }, "deleteUser")
+                                                }
+                                            })
+                                        }
+                                    },
+                                    {
+                                        type: "button",
                                         text: "Manually verify",
                                         buttonClass: `${variantPairings.danger.button} btn-sm`,
                                         id: user.userId,
@@ -223,7 +243,7 @@ const Users = () => {
                                                 handleYes: () => changeUserStatus({
                                                     userFullName,
                                                     id: user.userId
-                                                }, "denyUser")
+                                                }, "deleteUser")
                                             }
                                         })
                                     }
