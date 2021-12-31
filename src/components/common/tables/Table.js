@@ -90,7 +90,7 @@ const Table = ({
                                                 }}
                                 >
                                     <div className="d-flex flex-row align-items-center">
-                                        <ArrowIconTransition
+                                        {(x.text || x.length > 0) && <ArrowIconTransition
                                             in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
                                             colourVariant={sortSettings.index !== i && "secondary"}
                                         >
@@ -98,8 +98,8 @@ const Table = ({
                                                 <IoArrowUp
                                                     className="d-block"/> :
                                                 <IoArrowDown className="d-block"/>)}
-                                        </ArrowIconTransition>
-                                        <div>{x.text || x}</div>
+                                        </ArrowIconTransition>}
+                                        <div>{x.text ?? x}</div>
                                     </div>
                                 </th>) : null
                             })}
@@ -128,8 +128,8 @@ const Table = ({
                         <ul className="pagination justify-content-center">
                             <li className={`page-item user-select-none ${currentPageIndex === 0 ? "disabled" : "cursor-pointer"}`}>
                                 <button className="page-link"
-                                   aria-label="Previous"
-                                   onClick={() => setCurrentPageIndex(prevState => Math.max(0, --prevState))}
+                                        aria-label="Previous"
+                                        onClick={() => setCurrentPageIndex(prevState => Math.max(0, --prevState))}
                                 >
                                     <span aria-hidden="true">&laquo;</span>
                                 </button>
@@ -138,12 +138,13 @@ const Table = ({
                                 return <li key={`table-${title}-page-${i + 1}`}
                                            className={`page-item user-select-none ${currentPageIndex === i ? "active" : "cursor-pointer"}`}>
                                     <button className="page-link"
-                                       onClick={i !== currentPageIndex ? (() => setCurrentPageIndex(i)) : null}>{x}</button></li>
+                                            onClick={i !== currentPageIndex ? (() => setCurrentPageIndex(i)) : null}>{x}</button>
+                                </li>
                             })}
                             <li className={`page-item user-select-none ${currentPageIndex === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
                                 <button className="page-link"
-                                   aria-label="Next"
-                                   onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount - 1, ++prevState))}
+                                        aria-label="Next"
+                                        onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount - 1, ++prevState))}
                                 >
                                     <span aria-hidden="true">&raquo;</span>
                                 </button>
