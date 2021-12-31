@@ -8,6 +8,7 @@ const fetchOptions = {
     addItem: {url: "./php/items/addItem.php", method: "POST"},
     editItem: {url: "./php/items/editItem.php", method: "POST"},
     deleteItem: {url: "./php/items/deleteItem.php", method: "POST"},
+    restoreItem: {url: "./php/items/restoreItem.php", method: "POST"},
     getLocations: {url: "./php/locations/getAllLocations.php", method: "GET"},
     addLocation: {url: "./php/locations/addLocation.php", method: "POST"},
     editLocation: {url: "./php/locations/editLocation.php", method: "POST"},
