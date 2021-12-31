@@ -5,7 +5,6 @@ import {Route, Switch} from "react-router-dom";
 import Users from "./users/Users";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
-import Items from "./items/Items";
 import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
 import Lists from "./lists/Lists";
@@ -13,6 +12,7 @@ import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import Locations from "./locations/Locations";
 import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
+import EditEntries from "./editEntries/EditEntries";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -55,7 +55,7 @@ const Main = props => {
                         <TransactionForm formType={"transfer"}/>
                     </Route>
                     <Route path={"/items"}>
-                        <Items/>
+                        <EditEntries type="item"/>
                     </Route>
                     <Route path={"/lists"}>
                         <Lists/>
