@@ -1,6 +1,7 @@
 <?php
 function composeVerificationEmail($token, $selector, $name = null)
 {
+    require "composeLoginEmail.php";
     $verifyUrl = '/verify?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
     return composeLoginEmail(array(
         "headline" => "Verify your Restocker account",
