@@ -82,11 +82,11 @@ const Stock = () => {
 
     return (
         <>
-            <TableSection title={"All stock"} data={stockList.all}/>
-            <TableSection title={"Fully in stock"} data={stockList.inStock}/>
-            <TableSection title={"Below warning level"} data={stockList.belowWarningLevel}/>
-            <TableSection title={"Out of stock"} data={stockList.outOfStock}/>
-            {/*<TableSection title={"Load lists"} data={stockList.list}/>*/}
+            <TableSection title={"All stock"} tableProps={stockList.all}/>
+            <TableSection title={"Fully in stock"} tableProps={stockList.inStock}/>
+            <TableSection title={"Below warning level"} tableProps={stockList.belowWarningLevel}/>
+            <TableSection title={"Out of stock"} tableProps={stockList.outOfStock}/>
+            {/*<TableSection title={"Load lists"} tableProps={stockList.list}/>*/}
         </>
     );
 };

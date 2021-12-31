@@ -314,11 +314,11 @@ const Users = () => {
     return (
         <div>
             <h1 className="mb-5">Restocker users for {globalAppContext.user.organisation}</h1>
-            <TableSection title={"All users"} data={usersTableData.all}/>
-            <TableSection title={"Active users"} data={usersTableData.active}/>
-            <TableSection title={"Unapproved users"} data={usersTableData.unapproved}/>
-            <TableSection title={"Unverified users"} data={usersTableData.unverified}/>
-            <TableSection title={"Suspended users"} data={usersTableData.suspended}/>
+            <TableSection title={"All users"} tableProps={usersTableData.all}/>
+            <TableSection title={"Active users"} tableProps={usersTableData.active}/>
+            <TableSection title={"Unapproved users"} tableProps={usersTableData.unapproved}/>
+            <TableSection title={"Unverified users"} tableProps={usersTableData.unverified}/>
+            <TableSection title={"Suspended users"} tableProps={usersTableData.suspended}/>
             {isOneOfManySuperAdmins && <div>
                 <h1>Renounce super admin rights</h1>
                 <p>Click below to renounce your super admin rights. You will no longer be able to promote admins to
