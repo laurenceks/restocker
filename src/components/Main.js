@@ -25,7 +25,7 @@ const Main = props => {
         toasts: setToasts,
     };
 
-    const logout = (e) => {
+    const logout = () => {
         fetch("./php/login/tempLogout.php", {
             method: "GET",
         }).then((x) => {
@@ -46,7 +46,7 @@ const Main = props => {
                     <Route path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
                     <Route path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
                     <Route path={"/profile"} component={Profile}/>
-                    <Route path={"/logout"} component={logout}/>
+                    <Route path={"/logout"} render={() =>logout()}/>
                     <Route path={"/users"} render={()=><Users userId={globalAppContext.user.id}/>}/>
                 </Switch>
             </div>
