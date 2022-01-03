@@ -7,6 +7,7 @@ import {addDataForms, addDataTemplates} from "./editEntriesTemplates";
 import setCase from "../../functions/setCase";
 import {makeRows, makeUndeleteRow} from "./editEntiresFunctions";
 import TableSection from "../common/tables/TableSection";
+import {entryTableHeadings} from "./editEntriesTableHeadings";
 
 const EditEntries = ({type}) => {
         const addDataTemplate = addDataTemplates[type];
@@ -14,6 +15,7 @@ const EditEntries = ({type}) => {
         const fetchHook = useFetch();
         const setModalOptions = useContext(GlobalAppContext)[0].setStateFunctions.confirmModal;
         const [addData, setAddData] = useState({...addDataTemplate});
+        const [editData, setEditData] = useState(null);
         const [editId, setEditId] = useState(null);
         const [dataList, setDataList] = useState([]);
         const addForm = useRef();
@@ -23,10 +25,11 @@ const EditEntries = ({type}) => {
             setEditId(null);
             fetchHook({
                 type: `get${setCase(type, "capitalise")}s`,
+                options: {includeDeleted: true},
                 dontHandleFeedback: !dataLoadedOnce.current,
                 callback: (result) => {
                     dataLoadedOnce.current = true;
-                    setDataList(result.items)
+                    setDataList(result[`${type}s`] || [])
                 }
             });
         }
@@ -44,6 +47,10 @@ const EditEntries = ({type}) => {
             });
         }
         const editEntry = (form) => {
+            if (form.useEditData) {
+                form = {...form, ...editData};
+            }
+            console.log(form);
             fetchHook({
                 type: `edit${setCase(type, "capitalise")}`,
                 options: {
@@ -91,19 +98,35 @@ const EditEntries = ({type}) => {
         }
 
         const makeEntryRows = (filteredData = dataList) => {
-            return makeRows(type, filteredData, editId, {setModalOptions, setEditId, getEntries, editEntry, deleteEntry})
+            return makeRows(type, filteredData, editId, {
+                setModalOptions,
+                setEditId,
+                getEntries,
+                editEntry,
+                deleteEntry,
+                setDataList,
+                setEditData
+            })
         }
         const makeEntryUndeleteRow = (filteredData = dataList) => {
             return makeUndeleteRow(type, filteredData, {setModalOptions, restoreEntry})
         }
 
         useEffect(() => {
+            dataLoadedOnce.current = false;
             getEntries();
-        }, []);
+        }, [type]);
 
         useEffect(() => {
             makeEntryRows();
         }, [editId]);
+
+        useEffect(() => {
+            //trigger hover effect by applying class to 'grouped' rows
+            document.querySelectorAll(`.td-entryGroupId-${editData?.id}`).forEach((x) => {
+                x.classList.add("hover")
+            })
+        }, [dataList, editData]);
 
         return (
             <div className="container">
@@ -117,14 +140,15 @@ const EditEntries = ({type}) => {
                 <div className="row my-3">
                     <TableSection title={`All ${type}s`}
                                   tableProps={{
-                                      headers: ["ID", "Name", "Current stock", {text: "Warning level", colspan: 3}],
+                                      headers: entryTableHeadings[type],
                                       rows: makeEntryRows(dataList.filter((x) => !x.deleted)),
                                       defaultSortIndex: 1
                                   }}
+
                     />
                     <TableSection title={`Deleted ${type}s`}
                                   tableProps={{
-                                      headers: ["ID", "Name", "Stock on deletion", {colspan: 2, text: "Deleted"}],
+                                      headers: entryTableHeadings[type],
                                       rows: makeEntryUndeleteRow(dataList.filter((x) => x.deleted)),
                                       defaultSortIndex: 1
                                   }}
