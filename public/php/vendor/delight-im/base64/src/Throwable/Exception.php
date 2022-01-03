@@ -9,4 +9,5 @@
 namespace Delight\Base64\Throwable;
 
 /** Base class for all (checked) exceptions */
-abstract class Exception extends \Exception {}
+abstract class Exception extends \Exception {
+}

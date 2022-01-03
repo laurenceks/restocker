@@ -8,6 +8,8 @@ require_once "../common/db.php";
 require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
+use Delight\Auth\Role;
+use Delight\Auth\UnknownIdException;
 
 $auth = new Auth($db);
 
@@ -17,14 +19,14 @@ $output = $feedbackTemplate;
 $targetIsSuperAdmin = false;
 
 try {
-    $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
-} catch (\Delight\Auth\UnknownIdException $e) {
+    $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], Role::SUPER_ADMIN);
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 try {
     if (!$targetIsSuperAdmin || ($targetIsSuperAdmin && (int)$input["userId"] === $auth->getUserId())) {
-        $auth->admin()->addRoleForUserById($input["userId"], \Delight\Auth\Role::ADMIN);
-        $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
+        $auth->admin()->addRoleForUserById($input["userId"], Role::ADMIN);
+        $auth->admin()->removeRoleForUserById($input["userId"], Role::SUPER_ADMIN);
         $makeUserAdmin = $db->prepare("UPDATE users_info SET admin = 1, superAdmin = 0 WHERE userId = :userId");
         $makeUserAdmin->bindParam(':userId', $input["userId"]);
         $output["title"] = "User promoted";
@@ -36,7 +38,7 @@ try {
         $output["errorMessage"] = "A super admin can only renounce their own super admin rights";
         $output["errorType"] = "targetIsSuperAdmin";
     }
-} catch (\Delight\Auth\UnknownIdException $e) {
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 

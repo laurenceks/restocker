@@ -2,6 +2,8 @@
 require '../../vendor/autoload.php';
 
 use Delight\Auth\Auth;
+use Delight\Auth\ConfirmationRequestNotFound;
+use Delight\Auth\TooManyRequestsException;
 
 require_once "../../common/db.php";
 
@@ -24,12 +26,12 @@ try {
     });
     $output["success"] = true;
     $output["feedback"] = "Verification email re-sent, please check " . $input["inputReVerifyEmail"] . " for a verification link";
-} catch (\Delight\Auth\ConfirmationRequestNotFound $e) {
+} catch (ConfirmationRequestNotFound $e) {
     $output["feedback"] = "No verification found to re-send - are your already verified or did you forget to register?";
     $output["errorMessage"] = "No verification found to re-send";
     $output["errorType"] = "noVerificationFound";
     $output["keepFormActive"] = true;
-} catch (\Delight\Auth\TooManyRequestsException $e) {
+} catch (TooManyRequestsException $e) {
     $output["feedback"] = "There have been too many requests, please try again later";
     $output["errorMessage"] = "There have been too many requests, please try again later";
     $output["errorType"] = "tooManyRequests";

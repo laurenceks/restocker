@@ -11,7 +11,46 @@ namespace Delight\Http;
 /** HTTP response headers sent by the server */
 final class ResponseHeader {
 
-	private function __construct() { }
+	private function __construct() {
+	}
+
+	/**
+	 * Sets the header with the specified name and value
+	 *
+	 * @param string $name the name of the header
+	 * @param string $value the corresponding value for the header
+	 */
+	public static function set($name, $value) {
+		header($name . ': ' . $value);
+	}
+
+	/**
+	 * Adds the header with the specified name and value
+	 *
+	 * @param string $name the name of the header
+	 * @param string $value the corresponding value for the header
+	 */
+	public static function add($name, $value) {
+		header($name . ': ' . $value, false);
+	}
+
+	/**
+	 * Removes the header with the specified name (and optional value prefix)
+	 *
+	 * @param string $name the name of the header
+	 * @param string $valuePrefix the optional string to match at the beginning of the header's value
+	 */
+	public static function remove($name, $valuePrefix = '') {
+		if (empty($valuePrefix)) {
+			header_remove($name);
+		} else {
+			$found = self::get($name, $valuePrefix);
+
+			if (isset($found)) {
+				header_remove($name);
+			}
+		}
+	}
 
 	/**
 	 * Returns the header with the specified name (and optional value prefix)
@@ -38,45 +77,6 @@ final class ResponseHeader {
 	}
 
 	/**
-	 * Sets the header with the specified name and value
-	 *
-	 * @param string $name the name of the header
-	 * @param string $value the corresponding value for the header
-	 */
-	public static function set($name, $value) {
-		header($name.': '.$value);
-	}
-
-	/**
-	 * Adds the header with the specified name and value
-	 *
-	 * @param string $name the name of the header
-	 * @param string $value the corresponding value for the header
-	 */
-	public static function add($name, $value) {
-		header($name.': '.$value, false);
-	}
-
-	/**
-	 * Removes the header with the specified name (and optional value prefix)
-	 *
-	 * @param string $name the name of the header
-	 * @param string $valuePrefix the optional string to match at the beginning of the header's value
-	 */
-	public static function remove($name, $valuePrefix = '') {
-		if (empty($valuePrefix)) {
-			header_remove($name);
-		}
-		else {
-			$found = self::get($name, $valuePrefix);
-
-			if (isset($found)) {
-				header_remove($name);
-			}
-		}
-	}
-
-	/**
 	 * Returns and removes the header with the specified name (and optional value prefix)
 	 *
 	 * @param string $name the name of the header
@@ -90,8 +90,7 @@ final class ResponseHeader {
 			header_remove($name);
 
 			return $found;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

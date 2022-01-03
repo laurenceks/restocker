@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class EmailOrUsernameRequiredError extends AuthError {}
+class EmailOrUsernameRequiredError extends AuthError {
+}

@@ -23,8 +23,7 @@ try {
 
     $output["success"] = true;
     $output["feedback"] = $input["name"] . " was deleted successfully";
-} catch
-(PDOException $e) {
+} catch (PDOException $e) {
     echo $output["feedback"] = $e->getMessage();
     $output["errorMessage"] = $e->getMessage();
     $output["errorType"] = "queryError";

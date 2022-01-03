@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class UserAlreadyExistsException extends AuthException {}
+class UserAlreadyExistsException extends AuthException {
+}

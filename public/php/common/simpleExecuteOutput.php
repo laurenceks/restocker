@@ -1,6 +1,5 @@
 <?php
-function simpleExecuteOutput($exe, $output = array())
-{
+function simpleExecuteOutput($exe, $output = array()) {
     require "../common/feedbackTemplate.php";
     $output = array_merge($feedbackTemplate, $output, array("errorCode" => null));
     try {

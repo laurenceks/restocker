@@ -8,6 +8,11 @@
 
 namespace Delight\Auth;
 
+use ReflectionClass;
+use function array_flip;
+use function array_keys;
+use function array_values;
+
 final class Role {
 
 	const ADMIN = 1;
@@ -41,15 +46,18 @@ final class Role {
 	// const XYZ = 268435456;
 	// const XYZ = 536870912;
 
+	private function __construct() {
+	}
+
 	/**
 	 * Returns an array mapping the numerical role values to their descriptive names
 	 *
 	 * @return array
 	 */
 	public static function getMap() {
-		$reflectionClass = new \ReflectionClass(static::class);
+		$reflectionClass = new ReflectionClass(static::class);
 
-		return \array_flip($reflectionClass->getConstants());
+		return array_flip($reflectionClass->getConstants());
 	}
 
 	/**
@@ -58,9 +66,9 @@ final class Role {
 	 * @return string[]
 	 */
 	public static function getNames() {
-		$reflectionClass = new \ReflectionClass(static::class);
+		$reflectionClass = new ReflectionClass(static::class);
 
-		return \array_keys($reflectionClass->getConstants());
+		return array_keys($reflectionClass->getConstants());
 	}
 
 	/**
@@ -69,11 +77,9 @@ final class Role {
 	 * @return int[]
 	 */
 	public static function getValues() {
-		$reflectionClass = new \ReflectionClass(static::class);
+		$reflectionClass = new ReflectionClass(static::class);
 
-		return \array_values($reflectionClass->getConstants());
+		return array_values($reflectionClass->getConstants());
 	}
-
-	private function __construct() {}
 
 }

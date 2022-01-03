@@ -2,6 +2,11 @@
 require '../../vendor/autoload.php';
 
 use Delight\Auth\Auth;
+use Delight\Auth\InvalidPasswordException;
+use Delight\Auth\InvalidSelectorTokenPairException;
+use Delight\Auth\ResetDisabledException;
+use Delight\Auth\TokenExpiredException;
+use Delight\Auth\TooManyRequestsException;
 
 require_once "../../common/db.php";
 
@@ -27,14 +32,7 @@ if (!$input || !$input['selector'] || !$input['token']) {
             require_once "../../common/sendSmtpMail.php";
             require_once "../loginEmail/composeLoginEmail.php";
 
-            $emailParams = composeLoginEmail(array(
-                "headline" => "Restocker password reset",
-                "subheadline" => "Your password has been reset, " . $userDetails->firstName,
-                "body" => "Your account password has been reset. If this wasn't you, click the button below and then \"Forgot password\" change your password again.",
-                "buttonText" => "Login",
-                "alt" => "Your Restocker account password has been reset",
-                "url" => "/#/login",
-            ));
+            $emailParams = composeLoginEmail(array("headline" => "Restocker password reset", "subheadline" => "Your password has been reset, " . $userDetails->firstName, "body" => "Your account password has been reset. If this wasn't you, click the button below and then \"Forgot password\" change your password again.", "buttonText" => "Login", "alt" => "Your Restocker account password has been reset", "url" => "/#/login",));
             $mailToSend = composeSmtpMail($userDetails->email, $userDetails->firstName . " " . $userDetails->lastName, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
             $output["mail"] = sendSmtpMail($mailToSend);
             $output["feedback"] = 'Password has been reset';
@@ -44,23 +42,23 @@ if (!$input || !$input['selector'] || !$input['token']) {
             $output["errorMessage"] = "Invalid selector";
             $output["errorType"] = "invalidSelector";
         }
-    } catch (\Delight\Auth\InvalidSelectorTokenPairException $e) {
+    } catch (InvalidSelectorTokenPairException $e) {
         $output["feedback"] = "Invalid token";
         $output["errorMessage"] = "Invalid token";
         $output["errorType"] = "invalidToken";
-    } catch (\Delight\Auth\TokenExpiredException $e) {
+    } catch (TokenExpiredException $e) {
         $output["feedback"] = "Token expired";
         $output["errorMessage"] = "Token expired";
         $output["errorType"] = "tokenExpired";
-    } catch (\Delight\Auth\InvalidPasswordException  $e) {
+    } catch (InvalidPasswordException  $e) {
         $output["feedback"] = "Invalid password";
         $output["errorMessage"] = "Invalid password";
         $output["errorType"] = "invalidPassword";
-    } catch (\Delight\Auth\ResetDisabledException  $e) {
+    } catch (ResetDisabledException  $e) {
         $output["feedback"] = "Password resets are not allowed for this account - please contact your organisation's administrator";
         $output["errorMessage"] = "Password resets are not allowed for this account - please contact your organisation's administrator";
         $output["errorType"] = "resetDisabled";
-    } catch (\Delight\Auth\TooManyRequestsException $e) {
+    } catch (TooManyRequestsException $e) {
         $output["feedback"] = "Too many requests - please try again later";
         $output["errorMessage"] = "Too many requests";
         $output["errorType"] = "tooManyRequests";

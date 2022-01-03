@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class DuplicateUsernameException extends AuthException {}
+class DuplicateUsernameException extends AuthException {
+}

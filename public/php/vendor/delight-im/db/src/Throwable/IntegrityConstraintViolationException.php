@@ -15,4 +15,5 @@ namespace Delight\Db\Throwable;
  *
  * Ambiguous column references constitute violations as well
  */
-class IntegrityConstraintViolationException extends Exception {}
+class IntegrityConstraintViolationException extends Exception {
+}

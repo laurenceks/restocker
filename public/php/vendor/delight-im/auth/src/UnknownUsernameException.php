@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class UnknownUsernameException extends AuthException {}
+class UnknownUsernameException extends AuthException {
+}

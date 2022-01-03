@@ -6,16 +6,18 @@ require "../common/feedbackTemplate.php";
 require_once "../common/db.php";
 
 use Delight\Auth\Auth;
+use Delight\Auth\Role;
+use Delight\Auth\UnknownIdException;
 
 $auth = new Auth($db);
 
 $output = $feedbackTemplate;
 
 try {
-    $auth->admin()->addRoleForUserById(1, \Delight\Auth\Role::SUPER_ADMIN);
+    $auth->admin()->addRoleForUserById(1, Role::SUPER_ADMIN);
     $makeUserSuperAdmin = $db->prepare("UPDATE users_info SET admin = 1, superAdmin = 1 WHERE userId = 1");
     $output = simpleExecuteOutput($makeUserSuperAdmin);
-} catch (\Delight\Auth\UnknownIdException $e) {
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 

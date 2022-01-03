@@ -8,6 +8,30 @@
 
 namespace Delight\Cookie;
 
+use function count;
+use function explode;
+use function filter_var;
+use function gmdate;
+use function header;
+use function headers_sent;
+use function is_bool;
+use function is_null;
+use function is_numeric;
+use function preg_match;
+use function strcasecmp;
+use function stripos;
+use function strpos;
+use function strrpos;
+use function strtotime;
+use function substr;
+use function time;
+use function trigger_error;
+use function urldecode;
+use function urlencode;
+use const E_USER_WARNING;
+use const FILTER_VALIDATE_IP;
+use const PHP_VERSION_ID;
+
 /**
  * Modern cookie management for PHP
  *
@@ -63,6 +87,124 @@ final class Cookie {
 		$this->httpOnly = true;
 		$this->secureOnly = false;
 		$this->sameSiteRestriction = self::SAME_SITE_RESTRICTION_LAX;
+	}
+
+	/**
+	 * Sets a new cookie in a way compatible to PHP's `setcookie(...)` function
+	 *
+	 * @param string $name the name of the cookie which is also the key for future accesses via `$_COOKIE[...]`
+	 * @param mixed|null $value the value of the cookie that will be stored on the client's machine
+	 * @param int $expiryTime the Unix timestamp indicating the time that the cookie will expire at, i.e. usually `time() + $seconds`
+	 * @param string|null $path the path on the server that the cookie will be valid for (including all sub-directories), e.g. an empty string for the current directory or `/` for the root directory
+	 * @param string|null $domain the domain that the cookie will be valid for (including subdomains) or `null` for the current host (excluding subdomains)
+	 * @param bool $secureOnly indicates that the cookie should be sent back by the client over secure HTTPS connections only
+	 * @param bool $httpOnly indicates that the cookie should be accessible through the HTTP protocol only and not through scripting languages
+	 * @param string|null $sameSiteRestriction indicates that the cookie should not be sent along with cross-site requests (either `null`, `None`, `Lax` or `Strict`)
+	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to set the cookie)
+	 */
+	public static function setcookie($name, $value = null, $expiryTime = 0, $path = null, $domain = null, $secureOnly = false, $httpOnly = false, $sameSiteRestriction = null) {
+		return self::addHttpHeader(self::buildCookieHeader($name, $value, $expiryTime, $path, $domain, $secureOnly, $httpOnly, $sameSiteRestriction));
+	}
+
+	/**
+	 * Parses the given cookie header and returns an equivalent cookie instance
+	 *
+	 * @param string $cookieHeader the cookie header to parse
+	 * @return Cookie|null the cookie instance or `null`
+	 */
+	public static function parse($cookieHeader) {
+		if (empty($cookieHeader)) {
+			return null;
+		}
+
+		if (preg_match('/^' . self::HEADER_PREFIX . '(.*?)=(.*?)(?:; (.*?))?$/i', $cookieHeader, $matches)) {
+			$cookie = new self($matches[1]);
+			$cookie->setPath(null);
+			$cookie->setHttpOnly(false);
+			$cookie->setValue(urldecode($matches[2]));
+			$cookie->setSameSiteRestriction(null);
+
+			if (count($matches) >= 4) {
+				$attributes = explode('; ', $matches[3]);
+
+				foreach ($attributes as $attribute) {
+					if (strcasecmp($attribute, 'HttpOnly') === 0) {
+						$cookie->setHttpOnly(true);
+					} elseif (strcasecmp($attribute, 'Secure') === 0) {
+						$cookie->setSecureOnly(true);
+					} elseif (stripos($attribute, 'Expires=') === 0) {
+						$cookie->setExpiryTime((int)strtotime(substr($attribute, 8)));
+					} elseif (stripos($attribute, 'Domain=') === 0) {
+						$cookie->setDomain(substr($attribute, 7));
+					} elseif (stripos($attribute, 'Path=') === 0) {
+						$cookie->setPath(substr($attribute, 5));
+					} elseif (stripos($attribute, 'SameSite=') === 0) {
+						$cookie->setSameSiteRestriction(substr($attribute, 9));
+					}
+				}
+			}
+
+			return $cookie;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Checks whether a cookie with the specified name exists
+	 *
+	 * @param string $name the name of the cookie to check
+	 * @return bool whether there is a cookie with the specified name
+	 */
+	public static function exists($name) {
+		return isset($_COOKIE[$name]);
+	}
+
+	/**
+	 * Returns the value from the requested cookie or, if not found, the specified default value
+	 *
+	 * @param string $name the name of the cookie to retrieve the value from
+	 * @param mixed $defaultValue the default value to return if the requested cookie cannot be found
+	 * @return mixed the value from the requested cookie or the default value
+	 */
+	public static function get($name, $defaultValue = null) {
+		if (isset($_COOKIE[$name])) {
+			return $_COOKIE[$name];
+		} else {
+			return $defaultValue;
+		}
+	}
+
+	private static function normalizeDomain($domain = null) {
+		// make sure that the domain is a string
+		$domain = (string)$domain;
+
+		// if the cookie should be valid for the current host only
+		if ($domain === '') {
+			// no need for further normalization
+			return null;
+		}
+
+		// if the provided domain is actually an IP address
+		if (filter_var($domain, FILTER_VALIDATE_IP) !== false) {
+			// let the cookie be valid for the current host
+			return null;
+		}
+
+		// for local hostnames (which either have no dot at all or a leading dot only)
+		if (strpos($domain, '.') === false || strrpos($domain, '.') === 0) {
+			// let the cookie be valid for the current host while ensuring maximum compatibility
+			return null;
+		}
+
+		// unless the domain already starts with a dot
+		if ($domain[0] !== '.') {
+			// prepend a dot for maximum compatibility (e.g. with RFC 2109)
+			$domain = '.' . $domain;
+		}
+
+		// return the normalized domain
+		return $domain;
 	}
 
 	/**
@@ -122,7 +264,7 @@ final class Cookie {
 	 * @return int the maximum age of the cookie in seconds
 	 */
 	public function getMaxAge() {
-		return $this->expiryTime - \time();
+		return $this->expiryTime - time();
 	}
 
 	/**
@@ -132,7 +274,7 @@ final class Cookie {
 	 * @return static this instance for chaining
 	 */
 	public function setMaxAge($maxAge) {
-		$this->expiryTime = \time() + $maxAge;
+		$this->expiryTime = time() + $maxAge;
 
 		return $this;
 	}
@@ -243,15 +385,6 @@ final class Cookie {
 	}
 
 	/**
-	 * Saves the cookie
-	 *
-	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to set the cookie)
-	 */
-	public function save() {
-		return self::addHttpHeader((string) $this);
-	}
-
-	/**
 	 * Saves the cookie and immediately creates the corresponding variable in the superglobal `$_COOKIE` array
 	 *
 	 * The variable would otherwise only be available starting from the next HTTP request
@@ -262,6 +395,40 @@ final class Cookie {
 		$_COOKIE[$this->name] = $this->value;
 
 		return $this->save();
+	}
+
+	/**
+	 * Saves the cookie
+	 *
+	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to set the cookie)
+	 */
+	public function save() {
+		return self::addHttpHeader((string)$this);
+	}
+
+	private static function addHttpHeader($header) {
+		if (!headers_sent()) {
+			if (!empty($header)) {
+				header($header, false);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Deletes the cookie and immediately removes the corresponding variable from the superglobal `$_COOKIE` array
+	 *
+	 * The variable would otherwise only be deleted at the start of the next HTTP request
+	 *
+	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to delete the cookie)
+	 */
+	public function deleteAndUnset() {
+		unset($_COOKIE[$this->name]);
+
+		return $this->delete();
 	}
 
 	/**
@@ -279,40 +446,8 @@ final class Cookie {
 		return $copiedCookie->save();
 	}
 
-	/**
-	 * Deletes the cookie and immediately removes the corresponding variable from the superglobal `$_COOKIE` array
-	 *
-	 * The variable would otherwise only be deleted at the start of the next HTTP request
-	 *
-	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to delete the cookie)
-	 */
-	public function deleteAndUnset() {
-		unset($_COOKIE[$this->name]);
-
-		return $this->delete();
-	}
-
 	public function __toString() {
 		return self::buildCookieHeader($this->name, $this->value, $this->expiryTime, $this->path, $this->domain, $this->secureOnly, $this->httpOnly, $this->sameSiteRestriction);
-	}
-
-	/**
-	 * Sets a new cookie in a way compatible to PHP's `setcookie(...)` function
-	 *
-	 * @param string $name the name of the cookie which is also the key for future accesses via `$_COOKIE[...]`
-	 * @param mixed|null $value the value of the cookie that will be stored on the client's machine
-	 * @param int $expiryTime the Unix timestamp indicating the time that the cookie will expire at, i.e. usually `time() + $seconds`
-	 * @param string|null $path the path on the server that the cookie will be valid for (including all sub-directories), e.g. an empty string for the current directory or `/` for the root directory
-	 * @param string|null $domain the domain that the cookie will be valid for (including subdomains) or `null` for the current host (excluding subdomains)
-	 * @param bool $secureOnly indicates that the cookie should be sent back by the client over secure HTTPS connections only
-	 * @param bool $httpOnly indicates that the cookie should be accessible through the HTTP protocol only and not through scripting languages
-	 * @param string|null $sameSiteRestriction indicates that the cookie should not be sent along with cross-site requests (either `null`, `None`, `Lax` or `Strict`)
-	 * @return bool whether the cookie header has successfully been sent (and will *probably* cause the client to set the cookie)
-	 */
-	public static function setcookie($name, $value = null, $expiryTime = 0, $path = null, $domain = null, $secureOnly = false, $httpOnly = false, $sameSiteRestriction = null) {
-		return self::addHttpHeader(
-			self::buildCookieHeader($name, $value, $expiryTime, $path, $domain, $secureOnly, $httpOnly, $sameSiteRestriction)
-		);
 	}
 
 	/**
@@ -330,22 +465,20 @@ final class Cookie {
 	 */
 	public static function buildCookieHeader($name, $value = null, $expiryTime = 0, $path = null, $domain = null, $secureOnly = false, $httpOnly = false, $sameSiteRestriction = null) {
 		if (self::isNameValid($name)) {
-			$name = (string) $name;
-		}
-		else {
+			$name = (string)$name;
+		} else {
 			return null;
 		}
 
 		if (self::isExpiryTimeValid($expiryTime)) {
-			$expiryTime = (int) $expiryTime;
-		}
-		else {
+			$expiryTime = (int)$expiryTime;
+		} else {
 			return null;
 		}
 
 		$forceShowExpiry = false;
 
-		if (\is_null($value) || $value === false || $value === '') {
+		if (is_null($value) || $value === false || $value === '') {
 			$value = 'deleted';
 			$expiryTime = 0;
 			$forceShowExpiry = true;
@@ -354,15 +487,15 @@ final class Cookie {
 		$maxAgeStr = self::formatMaxAge($expiryTime, $forceShowExpiry);
 		$expiryTimeStr = self::formatExpiryTime($expiryTime, $forceShowExpiry);
 
-		$headerStr = self::HEADER_PREFIX . $name . '=' . \urlencode($value);
+		$headerStr = self::HEADER_PREFIX . $name . '=' . urlencode($value);
 
-		if (!\is_null($expiryTimeStr)) {
+		if (!is_null($expiryTimeStr)) {
 			$headerStr .= '; expires=' . $expiryTimeStr;
 		}
 
 		// The `Max-Age` property is supported on PHP 5.5+ only (https://bugs.php.net/bug.php?id=23955).
-		if (\PHP_VERSION_ID >= 50500) {
-			if (!\is_null($maxAgeStr)) {
+		if (PHP_VERSION_ID >= 50500) {
+			if (!is_null($maxAgeStr)) {
 				$headerStr .= '; Max-Age=' . $maxAgeStr;
 			}
 		}
@@ -386,105 +519,25 @@ final class Cookie {
 		if ($sameSiteRestriction === self::SAME_SITE_RESTRICTION_NONE) {
 			// if the 'secure' attribute is missing
 			if (!$secureOnly) {
-				\trigger_error('When the \'SameSite\' attribute is set to \'None\', the \'secure\' attribute should be set as well', \E_USER_WARNING);
+				trigger_error('When the \'SameSite\' attribute is set to \'None\', the \'secure\' attribute should be set as well', E_USER_WARNING);
 			}
 
 			$headerStr .= '; SameSite=None';
-		}
-		elseif ($sameSiteRestriction === self::SAME_SITE_RESTRICTION_LAX) {
+		} elseif ($sameSiteRestriction === self::SAME_SITE_RESTRICTION_LAX) {
 			$headerStr .= '; SameSite=Lax';
-		}
-		elseif ($sameSiteRestriction === self::SAME_SITE_RESTRICTION_STRICT) {
+		} elseif ($sameSiteRestriction === self::SAME_SITE_RESTRICTION_STRICT) {
 			$headerStr .= '; SameSite=Strict';
 		}
 
 		return $headerStr;
 	}
 
-	/**
-	 * Parses the given cookie header and returns an equivalent cookie instance
-	 *
-	 * @param string $cookieHeader the cookie header to parse
-	 * @return \Delight\Cookie\Cookie|null the cookie instance or `null`
-	 */
-	public static function parse($cookieHeader) {
-		if (empty($cookieHeader)) {
-			return null;
-		}
-
-		if (\preg_match('/^' . self::HEADER_PREFIX . '(.*?)=(.*?)(?:; (.*?))?$/i', $cookieHeader, $matches)) {
-			$cookie = new self($matches[1]);
-			$cookie->setPath(null);
-			$cookie->setHttpOnly(false);
-			$cookie->setValue(
-				\urldecode($matches[2])
-			);
-			$cookie->setSameSiteRestriction(null);
-
-			if (\count($matches) >= 4) {
-				$attributes = \explode('; ', $matches[3]);
-
-				foreach ($attributes as $attribute) {
-					if (\strcasecmp($attribute, 'HttpOnly') === 0) {
-						$cookie->setHttpOnly(true);
-					}
-					elseif (\strcasecmp($attribute, 'Secure') === 0) {
-						$cookie->setSecureOnly(true);
-					}
-					elseif (\stripos($attribute, 'Expires=') === 0) {
-						$cookie->setExpiryTime((int) \strtotime(\substr($attribute, 8)));
-					}
-					elseif (\stripos($attribute, 'Domain=') === 0) {
-						$cookie->setDomain(\substr($attribute, 7));
-					}
-					elseif (\stripos($attribute, 'Path=') === 0) {
-						$cookie->setPath(\substr($attribute, 5));
-					}
-					elseif (\stripos($attribute, 'SameSite=') === 0) {
-						$cookie->setSameSiteRestriction(\substr($attribute, 9));
-					}
-				}
-			}
-
-			return $cookie;
-		}
-		else {
-			return null;
-		}
-	}
-
-	/**
-	 * Checks whether a cookie with the specified name exists
-	 *
-	 * @param string $name the name of the cookie to check
-	 * @return bool whether there is a cookie with the specified name
-	 */
-	public static function exists($name) {
-		return isset($_COOKIE[$name]);
-	}
-
-	/**
-	 * Returns the value from the requested cookie or, if not found, the specified default value
-	 *
-	 * @param string $name the name of the cookie to retrieve the value from
-	 * @param mixed $defaultValue the default value to return if the requested cookie cannot be found
-	 * @return mixed the value from the requested cookie or the default value
-	 */
-	public static function get($name, $defaultValue = null) {
-		if (isset($_COOKIE[$name])) {
-			return $_COOKIE[$name];
-		}
-		else {
-			return $defaultValue;
-		}
-	}
-
 	private static function isNameValid($name) {
-		$name = (string) $name;
+		$name = (string)$name;
 
 		// The name of a cookie must not be empty on PHP 7+ (https://bugs.php.net/bug.php?id=69523).
-		if ($name !== '' || \PHP_VERSION_ID < 70000) {
-			if (!\preg_match('/[=,; \\t\\r\\n\\013\\014]/', $name)) {
+		if ($name !== '' || PHP_VERSION_ID < 70000) {
+			if (!preg_match('/[=,; \\t\\r\\n\\013\\014]/', $name)) {
 				return true;
 			}
 		}
@@ -493,19 +546,26 @@ final class Cookie {
 	}
 
 	private static function isExpiryTimeValid($expiryTime) {
-		return \is_numeric($expiryTime) || \is_null($expiryTime) || \is_bool($expiryTime);
+		return is_numeric($expiryTime) || is_null($expiryTime) || is_bool($expiryTime);
+	}
+
+	private static function formatMaxAge($expiryTime, $forceShow = false) {
+		if ($expiryTime > 0 || $forceShow) {
+			return (string)self::calculateMaxAge($expiryTime);
+		} else {
+			return null;
+		}
 	}
 
 	private static function calculateMaxAge($expiryTime) {
 		if ($expiryTime === 0) {
 			return 0;
-		}
-		else {
-			$maxAge = $expiryTime - \time();
+		} else {
+			$maxAge = $expiryTime - time();
 
 			// The value of the `Max-Age` property must not be negative on PHP 7.0.19+ (< 7.1) and
 			// PHP 7.1.5+ (https://bugs.php.net/bug.php?id=72071).
-			if ((\PHP_VERSION_ID >= 70019 && \PHP_VERSION_ID < 70100) || \PHP_VERSION_ID >= 70105) {
+			if ((PHP_VERSION_ID >= 70019 && PHP_VERSION_ID < 70100) || PHP_VERSION_ID >= 70105) {
 				if ($maxAge < 0) {
 					$maxAge = 0;
 				}
@@ -521,64 +581,10 @@ final class Cookie {
 				$expiryTime = 1;
 			}
 
-			return \gmdate('D, d-M-Y H:i:s T', $expiryTime);
-		}
-		else {
+			return gmdate('D, d-M-Y H:i:s T', $expiryTime);
+		} else {
 			return null;
 		}
-	}
-
-	private static function formatMaxAge($expiryTime, $forceShow = false) {
-		if ($expiryTime > 0 || $forceShow) {
-			return (string) self::calculateMaxAge($expiryTime);
-		}
-		else {
-			return null;
-		}
-	}
-
-	private static function normalizeDomain($domain = null) {
-		// make sure that the domain is a string
-		$domain = (string) $domain;
-
-		// if the cookie should be valid for the current host only
-		if ($domain === '') {
-			// no need for further normalization
-			return null;
-		}
-
-		// if the provided domain is actually an IP address
-		if (\filter_var($domain, \FILTER_VALIDATE_IP) !== false) {
-			// let the cookie be valid for the current host
-			return null;
-		}
-
-		// for local hostnames (which either have no dot at all or a leading dot only)
-		if (\strpos($domain, '.') === false || \strrpos($domain, '.') === 0) {
-			// let the cookie be valid for the current host while ensuring maximum compatibility
-			return null;
-		}
-
-		// unless the domain already starts with a dot
-		if ($domain[0] !== '.') {
-			// prepend a dot for maximum compatibility (e.g. with RFC 2109)
-			$domain = '.' . $domain;
-		}
-
-		// return the normalized domain
-		return $domain;
-	}
-
-	private static function addHttpHeader($header) {
-		if (!\headers_sent()) {
-			if (!empty($header)) {
-				\header($header, false);
-
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 }

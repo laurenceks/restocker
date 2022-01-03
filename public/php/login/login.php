@@ -2,6 +2,10 @@
 require '../vendor/autoload.php';
 
 use Delight\Auth\Auth;
+use Delight\Auth\EmailNotVerifiedException;
+use Delight\Auth\InvalidEmailException;
+use Delight\Auth\InvalidPasswordException;
+use Delight\Auth\TooManyRequestsException;
 
 require_once "../common/db.php";
 
@@ -26,12 +30,12 @@ try {
             $output["feedback"] = "Your account is pending approval by an organisation admin";
             $output["errorMessage"] = "Account is pending approval by an organisation admin";
             $output["errorType"] = "accountPendingApproval";
-        }else if ($output["user"]->suspended) {
+        } else if ($output["user"]->suspended) {
             $output["success"] = false;
             $output["feedback"] = "Your account has been suspended by an organisational admin";
             $output["errorMessage"] = "Account has been suspended by an organisational admin";
             $output["errorType"] = "accountSuspended";
-        }else{
+        } else {
             $output["success"] = false;
             $output["feedback"] = "Your account credentials are invalid - please contact an organisational admin";
             $output["errorMessage"] = "Your account credentials are invalid";
@@ -41,19 +45,19 @@ try {
         $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 
-} catch (\Delight\Auth\InvalidEmailException $e) {
+} catch (InvalidEmailException $e) {
     $output["feedback"] = "Wrong or unknown email/password";
     $output["errorMessage"] = "Wrong or unknown email/password";
     $output["errorType"] = "wrongEmailOrPassword";
-} catch (\Delight\Auth\InvalidPasswordException $e) {
+} catch (InvalidPasswordException $e) {
     $output["feedback"] = "Wrong or unknown email/password";
     $output["errorMessage"] = "Wrong or unknown email/password";
     $output["errorType"] = "wrongEmailOrPassword";
-} catch (\Delight\Auth\EmailNotVerifiedException $e) {
+} catch (EmailNotVerifiedException $e) {
     $output["feedback"] = "Email not verified";
     $output["errorMessage"] = "Email not verified";
     $output["errorType"] = "emailNotVerified";
-} catch (\Delight\Auth\TooManyRequestsException $e) {
+} catch (TooManyRequestsException $e) {
     $output["feedback"] = "Too many requests - please try again later";
     $output["errorMessage"] = "Too many requests";
     $output["errorType"] = "tooManyRequests";

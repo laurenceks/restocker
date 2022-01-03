@@ -8,7 +8,7 @@ $auth = new Auth($db);
 
 $output = array("isLoggedIn" => $auth->isLoggedIn(), "user" => null);
 
-if($output["isLoggedIn"]){
+if ($output["isLoggedIn"]) {
     require "../common/getUserInfo.php";
     $output["user"] = getUserInfo($auth->getUserId());
 }

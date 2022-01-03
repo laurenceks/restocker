@@ -9,4 +9,5 @@
 namespace Delight\Db\Throwable;
 
 /** Error that is thrown when there is invalid syntax or when an access rule is being violated */
-class SyntaxError extends Error {}
+class SyntaxError extends Error {
+}

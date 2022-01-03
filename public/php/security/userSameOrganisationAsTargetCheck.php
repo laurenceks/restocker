@@ -1,7 +1,6 @@
 <?php
 
-function targetHasSameOrganisationAsCurrentUser($id)
-{
+function targetHasSameOrganisationAsCurrentUser($id) {
     require "../common/db.php";
     $id = $id ? intval($id) : null;
     if ($id && is_numeric($id)) {

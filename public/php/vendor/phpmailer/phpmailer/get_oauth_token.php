@@ -38,22 +38,25 @@ namespace PHPMailer\PHPMailer;
  * Plenty to choose from here:
  * @see http://oauth2-client.thephpleague.com/providers/thirdparty/
  */
+
 //@see https://github.com/thephpleague/oauth2-google
-use League\OAuth2\Client\Provider\Google;
-//@see https://packagist.org/packages/hayageek/oauth2-yahoo
 use Hayageek\OAuth2\Client\Provider\Yahoo;
-//@see https://github.com/stevenmaguire/oauth2-microsoft
+use League\OAuth2\Client\Provider\Google;
 use Stevenmaguire\OAuth2\Client\Provider\Microsoft;
+
+//@see https://packagist.org/packages/hayageek/oauth2-yahoo
+
+//@see https://github.com/stevenmaguire/oauth2-microsoft
 
 if (!isset($_GET['code']) && !isset($_GET['provider'])) {
     ?>
-<html>
-<body>Select Provider:<br>
-<a href='?provider=Google'>Google</a><br>
-<a href='?provider=Yahoo'>Yahoo</a><br>
-<a href='?provider=Microsoft'>Microsoft/Outlook/Hotmail/Live/Office365</a><br>
-</body>
-</html>
+    <html>
+    <body>Select Provider:<br>
+    <a href='?provider=Google'>Google</a><br>
+    <a href='?provider=Yahoo'>Yahoo</a><br>
+    <a href='?provider=Microsoft'>Microsoft/Outlook/Hotmail/Live/Office365</a><br>
+    </body>
+    </html>
     <?php
     exit;
 }
@@ -83,12 +86,7 @@ $clientSecret = 'RANDOMCHARS-----lGyjPcRtvP';
 $redirectUri = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 //$redirectUri = 'http://localhost/PHPMailer/redirect';
 
-$params = [
-    'clientId' => $clientId,
-    'clientSecret' => $clientSecret,
-    'redirectUri' => $redirectUri,
-    'accessType' => 'offline'
-];
+$params = ['clientId' => $clientId, 'clientSecret' => $clientSecret, 'redirectUri' => $redirectUri, 'accessType' => 'offline'];
 
 $options = [];
 $provider = null;
@@ -96,23 +94,14 @@ $provider = null;
 switch ($providerName) {
     case 'Google':
         $provider = new Google($params);
-        $options = [
-            'scope' => [
-                'https://mail.google.com/'
-            ]
-        ];
+        $options = ['scope' => ['https://mail.google.com/']];
         break;
     case 'Yahoo':
         $provider = new Yahoo($params);
         break;
     case 'Microsoft':
         $provider = new Microsoft($params);
-        $options = [
-            'scope' => [
-                'wl.imap',
-                'wl.offline_access'
-            ]
-        ];
+        $options = ['scope' => ['wl.imap', 'wl.offline_access']];
         break;
 }
 
@@ -134,12 +123,7 @@ if (!isset($_GET['code'])) {
 } else {
     unset($_SESSION['provider']);
     //Try to get an access token (using the authorization code grant)
-    $token = $provider->getAccessToken(
-        'authorization_code',
-        [
-            'code' => $_GET['code']
-        ]
-    );
+    $token = $provider->getAccessToken('authorization_code', ['code' => $_GET['code']]);
     //Use this to interact with an API on the users behalf
     //Use this to get a new access token if the old one expires
     echo 'Refresh Token: ', $token->getRefreshToken();

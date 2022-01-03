@@ -1,6 +1,5 @@
 <?php
-function fetchFunctionLocations($organisationId)
-{
+function fetchFunctionLocations($organisationId) {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
     $getAllLocations = $db->prepare("

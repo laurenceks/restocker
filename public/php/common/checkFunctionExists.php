@@ -1,14 +1,10 @@
 <?php
-function checkFunctionExists($table, $selectKey, $keyValues, $checkDeleted = false, $compareValues = false, $entryId = null)
-{
+function checkFunctionExists($table, $selectKey, $keyValues, $checkDeleted = false, $compareValues = false, $entryId = null) {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
 
     $result = false;
-    $whiteList = array(
-        "tables" => array("lists", "list_items", "items", "locations", "transactions"),
-        "keys" => array("id", "name", "listId", "itemId")
-    );
+    $whiteList = array("tables" => array("lists", "list_items", "items", "locations", "transactions"), "keys" => array("id", "name", "listId", "itemId"));
 
     if (count($keyValues) > 0 && in_array($table, $whiteList["tables"], true) && in_array($selectKey, $whiteList["keys"], true)) {
         $whereString = " WHERE";

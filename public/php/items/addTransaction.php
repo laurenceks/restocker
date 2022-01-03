@@ -103,8 +103,7 @@ $output["feedback"] = $input["transactionFormType"] === "transfer" ? ($input["tr
 
 echo json_encode($output);
 
-function earlyExit($output)
-{
+function earlyExit($output) {
     echo json_encode($output);
     exit();
 }

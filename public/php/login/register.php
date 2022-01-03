@@ -2,6 +2,12 @@
 require '../vendor/autoload.php';
 
 use Delight\Auth\Auth;
+use Delight\Auth\InvalidEmailException;
+use Delight\Auth\InvalidPasswordException;
+use Delight\Auth\Role;
+use Delight\Auth\TooManyRequestsException;
+use Delight\Auth\UnknownIdException;
+use Delight\Auth\UserAlreadyExistsException;
 
 
 require_once "../common/db.php";
@@ -71,8 +77,8 @@ try {
     if (isset($input["organisation"]["customOption"]) && $input["organisation"]["customOption"]) {
         try {
             //new organisation - make super admin
-            $auth->admin()->addRoleForUserById($userId, \Delight\Auth\Role::SUPER_ADMIN);
-        } catch (\Delight\Auth\UnknownIdException $e) {
+            $auth->admin()->addRoleForUserById($userId, Role::SUPER_ADMIN);
+        } catch (UnknownIdException $e) {
             $output["feedback"] = "Unable to assign user super admin role, please contact the support team";
             $output["errorMessage"] = "Unable to assign user super admin role";
             $output["errorType"] = "unableToAssignSuperAdmin";
@@ -82,19 +88,19 @@ try {
     $output["success"] = true;
     $output["feedback"] = "You have successfully registered, please check " . $input["inputRegisterEmail"] . " for a verification link";
     $output["id"] = $userId;
-} catch (\Delight\Auth\InvalidEmailException $e) {
+} catch (InvalidEmailException $e) {
     $output["feedback"] = "Invalid email address";
     $output["errorMessage"] = "Invalid email address";
     $output["errorType"] = "invalidEmail";
-} catch (\Delight\Auth\InvalidPasswordException $e) {
+} catch (InvalidPasswordException $e) {
     $output["feedback"] = "Invalid password";
     $output["errorMessage"] = "Invalid password";
     $output["errorType"] = "invalidPassword";
-} catch (\Delight\Auth\UserAlreadyExistsException $e) {
+} catch (UserAlreadyExistsException $e) {
     $output["feedback"] = "User already exists";
     $output["errorMessage"] = "User already exists";
     $output["errorType"] = "userExists";
-} catch (\Delight\Auth\TooManyRequestsException $e) {
+} catch (TooManyRequestsException $e) {
     $output["feedback"] = "Too many requests - please try again later";
     $output["errorMessage"] = "Too many requests";
     $output["errorType"] = "tooManyRequests";

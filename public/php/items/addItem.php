@@ -27,6 +27,7 @@ if (checkFunctionExists("items", "id", array(array("key" => "name", "value" => $
         $output["title"] = "Item added";
         $output["feedback"] = $input["inputAddItemName"] . " was added successfully";
     } catch (PDOException $e) {
+        //TODO replace server error message with generic message for security
         $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
     }
 }

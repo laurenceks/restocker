@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class TokenExpiredException extends AuthException {}
+class TokenExpiredException extends AuthException {
+}

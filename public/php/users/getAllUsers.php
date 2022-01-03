@@ -5,6 +5,7 @@ require '../vendor/autoload.php';
 require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
+use Delight\Auth\Role;
 
 $auth = new Auth($db);
 
@@ -23,7 +24,7 @@ try {
     $output["title"] = "Users updated";
     $output["feedback"] = "Users data has been refreshed";
     $output["users"] = $getAllUsers->fetchAll(PDO::FETCH_ASSOC);
-    if ($auth->hasRole(\Delight\Auth\Role::SUPER_ADMIN)) {
+    if ($auth->hasRole(Role::SUPER_ADMIN)) {
         $isSuperAdminAndThereIsMoreThanOne = $db->prepare("SELECT COUNT(*) as result FROM `users_info` WHERE `superAdmin` = 1 AND `organisationId` = :organisationId");
         $isSuperAdminAndThereIsMoreThanOne->bindValue(':organisationId', $_SESSION["user"]->organisationId);
         $isSuperAdminAndThereIsMoreThanOne->execute();

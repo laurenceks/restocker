@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class ResetDisabledException extends AuthException {}
+class ResetDisabledException extends AuthException {
+}

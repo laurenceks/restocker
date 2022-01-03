@@ -26,6 +26,6 @@ if (!$auth->isLoggedIn()) {
         } else if ($u->organisationId !== $_SESSION["user"]->organisationId) {
             $msg = "User does not belong to current organisation";
         }
-        endProcessDueToInvalidLogin($msg);;
+        endProcessDueToInvalidLogin($msg);
     }
 }

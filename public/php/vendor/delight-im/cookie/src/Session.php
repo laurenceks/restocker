@@ -9,6 +9,12 @@
 namespace Delight\Cookie;
 
 use Delight\Http\ResponseHeader;
+use function session_id;
+use function session_name;
+use function session_regenerate_id;
+use function session_start;
+use function trigger_error;
+use const E_USER_WARNING;
 
 /**
  * Session management with improved cookie handling
@@ -19,7 +25,8 @@ use Delight\Http\ResponseHeader;
  */
 final class Session {
 
-	private function __construct() { }
+	private function __construct() {
+	}
 
 	/**
 	 * Starts or resumes a session in a way compatible to PHP's built-in `session_start()` function
@@ -28,10 +35,39 @@ final class Session {
 	 */
 	public static function start($sameSiteRestriction = Cookie::SAME_SITE_RESTRICTION_LAX) {
 		// run PHP's built-in equivalent
-		\session_start();
+		session_start();
 
 		// intercept the cookie header (if any) and rewrite it
 		self::rewriteCookieHeader($sameSiteRestriction);
+	}
+
+	/**
+	 * Intercepts and rewrites the session cookie header
+	 *
+	 * @param string|null $sameSiteRestriction indicates that the cookie should not be sent along with cross-site requests (either `null`, `None`, `Lax` or `Strict`)
+	 */
+	private static function rewriteCookieHeader($sameSiteRestriction = Cookie::SAME_SITE_RESTRICTION_LAX) {
+		// get and remove the original cookie header set by PHP
+		$originalCookieHeader = ResponseHeader::take('Set-Cookie', session_name() . '=');
+
+		// if a cookie header has been found
+		if (isset($originalCookieHeader)) {
+			// parse it into a cookie instance
+			$parsedCookie = Cookie::parse($originalCookieHeader);
+
+			// if the cookie has successfully been parsed
+			if (isset($parsedCookie)) {
+				// apply the supplied same-site restriction
+				$parsedCookie->setSameSiteRestriction($sameSiteRestriction);
+
+				if ($parsedCookie->getSameSiteRestriction() === Cookie::SAME_SITE_RESTRICTION_NONE && !$parsedCookie->isSecureOnly()) {
+					trigger_error('You may have to enable the \'session.cookie_secure\' directive in the configuration in \'php.ini\' or via the \'ini_set\' function', E_USER_WARNING);
+				}
+
+				// save the cookie
+				$parsedCookie->save();
+			}
+		}
 	}
 
 	/**
@@ -48,10 +84,9 @@ final class Session {
 	 */
 	public static function id($newId = null) {
 		if ($newId === null) {
-			return \session_id();
-		}
-		else {
-			return \session_id($newId);
+			return session_id();
+		} else {
+			return session_id($newId);
 		}
 	}
 
@@ -63,7 +98,7 @@ final class Session {
 	 */
 	public static function regenerate($deleteOldSession = false, $sameSiteRestriction = Cookie::SAME_SITE_RESTRICTION_LAX) {
 		// run PHP's built-in equivalent
-		\session_regenerate_id($deleteOldSession);
+		session_regenerate_id($deleteOldSession);
 
 		// intercept the cookie header (if any) and rewrite it
 		self::rewriteCookieHeader($sameSiteRestriction);
@@ -89,8 +124,7 @@ final class Session {
 	public static function get($key, $defaultValue = null) {
 		if (isset($_SESSION[$key])) {
 			return $_SESSION[$key];
-		}
-		else {
+		} else {
 			return $defaultValue;
 		}
 	}
@@ -111,8 +145,7 @@ final class Session {
 			unset($_SESSION[$key]);
 
 			return $value;
-		}
-		else {
+		} else {
 			return $defaultValue;
 		}
 	}
@@ -136,35 +169,6 @@ final class Session {
 	 */
 	public static function delete($key) {
 		unset($_SESSION[$key]);
-	}
-
-	/**
-	 * Intercepts and rewrites the session cookie header
-	 *
-	 * @param string|null $sameSiteRestriction indicates that the cookie should not be sent along with cross-site requests (either `null`, `None`, `Lax` or `Strict`)
-	 */
-	private static function rewriteCookieHeader($sameSiteRestriction = Cookie::SAME_SITE_RESTRICTION_LAX) {
-		// get and remove the original cookie header set by PHP
-		$originalCookieHeader = ResponseHeader::take('Set-Cookie', \session_name() . '=');
-
-		// if a cookie header has been found
-		if (isset($originalCookieHeader)) {
-			// parse it into a cookie instance
-			$parsedCookie = Cookie::parse($originalCookieHeader);
-
-			// if the cookie has successfully been parsed
-			if (isset($parsedCookie)) {
-				// apply the supplied same-site restriction
-				$parsedCookie->setSameSiteRestriction($sameSiteRestriction);
-
-				if ($parsedCookie->getSameSiteRestriction() === Cookie::SAME_SITE_RESTRICTION_NONE && !$parsedCookie->isSecureOnly()) {
-					\trigger_error('You may have to enable the \'session.cookie_secure\' directive in the configuration in \'php.ini\' or via the \'ini_set\' function', \E_USER_WARNING);
-				}
-
-				// save the cookie
-				$parsedCookie->save();
-			}
-		}
 	}
 
 }

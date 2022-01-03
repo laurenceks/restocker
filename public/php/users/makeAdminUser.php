@@ -8,6 +8,8 @@ require "../common/feedbackTemplate.php";
 require_once "../common/db.php";
 
 use Delight\Auth\Auth;
+use Delight\Auth\Role;
+use Delight\Auth\UnknownIdException;
 
 $auth = new Auth($db);
 
@@ -16,14 +18,14 @@ targetHasSameOrganisationAsCurrentUser($input["userId"]);
 $output = $feedbackTemplate;
 
 try {
-    $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::ADMIN);
-    $auth->admin()->removeRoleForUserById($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
+    $auth->admin()->removeRoleForUserById($input["userId"], Role::ADMIN);
+    $auth->admin()->removeRoleForUserById($input["userId"], Role::SUPER_ADMIN);
     $makeAdminUser = $db->prepare("UPDATE users_info SET admin = 0, superAdmin = 0 WHERE userId = :userId");
     $makeAdminUser->bindParam(':userId', $input["userId"]);
     $output["title"] = "User demoted";
     $output["feedback"] = $input["userFullName"] . " is now a normal user";
     $output = simpleExecuteOutput($makeAdminUser, $output);
-} catch (\Delight\Auth\UnknownIdException $e) {
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 

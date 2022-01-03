@@ -1,6 +1,5 @@
 <?php
-function fetchFunctionLists($organisationId, $locationId = null)
-{
+function fetchFunctionLists($organisationId, $locationId = null) {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
     $locationWhere = $locationId ? "AND transactions.locationId = :locationId" : "";

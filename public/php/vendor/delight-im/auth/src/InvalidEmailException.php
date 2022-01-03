@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class InvalidEmailException extends AuthException {}
+class InvalidEmailException extends AuthException {
+}

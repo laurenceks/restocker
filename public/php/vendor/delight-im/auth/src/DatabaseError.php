@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class DatabaseError extends AuthError {}
+class DatabaseError extends AuthError {
+}

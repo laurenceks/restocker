@@ -5,11 +5,4 @@
 $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
-return array(
-    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
-    'Delight\\Http\\' => array($vendorDir . '/delight-im/http/src'),
-    'Delight\\Db\\' => array($vendorDir . '/delight-im/db/src'),
-    'Delight\\Cookie\\' => array($vendorDir . '/delight-im/cookie/src'),
-    'Delight\\Base64\\' => array($vendorDir . '/delight-im/base64/src'),
-    'Delight\\Auth\\' => array($vendorDir . '/delight-im/auth/src'),
-);
+return array('PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'), 'Delight\\Http\\' => array($vendorDir . '/delight-im/http/src'), 'Delight\\Db\\' => array($vendorDir . '/delight-im/db/src'), 'Delight\\Cookie\\' => array($vendorDir . '/delight-im/cookie/src'), 'Delight\\Base64\\' => array($vendorDir . '/delight-im/base64/src'), 'Delight\\Auth\\' => array($vendorDir . '/delight-im/auth/src'),);

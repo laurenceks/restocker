@@ -26,9 +26,9 @@ final class PdoDsn implements Dsn {
 	 * @param string $password (optional) the password that complements the DSN
 	 */
 	public function __construct($dsnStr, $username = null, $password = null) {
-		$this->dsn = (string) $dsnStr;
-		$this->username = (string) $username;
-		$this->password = (string) $password;
+		$this->dsn = (string)$dsnStr;
+		$this->username = (string)$username;
+		$this->password = (string)$password;
 	}
 
 	/**

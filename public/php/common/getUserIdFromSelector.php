@@ -1,6 +1,5 @@
 <?php
-function getUserIdFromSelector($selector, $table)
-{
+function getUserIdFromSelector($selector, $table) {
     if (!$selector || !$table) {
         return null;
     } else {
@@ -16,7 +15,5 @@ function getUserIdFromSelector($selector, $table)
         } catch (PDOException $e) {
             return $e;
         }
-
-
     }
 }

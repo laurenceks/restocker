@@ -26,9 +26,8 @@ final class SimpleProfiler implements Profiler {
 
 		if ($maxTraceLength === null) {
 			$this->maxTraceLength = self::TRACE_MAX_LENGTH_DEFAULT;
-		}
-		else {
-			$this->maxTraceLength = (int) $maxTraceLength;
+		} else {
+			$this->maxTraceLength = (int)$maxTraceLength;
 		}
 
 		$this->currentMeasurementStartTime = null;
@@ -41,9 +40,8 @@ final class SimpleProfiler implements Profiler {
 	public function endMeasurement($sql, array $boundValues = null, $discardMostRecentTraceEntries = null) {
 		if ($discardMostRecentTraceEntries === null) {
 			$discardMostRecentTraceEntries = 0;
-		}
-		else {
-			$discardMostRecentTraceEntries = (int) $discardMostRecentTraceEntries;
+		} else {
+			$discardMostRecentTraceEntries = (int)$discardMostRecentTraceEntries;
 		}
 
 		// get the trace at this point of the program execution
@@ -58,12 +56,7 @@ final class SimpleProfiler implements Profiler {
 		$duration = (microtime(true) * 1000) - $this->currentMeasurementStartTime;
 
 		// and finally record the measurement
-		$this->measurements[] = new SimpleMeasurement(
-			$duration,
-			$sql,
-			$boundValues,
-			$trace
-		);
+		$this->measurements[] = new SimpleMeasurement($duration, $sql, $boundValues, $trace);
 	}
 
 	public function getCount() {

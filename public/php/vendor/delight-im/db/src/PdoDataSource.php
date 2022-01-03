@@ -53,7 +53,7 @@ final class PdoDataSource implements DataSource {
 	 * @param string $driverName the name of the driver, e.g. `mysql` or `pgsql`
 	 */
 	public function __construct($driverName) {
-		$this->driverName = (string) $driverName;
+		$this->driverName = (string)$driverName;
 		$this->hostname = self::HOST_DEFAULT;
 		$this->port = self::suggestPortFromDriverName($driverName);
 		$this->unixSocket = null;
@@ -66,13 +66,47 @@ final class PdoDataSource implements DataSource {
 	}
 
 	/**
+	 * Suggests a default port number for a given driver
+	 *
+	 * @param string $driverName the name of the driver
+	 * @return int|null the suggested port number
+	 */
+	private static function suggestPortFromDriverName($driverName) {
+		switch ($driverName) {
+			case self::DRIVER_NAME_MYSQL:
+				return 3306;
+			case self::DRIVER_NAME_POSTGRESQL:
+				return 5432;
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Suggests a default charset for a given driver
+	 *
+	 * @param string $driverName the name of the driver
+	 * @return string|null the suggested charset
+	 */
+	private static function suggestCharsetFromDriverName($driverName) {
+		switch ($driverName) {
+			case self::DRIVER_NAME_MYSQL:
+				return 'utf8mb4';
+			case self::DRIVER_NAME_POSTGRESQL:
+				return 'UTF8';
+			default:
+				return null;
+		}
+	}
+
+	/**
 	 * Sets the hostname
 	 *
 	 * @param string|null $hostname the hostname where the database can be accessed, e.g. `db.example.com`
 	 * @return static this instance for chaining
 	 */
 	public function setHostname($hostname = null) {
-		$this->hostname = $hostname !== null ? (string) $hostname : null;
+		$this->hostname = $hostname !== null ? (string)$hostname : null;
 
 		return $this;
 	}
@@ -84,7 +118,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setPort($port = null) {
-		$this->port = $port !== null ? (int) $port : null;
+		$this->port = $port !== null ? (int)$port : null;
 
 		return $this;
 	}
@@ -96,7 +130,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setUnixSocket($unixSocket = null) {
-		$this->unixSocket = $unixSocket !== null ? (string) $unixSocket : null;
+		$this->unixSocket = $unixSocket !== null ? (string)$unixSocket : null;
 
 		return $this;
 	}
@@ -108,7 +142,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setMemory($memory = null) {
-		$this->memory = $memory !== null ? (bool) $memory : null;
+		$this->memory = $memory !== null ? (bool)$memory : null;
 
 		return $this;
 	}
@@ -120,7 +154,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setFilePath($filePath = null) {
-		$this->filePath = $filePath !== null ? (string) $filePath : null;
+		$this->filePath = $filePath !== null ? (string)$filePath : null;
 
 		return $this;
 	}
@@ -132,7 +166,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setDatabaseName($databaseName = null) {
-		$this->databaseName = $databaseName !== null ? (string) $databaseName : null;
+		$this->databaseName = $databaseName !== null ? (string)$databaseName : null;
 
 		return $this;
 	}
@@ -144,7 +178,7 @@ final class PdoDataSource implements DataSource {
 	 * @return static this instance for chaining
 	 */
 	public function setCharset($charset = null) {
-		$this->charset = $charset !== null ? (string) $charset : null;
+		$this->charset = $charset !== null ? (string)$charset : null;
 
 		return $this;
 	}
@@ -189,18 +223,18 @@ final class PdoDataSource implements DataSource {
 					}
 				}
 
-				$components[] = 'host='.$hostname;
+				$components[] = 'host=' . $hostname;
 			}
 		}
 
 		if (isset($this->port)) {
 			if ($this->driverName !== self::DRIVER_NAME_ORACLE) {
-				$components[] = 'port='.$this->port;
+				$components[] = 'port=' . $this->port;
 			}
 		}
 
 		if (isset($this->unixSocket)) {
-			$components[] = 'unix_socket='.$this->unixSocket;
+			$components[] = 'unix_socket=' . $this->unixSocket;
 		}
 
 		if (isset($this->memory)) {
@@ -225,65 +259,34 @@ final class PdoDataSource implements DataSource {
 				}
 
 				if (count($oracleLocation) > 0) {
-					$components[] = 'dbname=//'.implode(':', $oracleLocation).'/'.$this->databaseName;
+					$components[] = 'dbname=//' . implode(':', $oracleLocation) . '/' . $this->databaseName;
+				} else {
+					$components[] = 'dbname=' . $this->databaseName;
 				}
-				else {
-					$components[] = 'dbname='.$this->databaseName;
-				}
-			}
-			else {
-				$components[] = 'dbname='.$this->databaseName;
+			} else {
+				$components[] = 'dbname=' . $this->databaseName;
 			}
 		}
 
 		if (isset($this->charset)) {
 			if ($this->driverName === self::DRIVER_NAME_POSTGRESQL) {
-				$components[] = 'client_encoding='.$this->charset;
-			}
-			else {
-				$components[] = 'charset='.$this->charset;
+				$components[] = 'client_encoding=' . $this->charset;
+			} else {
+				$components[] = 'charset=' . $this->charset;
 			}
 		}
 
 		if (isset($this->username)) {
-			$components[] = 'user='.$this->username;
+			$components[] = 'user=' . $this->username;
 		}
 
 		if (isset($this->password)) {
-			$components[] = 'password='.$this->password;
+			$components[] = 'password=' . $this->password;
 		}
 
 		$dsnStr = $this->driverName . ':' . implode(';', $components);
 
 		return new PdoDsn($dsnStr, $this->username, $this->password);
-	}
-
-	/**
-	 * Suggests a default charset for a given driver
-	 *
-	 * @param string $driverName the name of the driver
-	 * @return string|null the suggested charset
-	 */
-	private static function suggestCharsetFromDriverName($driverName) {
-		switch ($driverName) {
-			case self::DRIVER_NAME_MYSQL: return 'utf8mb4';
-			case self::DRIVER_NAME_POSTGRESQL: return 'UTF8';
-			default: return null;
-		}
-	}
-
-	/**
-	 * Suggests a default port number for a given driver
-	 *
-	 * @param string $driverName the name of the driver
-	 * @return int|null the suggested port number
-	 */
-	private static function suggestPortFromDriverName($driverName) {
-		switch ($driverName) {
-			case self::DRIVER_NAME_MYSQL: return 3306;
-			case self::DRIVER_NAME_POSTGRESQL: return 5432;
-			default: return null;
-		}
 	}
 
 }

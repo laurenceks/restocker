@@ -8,14 +8,18 @@
 
 namespace Delight\Db;
 
-use PDO;
-use PDOException;
-use PDOStatement;
 use Delight\Db\Throwable\BeginTransactionFailureException;
 use Delight\Db\Throwable\CommitTransactionFailureException;
 use Delight\Db\Throwable\EmptyValueListError;
 use Delight\Db\Throwable\EmptyWhereClauseError;
 use Delight\Db\Throwable\RollBackTransactionFailureException;
+use PDO;
+use PDOException;
+use PDOStatement;
+use function array_map;
+use function implode;
+use function is_array;
+use function is_bool;
 
 /** Database access using PHP's built-in PDO */
 final class PdoDatabase implements Database {
@@ -51,27 +55,19 @@ final class PdoDatabase implements Database {
 		if ($preserveOldState) {
 			// prepare an array for that task
 			$this->previousAttributes = [];
-		}
-		// if the old state of the connection doesn't need to be tracked
+		} // if the old state of the connection doesn't need to be tracked
 		else {
 			$this->previousAttributes = null;
 		}
 
 		// track the new attributes that should be applied during normalization
-		$this->attributes = [
-			// set the error mode for this connection to throw exceptions
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-			// set the default fetch mode for this connection to use associative arrays
-			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-			// prefer native prepared statements over emulated ones
-			PDO::ATTR_EMULATE_PREPARES => false,
-			// use lowercase and uppercase as returned by the server
-			PDO::ATTR_CASE => PDO::CASE_NATURAL,
-			// don't convert numeric values to strings when fetching data
-			PDO::ATTR_STRINGIFY_FETCHES => false,
-			// keep `null` values and empty strings as returned by the server
-			PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL
-		];
+		$this->attributes = [// set the error mode for this connection to throw exceptions
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // set the default fetch mode for this connection to use associative arrays
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // prefer native prepared statements over emulated ones
+			PDO::ATTR_EMULATE_PREPARES => false, // use lowercase and uppercase as returned by the server
+			PDO::ATTR_CASE => PDO::CASE_NATURAL, // don't convert numeric values to strings when fetching data
+			PDO::ATTR_STRINGIFY_FETCHES => false, // keep `null` values and empty strings as returned by the server
+			PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL];
 
 		$this->pdo = $pdoInstance;
 		$this->dsn = $pdoDsn;
@@ -121,6 +117,147 @@ final class PdoDatabase implements Database {
 		}, $query, $bindValues);
 	}
 
+	/**
+	 * Selects from the database using the specified query and returns what the supplied callback extracts from the result set
+	 *
+	 * You should not include any dynamic input in the query
+	 *
+	 * Instead, pass `?` characters (without any quotes) as placeholders and pass the actual values in the third argument
+	 *
+	 * @param callable $callback the callback that receives the executed statement and can then extract and return the desired results
+	 * @param string $query the query to select with
+	 * @param array|null $bindValues (optional) the values to bind as replacements for the `?` characters in the query
+	 * @return mixed whatever the callback has extracted and returned from the result set
+	 */
+	private function selectInternal(callable $callback, $query, array $bindValues = null) {
+		$this->normalizeConnection();
+
+		try {
+			// create a prepared statement from the supplied SQL string
+			$stmt = $this->pdo->prepare($query);
+		} catch (PDOException $e) {
+			ErrorHandler::rethrow($e);
+		}
+
+		// if a performance profiler has been defined
+		if (isset($this->profiler)) {
+			$this->profiler->beginMeasurement();
+		}
+
+		/** @var PDOStatement $stmt */
+
+		// bind the supplied values to the query and execute it
+		try {
+			$stmt->execute($bindValues);
+		} catch (PDOException $e) {
+			ErrorHandler::rethrow($e);
+		}
+
+		// if a performance profiler has been defined
+		if (isset($this->profiler)) {
+			$this->profiler->endMeasurement($query, $bindValues, 1);
+		}
+
+		// fetch the desired results from the result set via the supplied callback
+		$results = $callback($stmt);
+
+		$this->denormalizeConnection();
+
+		// if the result is empty
+		if (empty($results) && $stmt->rowCount() === 0 && ($this->driverName !== PdoDataSource::DRIVER_NAME_SQLITE || is_bool($results) || is_array($results))) {
+			// consistently return `null`
+			return null;
+		} // if some results have been found
+		else {
+			// return these as extracted by the callback
+			return $results;
+		}
+	}
+
+	/** Normalizes this connection by setting attributes that provide the strong guarantees about the connection's behavior that we need */
+	private function normalizeConnection() {
+		$this->ensureConnected();
+
+		$this->configureConnection($this->attributes, $this->previousAttributes);
+	}
+
+	/** Makes sure that the connection is active and otherwise establishes it automatically */
+	private function ensureConnected() {
+		if ($this->pdo === null) {
+			try {
+				$this->pdo = new PDO($this->dsn->getDsn(), $this->dsn->getUsername(), $this->dsn->getPassword());
+			} catch (PDOException $e) {
+				ErrorHandler::rethrow($e);
+			}
+
+			// iterate over all listeners waiting for the connection to be established
+			foreach ($this->onConnectListeners as $onConnectListener) {
+				// execute the callback
+				$onConnectListener($this);
+			}
+
+			// discard the listeners now that they have all been executed
+			$this->onConnectListeners = [];
+
+			$this->dsn = null;
+		}
+
+		if ($this->driverName === null) {
+			$this->driverName = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+		}
+	}
+
+	/**
+	 * Configures this connection by setting appropriate attributes
+	 *
+	 * @param array|null $newAttributes the new attributes to set
+	 * @param array|null $oldAttributes where old configurations may be saved to restore them later
+	 */
+	private function configureConnection(array &$newAttributes = null, array &$oldAttributes = null) {
+		// if a connection is available
+		if (isset($this->pdo)) {
+			// if there are attributes that need to be applied
+			if (isset($newAttributes)) {
+				// get the keys and values of the attributes to apply
+				foreach ($newAttributes as $key => $newValue) {
+					// if the old state of the connection must be preserved
+					if (isset($oldAttributes)) {
+						// retrieve the old value for this attribute
+						try {
+							$oldValue = @$this->pdo->getAttribute($key);
+						} catch (PDOException $e) {
+							// the specified attribute is not supported by the driver
+							$oldValue = null;
+						}
+
+						// if an old value has been found
+						if (isset($oldValue)) {
+							// if the old value differs from the new value that we're going to set
+							if ($oldValue !== $newValue) {
+								// save the old value so that we're able to restore it later
+								$oldAttributes[$key] = $oldValue;
+							}
+						}
+					}
+
+					// and then set the desired new value
+					$this->pdo->setAttribute($key, $newValue);
+				}
+
+				// if the old state of the connection doesn't need to be preserved
+				if (!isset($oldAttributes)) {
+					// we're done updating attributes for this connection once and for all
+					$newAttributes = null;
+				}
+			}
+		}
+	}
+
+	/** Restores this connection's original behavior if desired */
+	private function denormalizeConnection() {
+		$this->configureConnection($this->previousAttributes, $this->attributes);
+	}
+
 	public function selectValue($query, array $bindValues = null) {
 		return $this->selectInternal(function ($stmt) {
 			/** @var PDOStatement $stmt */
@@ -154,7 +291,7 @@ final class PdoDatabase implements Database {
 		// get the column names
 		$columnNames = array_keys($insertMappings);
 		// escape the column names
-		$columnNames = array_map([ $this, 'quoteIdentifier' ], $columnNames);
+		$columnNames = array_map([$this, 'quoteIdentifier'], $columnNames);
 		// build the column list
 		$columnList = implode(', ', $columnNames);
 		// prepare the values (which are placeholders only)
@@ -162,10 +299,69 @@ final class PdoDatabase implements Database {
 		// build the value list
 		$placeholderList = implode(', ', $values);
 		// and finally build the full statement (still using placeholders)
-		$statement = 'INSERT INTO '.$tableName.' ('.$columnList.') VALUES ('.$placeholderList.');';
+		$statement = 'INSERT INTO ' . $tableName . ' (' . $columnList . ') VALUES (' . $placeholderList . ');';
 
 		// execute the (parameterized) statement and supply the values to be bound to it
 		return $this->exec($statement, array_values($insertMappings));
+	}
+
+	public function quoteTableName($tableName) {
+		if (is_array($tableName)) {
+			$tableName = array_map([$this, 'quoteIdentifier'], $tableName);
+
+			return implode('.', $tableName);
+		} else {
+			return $this->quoteIdentifier($tableName);
+		}
+	}
+
+	public function quoteIdentifier($identifier) {
+		$this->ensureConnected();
+
+		if ($this->driverName === PdoDataSource::DRIVER_NAME_MYSQL) {
+			$char = '`';
+		} else {
+			$char = '"';
+		}
+
+		return $char . str_replace($char, $char . $char, $identifier) . $char;
+	}
+
+	public function exec($statement, array $bindValues = null) {
+		$this->normalizeConnection();
+
+		try {
+			// create a prepared statement from the supplied SQL string
+			$stmt = $this->pdo->prepare($statement);
+		} catch (PDOException $e) {
+			ErrorHandler::rethrow($e);
+		}
+
+		// if a performance profiler has been defined
+		if (isset($this->profiler)) {
+			$this->profiler->beginMeasurement();
+		}
+
+		/** @var PDOStatement $stmt */
+
+		try {
+			// bind the supplied values to the statement and execute it
+			$stmt->execute($bindValues);
+		} catch (PDOException $e) {
+			ErrorHandler::rethrow($e);
+		}
+
+		// if a performance profiler has been defined
+		if (isset($this->profiler)) {
+			$this->profiler->endMeasurement($statement, $bindValues);
+		}
+
+		// get the number of rows affected by this operation
+		$affectedRows = $stmt->rowCount();
+
+		$this->denormalizeConnection();
+
+		return $affectedRows;
 	}
 
 	public function update($tableName, array $updateMappings, array $whereMappings) {
@@ -208,7 +404,7 @@ final class PdoDatabase implements Database {
 		}
 
 		// build the full statement (still using placeholders)
-		$statement = 'UPDATE '.$tableName.' SET '.implode(', ', $setDirectives).' WHERE '.implode(' AND ', $wherePredicates).';';
+		$statement = 'UPDATE ' . $tableName . ' SET ' . implode(', ', $setDirectives) . ' WHERE ' . implode(' AND ', $wherePredicates) . ';';
 
 		// execute the (parameterized) statement and supply the values to be bound to it
 		return $this->exec($statement, $bindValues);
@@ -237,49 +433,10 @@ final class PdoDatabase implements Database {
 		}
 
 		// build the full statement (still using placeholders)
-		$statement = 'DELETE FROM '.$tableName.' WHERE '.implode(' AND ', $wherePredicates).';';
+		$statement = 'DELETE FROM ' . $tableName . ' WHERE ' . implode(' AND ', $wherePredicates) . ';';
 
 		// execute the (parameterized) statement and supply the values to be bound to it
 		return $this->exec($statement, $bindValues);
-	}
-
-	public function exec($statement, array $bindValues = null) {
-		$this->normalizeConnection();
-
-		try {
-			// create a prepared statement from the supplied SQL string
-			$stmt = $this->pdo->prepare($statement);
-		}
-		catch (PDOException $e) {
-			ErrorHandler::rethrow($e);
-		}
-
-		// if a performance profiler has been defined
-		if (isset($this->profiler)) {
-			$this->profiler->beginMeasurement();
-		}
-
-		/** @var PDOStatement $stmt */
-
-		try {
-			// bind the supplied values to the statement and execute it
-			$stmt->execute($bindValues);
-		}
-		catch (PDOException $e) {
-			ErrorHandler::rethrow($e);
-		}
-
-		// if a performance profiler has been defined
-		if (isset($this->profiler)) {
-			$this->profiler->endMeasurement($statement, $bindValues);
-		}
-
-		// get the number of rows affected by this operation
-		$affectedRows = $stmt->rowCount();
-
-		$this->denormalizeConnection();
-
-		return $affectedRows;
 	}
 
 	public function getLastInsertId($sequenceName = null) {
@@ -292,13 +449,16 @@ final class PdoDatabase implements Database {
 		return $id;
 	}
 
+	public function startTransaction() {
+		$this->beginTransaction();
+	}
+
 	public function beginTransaction() {
 		$this->normalizeConnection();
 
 		try {
 			$success = $this->pdo->beginTransaction();
-		}
-		catch (PDOException $e) {
+		} catch (PDOException $e) {
 			$success = $e->getMessage();
 		}
 
@@ -307,10 +467,6 @@ final class PdoDatabase implements Database {
 		if ($success !== true) {
 			throw new BeginTransactionFailureException(is_string($success) ? $success : null);
 		}
-	}
-
-	public function startTransaction() {
-		$this->beginTransaction();
 	}
 
 	public function isTransactionActive() {
@@ -328,8 +484,7 @@ final class PdoDatabase implements Database {
 
 		try {
 			$success = $this->pdo->commit();
-		}
-		catch (PDOException $e) {
+		} catch (PDOException $e) {
 			$success = $e->getMessage();
 		}
 
@@ -345,8 +500,7 @@ final class PdoDatabase implements Database {
 
 		try {
 			$success = $this->pdo->rollBack();
-		}
-		catch (PDOException $e) {
+		} catch (PDOException $e) {
 			$success = $e->getMessage();
 		}
 
@@ -371,11 +525,16 @@ final class PdoDatabase implements Database {
 		$this->ensureConnected();
 
 		switch ($this->driverName) {
-			case PdoDataSource::DRIVER_NAME_MYSQL: return 'MySQL';
-			case PdoDataSource::DRIVER_NAME_POSTGRESQL: return 'PostgreSQL';
-			case PdoDataSource::DRIVER_NAME_SQLITE: return 'SQLite';
-			case PdoDataSource::DRIVER_NAME_ORACLE: return 'Oracle';
-			default: return $this->driverName;
+			case PdoDataSource::DRIVER_NAME_MYSQL:
+				return 'MySQL';
+			case PdoDataSource::DRIVER_NAME_POSTGRESQL:
+				return 'PostgreSQL';
+			case PdoDataSource::DRIVER_NAME_SQLITE:
+				return 'SQLite';
+			case PdoDataSource::DRIVER_NAME_ORACLE:
+				return 'Oracle';
+			default:
+				return $this->driverName;
 		}
 	}
 
@@ -412,30 +571,6 @@ final class PdoDatabase implements Database {
 		return $this->pdo->getAttribute(PDO::ATTR_CLIENT_VERSION);
 	}
 
-	public function quoteIdentifier($identifier) {
-		$this->ensureConnected();
-
-		if ($this->driverName === PdoDataSource::DRIVER_NAME_MYSQL) {
-			$char = '`';
-		}
-		else {
-			$char = '"';
-		}
-
-		return $char . str_replace($char, $char . $char, $identifier) . $char;
-	}
-
-	public function quoteTableName($tableName) {
-		if (\is_array($tableName)) {
-			$tableName = \array_map([ $this, 'quoteIdentifier' ], $tableName);
-
-			return \implode('.', $tableName);
-		}
-		else {
-			return $this->quoteIdentifier($tableName);
-		}
-	}
-
 	public function quoteLiteral($literal) {
 		$this->ensureConnected();
 
@@ -445,8 +580,7 @@ final class PdoDatabase implements Database {
 			}
 
 			return $literal;
-		}
-		else {
+		} else {
 			return $this->pdo->quote($literal);
 		}
 	}
@@ -456,160 +590,13 @@ final class PdoDatabase implements Database {
 		if ($this->pdo === null) {
 			// schedule the callback for later execution
 			$this->onConnectListeners[] = $onConnectListener;
-		}
-		// if the database connection has already been established
+		} // if the database connection has already been established
 		else {
 			// execute the callback immediately
 			$onConnectListener($this);
 		}
 
 		return $this;
-	}
-
-	/** Makes sure that the connection is active and otherwise establishes it automatically */
-	private function ensureConnected() {
-		if ($this->pdo === null) {
-			try {
-				$this->pdo = new PDO($this->dsn->getDsn(), $this->dsn->getUsername(), $this->dsn->getPassword());
-			}
-			catch (PDOException $e) {
-				ErrorHandler::rethrow($e);
-			}
-
-			// iterate over all listeners waiting for the connection to be established
-			foreach ($this->onConnectListeners as $onConnectListener) {
-				// execute the callback
-				$onConnectListener($this);
-			}
-
-			// discard the listeners now that they have all been executed
-			$this->onConnectListeners = [];
-
-			$this->dsn = null;
-		}
-
-		if ($this->driverName === null) {
-			$this->driverName = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
-		}
-	}
-
-	/** Normalizes this connection by setting attributes that provide the strong guarantees about the connection's behavior that we need */
-	private function normalizeConnection() {
-		$this->ensureConnected();
-
-		$this->configureConnection($this->attributes, $this->previousAttributes);
-	}
-
-	/** Restores this connection's original behavior if desired */
-	private function denormalizeConnection() {
-		$this->configureConnection($this->previousAttributes, $this->attributes);
-	}
-
-	/**
-	 * Configures this connection by setting appropriate attributes
-	 *
-	 * @param array|null $newAttributes the new attributes to set
-	 * @param array|null $oldAttributes where old configurations may be saved to restore them later
-	 */
-	private function configureConnection(array &$newAttributes = null, array &$oldAttributes = null) {
-		// if a connection is available
-		if (isset($this->pdo)) {
-			// if there are attributes that need to be applied
-			if (isset($newAttributes)) {
-				// get the keys and values of the attributes to apply
-				foreach ($newAttributes as $key => $newValue) {
-					// if the old state of the connection must be preserved
-					if (isset($oldAttributes)) {
-						// retrieve the old value for this attribute
-						try {
-							$oldValue = @$this->pdo->getAttribute($key);
-						}
-						catch (PDOException $e) {
-							// the specified attribute is not supported by the driver
-							$oldValue = null;
-						}
-
-						// if an old value has been found
-						if (isset($oldValue)) {
-							// if the old value differs from the new value that we're going to set
-							if ($oldValue !== $newValue) {
-								// save the old value so that we're able to restore it later
-								$oldAttributes[$key] = $oldValue;
-							}
-						}
-					}
-
-					// and then set the desired new value
-					$this->pdo->setAttribute($key, $newValue);
-				}
-
-				// if the old state of the connection doesn't need to be preserved
-				if (!isset($oldAttributes)) {
-					// we're done updating attributes for this connection once and for all
-					$newAttributes = null;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Selects from the database using the specified query and returns what the supplied callback extracts from the result set
-	 *
-	 * You should not include any dynamic input in the query
-	 *
-	 * Instead, pass `?` characters (without any quotes) as placeholders and pass the actual values in the third argument
-	 *
-	 * @param callable $callback the callback that receives the executed statement and can then extract and return the desired results
-	 * @param string $query the query to select with
-	 * @param array|null $bindValues (optional) the values to bind as replacements for the `?` characters in the query
-	 * @return mixed whatever the callback has extracted and returned from the result set
-	 */
-	private function selectInternal(callable $callback, $query, array $bindValues = null) {
-		$this->normalizeConnection();
-
-		try {
-			// create a prepared statement from the supplied SQL string
-			$stmt = $this->pdo->prepare($query);
-		}
-		catch (PDOException $e) {
-			ErrorHandler::rethrow($e);
-		}
-
-		// if a performance profiler has been defined
-		if (isset($this->profiler)) {
-			$this->profiler->beginMeasurement();
-		}
-
-		/** @var PDOStatement $stmt */
-
-		// bind the supplied values to the query and execute it
-		try {
-			$stmt->execute($bindValues);
-		}
-		catch (PDOException $e) {
-			ErrorHandler::rethrow($e);
-		}
-
-		// if a performance profiler has been defined
-		if (isset($this->profiler)) {
-			$this->profiler->endMeasurement($query, $bindValues, 1);
-		}
-
-		// fetch the desired results from the result set via the supplied callback
-		$results = $callback($stmt);
-
-		$this->denormalizeConnection();
-
-		// if the result is empty
-		if (empty($results) && $stmt->rowCount() === 0 && ($this->driverName !== PdoDataSource::DRIVER_NAME_SQLITE || \is_bool($results) || \is_array($results))) {
-			// consistently return `null`
-			return null;
-		}
-		// if some results have been found
-		else {
-			// return these as extracted by the callback
-			return $results;
-		}
 	}
 
 }

@@ -8,7 +8,6 @@
 
 namespace Delight\Db;
 
-use PDOException;
 use Delight\Db\Throwable\DatabaseNotFoundError;
 use Delight\Db\Throwable\Error;
 use Delight\Db\Throwable\Exception;
@@ -18,6 +17,7 @@ use Delight\Db\Throwable\SyntaxError;
 use Delight\Db\Throwable\TableNotFoundError;
 use Delight\Db\Throwable\UnknownColumnError;
 use Delight\Db\Throwable\WrongCredentialsError;
+use PDOException;
 
 /**
  * Handles, processes and re-throws exceptions and errors
@@ -61,29 +61,22 @@ final class ErrorHandler {
 
 		if ($errorClass === '3D') {
 			throw new NoDatabaseSelectedError($e->getMessage());
-		}
-		elseif ($errorClass === '23') {
+		} elseif ($errorClass === '23') {
 			throw new IntegrityConstraintViolationException($e->getMessage());
-		}
-		elseif ($errorClass === '42') {
+		} elseif ($errorClass === '42') {
 			if ($errorSubClass === 'S02') {
 				throw new TableNotFoundError($e->getMessage());
-			}
-			elseif ($errorSubClass === 'S22') {
+			} elseif ($errorSubClass === 'S22') {
 				throw new UnknownColumnError($e->getMessage());
-			}
-			else {
+			} else {
 				throw new SyntaxError($e->getMessage());
 			}
-		}
-		else {
+		} else {
 			if ($error === 1044) {
 				throw new WrongCredentialsError($e->getMessage());
-			}
-			elseif ($error === 1049) {
+			} elseif ($error === 1049) {
 				throw new DatabaseNotFoundError($e->getMessage());
-			}
-			else {
+			} else {
 				throw new Error($e->getMessage());
 			}
 		}

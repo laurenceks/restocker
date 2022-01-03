@@ -40,7 +40,7 @@ foreach ($allLists as $row) {
         $output["lists"][] = array("id" => $row["id"], "name" => $row["name"], "items" => array(array_slice($row, 3)));
     }
     $previousRow = $row;
-};
+}
 
 $output["success"] = true;
 $output["title"] = "Lists updated";

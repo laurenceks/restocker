@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class NotLoggedInException extends AuthException {}
+class NotLoggedInException extends AuthException {
+}

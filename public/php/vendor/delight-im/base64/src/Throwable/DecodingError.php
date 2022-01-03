@@ -9,4 +9,5 @@
 namespace Delight\Base64\Throwable;
 
 /** Error that is thrown when an attempt is being made to decode illegal input */
-class DecodingError extends Error {}
+class DecodingError extends Error {
+}

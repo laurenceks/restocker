@@ -9,4 +9,5 @@
 namespace Delight\Db\Throwable;
 
 /** Error that is thrown when a table cannot be found */
-class TableNotFoundError extends Error {}
+class TableNotFoundError extends Error {
+}

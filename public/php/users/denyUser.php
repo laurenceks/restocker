@@ -8,6 +8,7 @@ require "../common/db.php";
 require "../common/feedbackTemplate.php";
 
 use Delight\Auth\Auth;
+use Delight\Auth\UnknownIdException;
 
 $auth = new Auth($db);
 $input = json_decode(file_get_contents('php://input'), true);
@@ -37,7 +38,7 @@ try {
         $output["errorType"] = "unableToDeny";
     }
 
-} catch (\Delight\Auth\UnknownIdException $e) {
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 

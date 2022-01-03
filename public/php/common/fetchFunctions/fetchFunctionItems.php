@@ -1,6 +1,5 @@
 <?php
-function fetchFunctionItems($organisationId, $locationId = null)
-{
+function fetchFunctionItems($organisationId, $locationId = null) {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
     $locationWhere = $locationId ? "AND transactions.locationId = :locationId" : "";
@@ -26,9 +25,7 @@ function fetchFunctionItems($organisationId, $locationId = null)
                                           ON items.id = transactions.itemid
                             WHERE  items.deleted = 0
                                 AND items.organisationid = :organisationId2
-                                   AND transactions.organisationid = :organisationId3'
-                                    . "\n" . $locationWhere . "\n" .
-                                    'GROUP  BY items.id,
+                                   AND transactions.organisationid = :organisationId3' . "\n" . $locationWhere . "\n" . 'GROUP  BY items.id,
                                       transactions.locationId
                             ORDER  BY locationId,
                                       id; ');
@@ -39,5 +36,5 @@ function fetchFunctionItems($organisationId, $locationId = null)
         $getAllItems->bindValue(':locationId', $locationId);
     }
     $getAllItems->execute();
-    return $getAllItems->fetchAll( PDO::FETCH_ASSOC);
+    return $getAllItems->fetchAll(PDO::FETCH_ASSOC);
 }

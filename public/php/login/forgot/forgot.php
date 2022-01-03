@@ -2,6 +2,9 @@
 require '../../vendor/autoload.php';
 
 use Delight\Auth\Auth;
+use Delight\Auth\EmailNotVerifiedException;
+use Delight\Auth\InvalidEmailException;
+use Delight\Auth\TooManyRequestsException;
 
 require_once "../../common/db.php";
 
@@ -19,30 +22,23 @@ try {
         require "../../common/getUserIdFromSelector.php";
 
         $name = getUserInfo(getUserIdFromSelector($selector, "users_resets"))->firstName;
-        $forgotUrl = '/resetPassword?selector=' . \urlencode($selector) . '&token=' . \urlencode($token);
-        $emailParams = composeLoginEmail(array(
-            "headline" => "Restocker account recovery",
-            "subheadline" => "Reset your password, " . $name,
-            "body" => "Recover your Restocker account by clicking on the link below:",
-            "buttonText" => "Reset password",
-            "alt" => "Please copy and paste the below link into your browser to recover your Restocker account.\n\r\n\r".$forgotUrl,
-            "url" => $forgotUrl,
-        ));
+        $forgotUrl = '/resetPassword?selector=' . urlencode($selector) . '&token=' . urlencode($token);
+        $emailParams = composeLoginEmail(array("headline" => "Restocker account recovery", "subheadline" => "Reset your password, " . $name, "body" => "Recover your Restocker account by clicking on the link below:", "buttonText" => "Reset password", "alt" => "Please copy and paste the below link into your browser to recover your Restocker account.\n\r\n\r" . $forgotUrl, "url" => $forgotUrl,));
         $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;
     $output["feedback"] = "Password reset email sent, please check " . $input["inputForgotEmail"] . " for a recovery link";
-} catch (\Delight\Auth\InvalidEmailException $e) {
+} catch (InvalidEmailException $e) {
     $output["feedback"] = "Unknown email address, please check for typos or register";
     $output["errorMessage"] = "Unknown email address";
     $output["keepFormActive"] = true;
     $output["errorType"] = "unknownEmail";
-} catch (\Delight\Auth\EmailNotVerifiedException $e) {
+} catch (EmailNotVerifiedException $e) {
     $output["feedback"] = "Email not verified";
     $output["errorMessage"] = "Email not verified";
     $output["errorType"] = "unverifiedEmail";
-} catch (\Delight\Auth\TooManyRequestsException $e) {
+} catch (TooManyRequestsException $e) {
     $output["feedback"] = "There have been too many requests, please try again later";
     $output["errorMessage"] = "Too many requests";
     $output["errorType"] = "tooManyRequests";

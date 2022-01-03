@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class ConfirmationRequestNotFound extends AuthException {}
+class ConfirmationRequestNotFound extends AuthException {
+}

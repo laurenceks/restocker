@@ -3,7 +3,7 @@ require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require "../common/db.php";
 
-$output = array("items" => array(), "lists"=>array());
+$output = array("items" => array(), "lists" => array());
 $getAllItems = $db->prepare('SELECT items.id,
                                    items.name,
                                    items.unit,
@@ -40,7 +40,7 @@ foreach ($items as $row) {
     if ($row["locationId"] === "all") {
         $output["items"][] = $row;
     }
-};
+}
 
 $getAllLists = $db->prepare("SELECT 
 'all' as locationId,
@@ -90,5 +90,5 @@ foreach ($lists as $row) {
     if ($row["locationId"] === "all") {
         $output["lists"][] = $row;
     }
-};
+}
 echo json_encode($output);

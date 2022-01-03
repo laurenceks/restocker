@@ -1,11 +1,8 @@
 <?php
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\SMTP;
 
-function composeSmtpMail($email, $name, $subject, $message, $messageAlt)
-{
+function composeSmtpMail($email, $name, $subject, $message, $messageAlt) {
     require 'smtpCredentials.php';
     $emailFrom = "noreply@restocker.com";
     $emailFromName = "Restocker";
@@ -32,8 +29,7 @@ function composeSmtpMail($email, $name, $subject, $message, $messageAlt)
     return $mail;
 }
 
-function sendSmtpMail($mailToSend)
-{
+function sendSmtpMail($mailToSend) {
     $smtpOutput = new stdClass();
     if (!$mailToSend) {
         $smtpOutput->status = "fail";

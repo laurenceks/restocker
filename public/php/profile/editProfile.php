@@ -1,4 +1,11 @@
 <?php
+
+use Delight\Auth\EmailNotVerifiedException;
+use Delight\Auth\InvalidEmailException;
+use Delight\Auth\NotLoggedInException;
+use Delight\Auth\TooManyRequestsException;
+use Delight\Auth\UserAlreadyExistsException;
+
 require "../security/userLoginSecurityCheck.php";
 require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
@@ -13,24 +20,18 @@ try {
             echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email to the *new* address)';
         });
         echo 'The change will take effect as soon as the new email address has been confirmed';
-    }
-    else {
+    } else {
         echo 'We can\'t say if the user is who they claim to be';
     }
-}
-catch (\Delight\Auth\InvalidEmailException $e) {
+} catch (InvalidEmailException $e) {
     die('Invalid email address');
-}
-catch (\Delight\Auth\UserAlreadyExistsException $e) {
+} catch (UserAlreadyExistsException $e) {
     die('Email address already exists');
-}
-catch (\Delight\Auth\EmailNotVerifiedException $e) {
+} catch (EmailNotVerifiedException $e) {
     die('Account not verified');
-}
-catch (\Delight\Auth\NotLoggedInException $e) {
+} catch (NotLoggedInException $e) {
     die('Not logged in');
-}
-catch (\Delight\Auth\TooManyRequestsException $e) {
+} catch (TooManyRequestsException $e) {
     die('Too many requests');
 }
 

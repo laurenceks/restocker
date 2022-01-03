@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class InvalidPasswordException extends AuthException {}
+class InvalidPasswordException extends AuthException {
+}

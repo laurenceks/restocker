@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class AmbiguousUsernameException extends AuthException {}
+class AmbiguousUsernameException extends AuthException {
+}

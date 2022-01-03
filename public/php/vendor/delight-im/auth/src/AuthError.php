@@ -8,5 +8,8 @@
 
 namespace Delight\Auth;
 
+use Exception;
+
 /** Base class for all (unchecked) errors */
-class AuthError extends \Exception {}
+class AuthError extends Exception {
+}

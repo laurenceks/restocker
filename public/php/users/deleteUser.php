@@ -9,6 +9,8 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 
 use Delight\Auth\Auth;
+use Delight\Auth\Role;
+use Delight\Auth\UnknownIdException;
 
 $auth = new Auth($db);
 
@@ -16,28 +18,25 @@ $input = json_decode(file_get_contents('php://input'), true);
 $output = $feedbackTemplate;
 $targetIsSuperAdmin = false;
 $targetIsAdmin = false;
-$currentIsSuperAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::SUPER_ADMIN);
-$currentIsAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), \Delight\Auth\Role::ADMIN);
+$currentIsSuperAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), Role::SUPER_ADMIN);
+$currentIsAdmin = $auth->admin()->doesUserHaveRole($auth->getUserId(), Role::ADMIN);
 $sameUser = !(int)$input["userId"] === $auth->getUserId();
 if (!$sameUser) {
     require "../security/userAdminRightsCheck.php";
 }
 try {
-    $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::SUPER_ADMIN);
-} catch (\Delight\Auth\UnknownIdException $e) {
+    $targetIsSuperAdmin = $auth->admin()->doesUserHaveRole($input["userId"], Role::SUPER_ADMIN);
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 try {
-    $targetIsAdmin = $auth->admin()->doesUserHaveRole($input["userId"], \Delight\Auth\Role::ADMIN);
-} catch (\Delight\Auth\UnknownIdException $e) {
+    $targetIsAdmin = $auth->admin()->doesUserHaveRole($input["userId"], Role::ADMIN);
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 
 try {
-    if (!$targetIsSuperAdmin && !$targetIsAdmin && ($currentIsAdmin || $currentIsSuperAdmin)
-        || $targetIsAdmin && $currentIsSuperAdmin
-        || $sameUser
-    ) {
+    if (!$targetIsSuperAdmin && !$targetIsAdmin && ($currentIsAdmin || $currentIsSuperAdmin) || $targetIsAdmin && $currentIsSuperAdmin || $sameUser) {
         //only delete if the target user is
         //- not an admin/superAdmin and the current user is an admin
         //- an admin but the current user is a super admin
@@ -52,7 +51,7 @@ try {
             $deleteUserFromDb->bindValue(':userId', $input["userId"]);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $output = simpleExecuteOutput($deleteUserFromDb);
-        } catch (\Delight\Auth\UnknownIdException $e) {
+        } catch (UnknownIdException $e) {
             $output = array_merge($output, $unknownUserIdOutput);
         }
     } else {
@@ -76,7 +75,7 @@ try {
             $output["errorType"] = "unknownPermissionsError";
         }
     }
-} catch (\Delight\Auth\UnknownIdException $e) {
+} catch (UnknownIdException $e) {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 

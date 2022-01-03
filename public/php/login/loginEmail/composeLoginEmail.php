@@ -1,6 +1,5 @@
 <?php
-function composeLoginEmail($emailProps)
-{
+function composeLoginEmail($emailProps) {
     $serverString = ($_SERVER['SERVER_NAME'] == "localhost" ? "http://" : "https://") . $_SERVER['SERVER_NAME'] . ($_SERVER['SERVER_NAME'] == "localhost" ? ":3000/#" : "/demos/restocker/#");
     $messageAlt = ($emailProps["alt"] || "") . ($emailProps["url"] || "");
     $message = file_get_contents('loginEmailTemplate.html', __DIR__);

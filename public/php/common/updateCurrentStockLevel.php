@@ -1,7 +1,6 @@
 <?php
 
-function updateCurrentStockLevel()
-{
+function updateCurrentStockLevel() {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
     $output = array("success" => false, "feedback" => "An unknown error occurred");

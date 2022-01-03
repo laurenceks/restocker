@@ -8,4 +8,5 @@
 
 namespace Delight\Auth;
 
-class HeadersAlreadySentError extends AuthError {}
+class HeadersAlreadySentError extends AuthError {
+}

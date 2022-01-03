@@ -1,7 +1,6 @@
 <?php
-function getUserInfo($userId, $auth = null)
-{
-    if($userId) {
+function getUserInfo($userId, $auth = null) {
+    if ($userId) {
         require "db.php";
         $getUserInfo = $db->prepare("
         SELECT users.email, users_info.*, users_organisations.organisation
@@ -17,7 +16,7 @@ function getUserInfo($userId, $auth = null)
         $output = $getUserInfo->fetch(PDO::FETCH_OBJ);
         $output->roles = $auth ? array_values($auth->getRoles()) : null;
         return $output;
-    }else{
+    } else {
         return false;
     }
 }
