@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import {useContext, useState} from 'react';
 import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
 import {Route, Switch} from "react-router-dom";
@@ -9,7 +9,6 @@ import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
 import Lists from "./lists/Lists";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
-import Locations from "./locations/Locations";
 import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
 import EditEntries from "./editEntries/EditEntries";
@@ -38,38 +37,17 @@ const Main = props => {
             <TopNav user={globalAppContext.user}/>
             <div className="main my-5 mx-auto px-1 px-md-0">
                 <Switch>
-                    }}/>
-                    <Route path={"/"} exact>
-                        <Dashboard/>
-                    </Route>
-                    <Route path={"/stock"}>
-                        <Stock/>
-                    </Route>
-                    <Route path={"/withdraw"}>
-                        <TransactionForm formType={"withdraw"}/>
-                    </Route>
-                    <Route path={"/restock"}>
-                        <TransactionForm formType={"restock"}/>
-                    </Route>
-                    <Route path={"/transfer"}>
-                        <TransactionForm formType={"transfer"}/>
-                    </Route>
-                    <Route path={"/items"}>
-                        <EditEntries type="item"/>
-                    </Route>
-                    <Route path={"/lists"}>
-                        <Lists/>
-                    </Route>
-                    <Route path={"/locations"}>
-                        <Locations/>
-                    </Route>
-                    <Route path={"/profile"}>
-                        <Profile/>
-                    </Route>
-                    <Route path={"/logout"} render={logout}/>
-                    <Route path={"/users"}>
-                        <Users userId={globalAppContext.user.id}/>
-                    </Route>
+                    <Route path={"/"} exact component={Dashboard}/>
+                    <Route path={"/stock"} component={Stock}/>
+                    <Route path={"/withdraw"} render={()=><TransactionForm formType={"withdraw"}/>}/>
+                    <Route path={"/restock"} render={()=><TransactionForm formType={"restock"}/>}/>
+                    <Route path={"/transfer"} render={()=><TransactionForm formType={"transfer"}/>}/>
+                    <Route path={"/items"} render={() => <EditEntries type={"item"}/>}/>
+                    <Route path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
+                    <Route path={"/lists"} component={Lists}/>
+                    <Route path={"/profile"} component={Profile}/>
+                    <Route path={"/logout"} component={logout}/>
+                    <Route path={"/users"} render={()=><Users userId={globalAppContext.user.id}/>}/>
                 </Switch>
             </div>
             <AcknowledgeModal {...acknowledgeModalOptions}/>
