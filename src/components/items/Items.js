@@ -82,7 +82,7 @@ const Items = () => {
             const inputIds = {
                 name: `editItemRow-${editId}-name`,
                 unit: `editItemRow-${editId}-unit`,
-                warningLevel: `editItemRow-${editId}-wanringLevel`
+                warningLevel: `editItemRow-${editId}-warningLevel`
             };
             return [
                 item.id,

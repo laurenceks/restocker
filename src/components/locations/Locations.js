@@ -78,7 +78,7 @@ const Locations = () => {
             const inputIds = {
                 name: `editLocationRow-${editId}-name`,
                 unit: `editLocationRow-${editId}-unit`,
-                warningLevel: `editLocationRow-${editId}-wanringLevel`
+                warningLevel: `editLocationRow-${editId}-warningLevel`
             };
             return [
                 location.id,
