@@ -4,6 +4,7 @@ require "../common/db.php";
 require "../common/feedbackTemplate.php";
 
 $output = array_merge($feedbackTemplate, array("locations" => array()));
+$input = json_decode(file_get_contents('php://input'), true);
 $getAllLocations = $db->prepare("
 SELECT 
   *, 
@@ -21,8 +22,8 @@ FROM
   locations 
 WHERE 
   locations.organisationId = :organisationId2 
-  AND locations.deleted = 0;
-");
+  " . ((isset($input["includeLocations"]) ? $input["includeLocations"] : false) ? "AND locations.deleted = 0;" : ";"));
+
 $getAllLocations->bindValue(':organisationId1', $_SESSION["user"]->organisationId);
 $getAllLocations->bindValue(':organisationId2', $_SESSION["user"]->organisationId);
 $getAllLocations->execute();
