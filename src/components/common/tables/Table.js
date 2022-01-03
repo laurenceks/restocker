@@ -34,6 +34,17 @@ const Table = ({
     const pageCount = maxRowCount ? Math.ceil(tableRows.length / maxRowCount) || null : null;
     const pageNumbers = pageCount ? [...Array(pageCount).keys()].map(x => ++x) : [];
 
+    const setHoverGroups = (e, enter = true) => {
+        document.querySelectorAll(`.td-rowGroupId-${e.target.dataset.rowgroupid}`).forEach((x) => {
+            x.classList[enter ? "add" : "remove"]("hover");
+        })
+        if (enter && rowEnter) {
+            rowEnter(e);
+        } else if (!enter && rowLeave) {
+            rowLeave(e);
+        }
+    }
+
     const sortTableRows = (a, b) => {
         const aIndex = sortSettings.index + (columnCount.current - a.length);
         const bIndex = sortSettings.index + (columnCount.current - b.length);
@@ -108,7 +119,9 @@ const Table = ({
                         <tbody>
                         {[...tableRows].splice(currentPageIndex * (maxRowCount || 0), maxRowCount || tableRows.length).map((x, i) => {
                             return (
-                                <tr key={`${title}-tr-${i}`} onMouseEnter={rowEnter} onMouseLeave={rowLeave}>
+                                <tr key={`${title}-tr-${i}`}
+                                    onMouseEnter={setHoverGroups}
+                                    onMouseLeave={(e) => setHoverGroups(e,false)}>
                                     {x.map((y, j) => {
                                         return y || y === 0 ?
                                             <TableCell key={`${title}-tr-${i}-td-${j}`}
