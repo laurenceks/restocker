@@ -50,7 +50,6 @@ const EditEntries = ({type}) => {
             if (form.useEditData) {
                 form = {...form, ...editData};
             }
-            console.log(form);
             fetchHook({
                 type: `edit${setCase(type, "capitalise")}`,
                 options: {
