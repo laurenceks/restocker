@@ -3,7 +3,6 @@ import {useEffect, useState} from "react";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
 
-
 const Stock = () => {
     const stockTableHeaders = ["ID", "Name", "Current stock", "Warning level", "Last transaction"];
 
