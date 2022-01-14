@@ -30,7 +30,7 @@ const Table = ({
     const [currentHeadingHoverIndex, setCurrentHeadingHoverIndex] = useState(null);
     const [tableRows, setTableRows] = useState(rows);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const columnCount = useRef(headers.reduce((a, b) => a += b.colspan || 1, 0));
+    const columnCount = useRef(0);
     const pageCount = maxRowCount ? Math.ceil(tableRows.length / maxRowCount) || null : null;
     const pageNumbers = pageCount ? [...Array(pageCount).keys()].map(x => ++x) : [];
 
@@ -45,33 +45,67 @@ const Table = ({
         }
     }
 
-    const sortTableRows = (a, b) => {
-        const aIndex = sortSettings.index + (columnCount.current - a.length);
-        const bIndex = sortSettings.index + (columnCount.current - b.length);
-        return naturalSort(a[aIndex]?.sortValue ?? a[aIndex]?.text ?? a[aIndex]?.props?.defaultValue ?? a[aIndex], b[bIndex]?.sortValue ?? b[bIndex]?.text ?? b[bIndex]?.props?.defaultValue ?? b[bIndex]);
+    const sortTableRows = (a, b, columnStructure = null, aIndex = sortSettings.index + (columnCount.current - a.length), bIndex = sortSettings.index + (columnCount.current - b.length)) => {
+        if (columnStructure) {
+            const col = columnStructure.reduce((a, b, c) => c < sortSettings.index ? a + b : a, 0)
+            aIndex = columnStructure?.length === a.length ? aIndex : col;
+            bIndex = columnStructure?.length === b.length ? bIndex : col;
+        }
+        if (a[aIndex]?.alwaysAtStart || b[bIndex]?.alwaysAtEnd) {
+            return sortSettings.ascending ? 1 : -1;
+        } else if (a[aIndex]?.alwaysAtEnd || b[bIndex]?.alwaysAtStart) {
+            return sortSettings.ascending ? -1 : 1;
+        } else {
+            return naturalSort(a[aIndex]?.sortValue ?? a[aIndex]?.text ?? a[aIndex]?.props?.defaultValue ?? a[aIndex], b[bIndex]?.sortValue ?? b[bIndex]?.text ?? b[bIndex]?.props?.defaultValue ?? b[bIndex]);
+        }
     };
 
+    const countColumnsInRow = (a, b) => a + (b?.colspan || 1);
+
     useEffect(() => {
+        columnCount.current = headers.reduce((a, b) => a + (b.colspan || 1), 0);
         let sortedRows = [...rows];
         if (allowSorting) {
-            if (sortedRows.some(x => x[sortSettings.index]?.rowspan)) {
-                let newSortArray = [];
-                while (sortedRows.length > 0) {
-                    newSortArray.push(sortedRows.splice(0, sortedRows[0]?.[0]?.rowspan || 1))
+            const maxCols = headers.reduce(countColumnsInRow, 0);
+            const columnStructures = [];
+            if (sortedRows.some(x => x.some((x) => x.rowspan && x.rowspan > 1))) {
+                let groupedRows = [];
+                let rowIndex = 0;
+                sortedRows.forEach((rowArray) => {
+                    const rowLength = rowArray.find((x) => x.rowspan)?.rowspan
+                    if (rowLength) {
+                        columnStructures.push(rowArray.map((x) => (x.rowspan && x.rowspan > 1) ? 0 : 1))
+                        groupedRows.push(sortedRows.slice(rowIndex, rowIndex + rowLength))
+                        rowIndex += rowLength;
+                    }
+                })
+                if (!columnStructures.every((x) => x[sortSettings.index])) {
+                    groupedRows.sort((a, b) => sortTableRows(a[0], b[0]))
+                    sortSettings.ascending && groupedRows.reverse();
+                } else {
+                    groupedRows.forEach((x, i) => {
+                        //for each row group, sort each inner row
+                        x.sort((a, b) => sortTableRows(a, b, columnStructures[i]))
+                        sortSettings.ascending && x.reverse();
+
+                        //then move cells with a rowspan to the first row
+                        const maxFindCols = Math.min(x.reduce((a, b) => Math.max(a, b.reduce(countColumnsInRow, 0)), 0), maxCols);
+                        const spannedRowCells = [...x.find((y) => y.length === maxFindCols)].filter((y) => y.rowspan && y.rowspan > 1);
+
+                        x = x.map(y => y.filter(z => !z.rowspan || z.rowspan === 1))
+                        const firstValues = [...x[0]];
+                        x[0] = columnStructures[i].map((y) => y ? firstValues.shift() : spannedRowCells.shift());
+                        groupedRows[i] = x;
+                    });
                 }
-                newSortArray = newSortArray.sort(sortTableRows);
-                newSortArray = sortSettings.ascending ? newSortArray : newSortArray.reverse();
-                newSortArray = !length ? newSortArray : newSortArray.splice(0, length);
-                sortedRows = [];
-                newSortArray.forEach((x) => {
-                    sortedRows.push(...x)
-                });
+                length && groupedRows.splice(0, length);
+                sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
-                sortedRows = sortedRows.sort(sortTableRows);
-                sortedRows = sortSettings.ascending ? sortedRows : sortedRows.reverse();
+                sortedRows.sort(sortTableRows);
+                sortSettings.ascending && sortedRows.reverse();
+                length && sortedRows.splice(0, length);
             }
         }
-        sortedRows = !length ? sortedRows : sortedRows.splice(0, length);
         setTableRows(sortedRows);
     }, [sortSettings, rows]);
 
@@ -121,9 +155,9 @@ const Table = ({
                             return (
                                 <tr key={`${title}-tr-${i}`}
                                     onMouseEnter={setHoverGroups}
-                                    onMouseLeave={(e) => setHoverGroups(e,false)}>
+                                    onMouseLeave={(e) => setHoverGroups(e, false)}>
                                     {x.map((y, j) => {
-                                        return y || y === 0 ?
+                                        return y || y === 0 || y === "" ?
                                             <TableCell key={`${title}-tr-${i}-td-${j}`}
                                                        content={y}
                                                        className={y?.className}
