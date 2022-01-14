@@ -115,7 +115,7 @@ const Table = ({
                 sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
                 sortedRows.sort(sortTableRows);
-                !sortSettings.ascending && sortedRows.reverse();
+                sortSettings.ascending && sortedRows.reverse();
                 paginate(sortedRows);
                 length && (sortedRows = sortedRows.splice(currentStart, length));
             }
