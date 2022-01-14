@@ -38,10 +38,11 @@ const EditEntries = ({type}) => {
                 type: `add${setCase(type, "capitalise")}`,
                 options: {
                     method: "POST",
-                    body: JSON.stringify(form.values),
+                    body: JSON.stringify({...addData, ...form.values}),
                 },
                 callback: () => {
                     setAddData({...addDataTemplate});
+                    document.querySelectorAll("div.main form input")[0].focus()
                     getEntries();
                 }
             });
