@@ -9,7 +9,6 @@ const Table = ({
                    title,
                    headers,
                    rows,
-                   maxRowCount,
                    tableClassName,
                    fullWidth,
                    rowEnter,
@@ -18,7 +17,8 @@ const Table = ({
                    defaultSortIndex,
                    defaultSortDirection,
                    allowSorting,
-                   length
+                   length,
+                   updated
                }) => {
 
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
@@ -31,8 +31,8 @@ const Table = ({
     const [tableRows, setTableRows] = useState(rows);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const columnCount = useRef(0);
-    const pageCount = maxRowCount ? Math.ceil(tableRows.length / maxRowCount) || null : null;
-    const pageNumbers = pageCount ? [...Array(pageCount).keys()].map(x => ++x) : [];
+    const pageCount = useRef(null);
+    const pageNumbers = useRef([]);
 
     const setHoverGroups = (e, enter = true) => {
         document.querySelectorAll(`.td-rowGroupId-${e.target.dataset.rowgroupid}`).forEach((x) => {
@@ -62,8 +62,19 @@ const Table = ({
 
     const countColumnsInRow = (a, b) => a + (b?.colspan || 1);
 
+    const paginate = (arr) => {
+        pageCount.current = length ? Math.ceil(arr.length / length) || null : null;
+        pageNumbers.current = pageCount.current ? [...Array(pageCount.current).keys()].map(x => ++x) : [];
+    }
+
+    useEffect(() => {
+        setCurrentPageIndex(0);
+    }, [updated])
+
     useEffect(() => {
         columnCount.current = headers.reduce((a, b) => a + (b.colspan || 1), 0);
+        const currentStart = currentPageIndex * (length || 0);
+
         let sortedRows = [...rows];
         if (allowSorting) {
             const maxCols = headers.reduce(countColumnsInRow, 0);
@@ -99,16 +110,18 @@ const Table = ({
                         groupedRows[i] = x;
                     });
                 }
-                length && groupedRows.splice(0, length);
+                paginate(groupedRows);
+                length && (groupedRows = groupedRows.splice(currentStart, length));
                 sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
                 sortedRows.sort(sortTableRows);
-                sortSettings.ascending && sortedRows.reverse();
-                length && sortedRows.splice(0, length);
+                !sortSettings.ascending && sortedRows.reverse();
+                paginate(sortedRows);
+                length && (sortedRows = sortedRows.splice(currentStart, length));
             }
         }
         setTableRows(sortedRows);
-    }, [sortSettings, rows]);
+    }, [sortSettings, rows, currentPageIndex]);
 
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
@@ -152,7 +165,7 @@ const Table = ({
                         </tr>
                         </thead>
                         <tbody>
-                        {[...tableRows].splice(currentPageIndex * (maxRowCount || 0), maxRowCount || tableRows.length).map((x, i) => {
+                        {tableRows.map((x, i) => {
                             return (
                                 <tr key={`${title}-tr-${i}`}
                                     onMouseEnter={setHoverGroups}
@@ -171,7 +184,7 @@ const Table = ({
                         })}
                         </tbody>
                     </table>
-                    {(tableRows.length > maxRowCount && maxRowCount) &&
+                    {(length && pageCount.current > 1) &&
                     <nav aria-label="Table pages">
                         <ul className="pagination justify-content-center">
                             <li className={`page-item user-select-none ${currentPageIndex === 0 ? "disabled" : "cursor-pointer"}`}>
@@ -182,17 +195,17 @@ const Table = ({
                                     <span aria-hidden="true">&laquo;</span>
                                 </button>
                             </li>
-                            {pageNumbers.map((x, i) => {
+                            {pageNumbers.current.map((x, i) => {
                                 return <li key={`table-${title}-page-${i + 1}`}
                                            className={`page-item user-select-none ${currentPageIndex === i ? "active" : "cursor-pointer"}`}>
                                     <button className="page-link"
                                             onClick={i !== currentPageIndex ? (() => setCurrentPageIndex(i)) : null}>{x}</button>
                                 </li>
                             })}
-                            <li className={`page-item user-select-none ${currentPageIndex === pageCount - 1 ? "disabled" : "cursor-pointer"}`}>
+                            <li className={`page-item user-select-none ${currentPageIndex === pageCount.current - 1 ? "disabled" : "cursor-pointer"}`}>
                                 <button className="page-link"
                                         aria-label="Next"
-                                        onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount - 1, ++prevState))}
+                                        onClick={() => setCurrentPageIndex(prevState => Math.min(pageCount.current - 1, ++prevState))}
                                 >
                                     <span aria-hidden="true">&raquo;</span>
                                 </button>
@@ -218,7 +231,6 @@ Table.propTypes = {
     rowEnter: PropTypes.func,
     rowLeave: PropTypes.func,
     defaultSortIndex: PropTypes.number,
-    maxRowCount: PropTypes.number,
     length: PropTypes.number,
 };
 
@@ -233,8 +245,7 @@ Table.defaultProps = {
     rowEnter: null,
     rowLeave: null,
     defaultSortIndex: 0,
-    maxRowCount: 10,
-    length: null
+    length: 10
 }
 
 export default Table;
