@@ -18,6 +18,7 @@ const fetchOptions = {
     addList: {url: "./php/lists/addList.php", method: "POST"},
     editList: {url: "./php/lists/editList.php", method: "POST"},
     deleteList: {url: "./php/lists/deleteList.php", method: "POST"},
+    restoreList: {url: "./php/lists/restoreList.php", method: "POST"},
     getUsers: {url: "./php/users/getAllUsers.php", method: "GET"},
     deleteUser: {url: "./php/users/deleteUser.php", method: "POST"},
     approveUser: {url: "./php/users/approveUser.php", method: "POST"},
