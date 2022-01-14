@@ -2,7 +2,6 @@ import validateForm from "../../functions/formValidation";
 import {variantPairings} from "../common/styles";
 import naturalSort from "../../functions/naturalSort";
 import {Fragment} from "react";
-import FormItem from "../common/forms/FormItem";
 
 export const makeRows = (type, entryList, editId, functions) => {
     const rowFunctions = {
@@ -91,9 +90,13 @@ export const makeRows = (type, entryList, editId, functions) => {
         list: () => {
             const newListRows = [];
             entryList.forEach((x, i) => {
-                const cellTemplate = {cellData: {"data-rowGroupId": x.id}, className: `td-rowGroupId-${x.id}`};
+                const cellTemplate = {
+                    cellData: {"data-rowGroupId": x.id},
+                    className: `td-rowGroupId-${x.id}`,
+                    text: ""
+                };
                 if (x.id !== editId) {
-                    x.items.sort((a, b) => naturalSort(a.itemName, b.itemName)).forEach((y, j) => {
+                    x.items?.sort((a, b) => naturalSort(a.itemName, b.itemName)).forEach((y, j) => {
                         newListRows.push((j === 0 ? [
                             {
                                 ...cellTemplate,
@@ -148,12 +151,7 @@ export const makeRows = (type, entryList, editId, functions) => {
                                     }
                                 })
                             }
-                        }] : j === 0 ? [{
-                            ...cellTemplate,
-                            text: "",
-                            rowspan: x.items.filter(x => !x.deleted).length,
-                            colspan: 2
-                        }] : null));
+                        }] : editId ? [cellTemplate, cellTemplate] : []));
                     })
                 } else {
                     newListRows.push(...makeEditRow(type, x, functions, editId, entryList))
@@ -284,65 +282,64 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
         },
         list: () => {
             const makeInputCells = (x, y, i, cellTemplate = {}, startIndex = 0) => {
-                const sortTemplate = `${x.id}-${i}-`
                 return [{
                     ...cellTemplate,
-                    sortValue: `${sortTemplate}${x.items[i].itemName}`,
-                    fragment: <FormItem id={`input-listId-${x.id}-itemId-${y.itemId}-name`}
-                                        inputClass={`form-listId-${x.id}`}
-                                        label={"Item"}
-                                        invalidFeedback={"You must select an item from the list"}
-                                        defaultSelected={[{
-                                            ...x.items[i],
-                                            name: x.items[i].itemName,
-                                            id: x.items[i].itemId
-                                        }]}
-                                        filterValues={{key: "id", values: x.items.map(x => x.itemId)}}
-                                        onChange={(e) => {
-                                            x.items.splice(i, 1, {
-                                                ...x.items[i],
-                                                itemName: e?.[0]?.name || null,
-                                                itemId: e?.[0]?.id || null,
-                                                unit: e?.[0]?.unit || null,
-                                            })
-                                            //update the editedList with new items
-                                            functions.setEditData(prevState => {
-                                                return {...prevState, items: x.items}
-                                            });
-                                            //update the full list so the table is re-rendered
-                                            functions.setDataList((prevState) => {
-                                                prevState[startIndex] = x;
-                                                return [...prevState];
-                                            })
-                                        }}
-                    />
-                }
-                    , {
-                        ...cellTemplate,
-                        sortValue: `${sortTemplate}${x.items[i]?.quantity || 0}`,
-                        type: "input",
-                        props: {
-                            label: "Quantity",
-                            type: "Number",
-                            id: `input-listId-${x.id}-itemId-${y.itemId}-quantity`,
-                            inputClass: `form-listId-${x.id}`,
-                            defaultValue: x.items[i]?.quantity || null,
-                            onChange: (e, v) => {
-                                x.items.splice(i, 1, {
-                                    ...x.items[i],
-                                    quantity: v
-                                })
-                                functions.setEditData(prevState => {
-                                    return {...prevState, items: x.items}
-                                })
-                            }
+                    sortValue: x.items[i].itemName,
+                    type: "formItem",
+                    props: {
+                        label: "Item",
+                        id: `input-listId-${x.id}-itemId-${y.itemId}-name`,
+                        inputClass: `form-listId-${x.id}`,
+                        defaultSelected: [{
+                            ...x.items[i],
+                            name: x.items[i].itemName,
+                            id: x.items[i].itemId
+                        }],
+                        filterValues: {key: "id", values: x.items.map(x => x.itemId)},
+                        onChange: (e) => {
+                            x.items.splice(i, 1, {
+                                ...x.items[i],
+                                itemName: e?.[0]?.name || null,
+                                itemId: e?.[0]?.id || null,
+                                unit: e?.[0]?.unit || null,
+                            })
+                            //update the editedList with new items
+                            functions.setEditData(prevState => {
+                                return {...prevState, items: x.items}
+                            });
+                            //update the full list so the table is re-rendered
+                            functions.setDataList((prevState) => {
+                                prevState[startIndex] = x;
+                                return [...prevState];
+                            })
                         }
-                    }, {
-                        ...cellTemplate,
-                        className: `align-middle ${cellTemplate.className}`,
-                        sortValue: `${sortTemplate}${x.items[i]?.unit || "units"}`,
-                        text: x.items[i]?.unit || "units"
                     },
+                }, {
+                    ...cellTemplate,
+                    sortValue: x.items[i]?.quantity || 0,
+                    type: "input",
+                    props: {
+                        label: "Quantity",
+                        type: "Number",
+                        id: `input-listId-${x.id}-itemId-${y.itemId}-quantity`,
+                        inputClass: `form-listId-${x.id}`,
+                        defaultValue: x.items[i]?.quantity || null,
+                        onChange: (e, v) => {
+                            x.items.splice(i, 1, {
+                                ...x.items[i],
+                                quantity: v
+                            })
+                            functions.setEditData(prevState => {
+                                return {...prevState, items: x.items}
+                            })
+                        }
+                    }
+                }, {
+                    ...cellTemplate,
+                    className: `align-middle ${cellTemplate.className}`,
+                    sortValue: x.items[i]?.unit || "units",
+                    text: x.items[i]?.unit || "units"
+                },
                     x.items.filter(x => !x.deleted).length > 1 ? {
                         ...cellTemplate,
                         type: "button",
@@ -405,6 +402,7 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
                 text: "Add item",
                 buttonClass: "btn-primary",
                 className: cellTemplate.className,
+                alwaysAtEnd: true,
                 handler: () => {
                     const newItems = [...entry.items];
                     newItems.push({
@@ -428,6 +426,7 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
             }, {
                 ...cellTemplate,
                 colspan: 3,
+                alwaysAtEnd: true,
                 fragment: <Fragment>
                     <button className="btn btn-success me-3"
                             onClick={(e) => validateForm(e, `#${inputIds.name}, .form-listId-${entry.id}`, (x) => {
