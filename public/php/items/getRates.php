@@ -90,7 +90,7 @@ try {
     if ($validLocation || $validRatePeriod) {
         $output["feedback"] = "Now showing data for ";
         $output["feedback"] .= $validLocation ? ($input["locationName"] . " ") : "all locations ";
-        $output["feedback"] .= $validRatePeriod ? ("in the last " . $input["ratePeriod"] . " day" . (intval($input["ratePeriod"]) === 1 ? "" : "s")) : "";
+        $output["feedback"] .= $validRatePeriod ? ("in the last " . $input["ratePeriod"] . " day" . (intval($input["ratePeriod"]) === 1 ? "" : "s")) : "over all time";
     } else {
         $output["feedback"] = "Now showing data for all locations over all time";
     }
