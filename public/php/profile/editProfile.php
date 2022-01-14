@@ -20,18 +20,24 @@ try {
             echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email to the *new* address)';
         });
         echo 'The change will take effect as soon as the new email address has been confirmed';
-    } else {
+    }
+    else {
         echo 'We can\'t say if the user is who they claim to be';
     }
-} catch (InvalidEmailException $e) {
+}
+catch (InvalidEmailException $e) {
     die('Invalid email address');
-} catch (UserAlreadyExistsException $e) {
+}
+catch (UserAlreadyExistsException $e) {
     die('Email address already exists');
-} catch (EmailNotVerifiedException $e) {
+}
+catch (EmailNotVerifiedException $e) {
     die('Account not verified');
-} catch (NotLoggedInException $e) {
+}
+catch (NotLoggedInException $e) {
     die('Not logged in');
-} catch (TooManyRequestsException $e) {
+}
+catch (TooManyRequestsException $e) {
     die('Too many requests');
 }
 
