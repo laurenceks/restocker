@@ -84,9 +84,11 @@ const Table = ({
                     sortSettings.ascending && groupedRows.reverse();
                 } else {
                     groupedRows.forEach((x, i) => {
-                        //for each row group, sort each inner row
-                        x.sort((a, b) => sortTableRows(a, b, columnStructures[i]))
-                        sortSettings.ascending && x.reverse();
+                        //TODO exclude edit row from sorting
+                        if (!x.some((x) => x.some((x) => x.type === "input"))) { //for each row group, sort each inner row
+                            x.sort((a, b) => sortTableRows(a, b, columnStructures[i]))
+                            sortSettings.ascending && x.reverse();
+                        }
 
                         //then move cells with a rowspan to the first row
                         const maxFindCols = Math.min(x.reduce((a, b) => Math.max(a, b.reduce(countColumnsInRow, 0)), 0), maxCols);
