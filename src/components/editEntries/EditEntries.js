@@ -113,6 +113,7 @@ const EditEntries = ({type}) => {
 
         useEffect(() => {
             dataLoadedOnce.current = false;
+            setDataList([]);
             getEntries();
         }, [type]);
 
