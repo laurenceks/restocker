@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import {IoCheckmarkCircleSharp, IoCloseCircleSharp} from "react-icons/all";
 import FormInput from "../forms/FormInput";
+import FormItem from "../forms/FormItem";
 
 const renderCellContent = (x) => {
     if (!x.type) {
@@ -27,6 +28,10 @@ const renderCellContent = (x) => {
             case "input":
                 return (
                     <FormInput {...x.props}/>
+                )
+            case "formItem":
+                return (
+                    <FormItem {...x.props}/>
                 )
             default:
                 return x.text || "";
