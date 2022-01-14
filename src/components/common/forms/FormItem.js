@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
 import {Typeahead} from "react-bootstrap-typeahead";
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
@@ -22,9 +22,9 @@ const FormItem = ({
                   }) => {
 
     const [items, setItems] = useState([]);
-    const [itemsLoadedOnce, setItemsLoadedOnce] = useState(false);
     const [updated, setUpdated] = useState(lastUpdated);
     const [selectedState, setSelectedState] = useState(defaultSelected);
+    const itemsLoadedOnce = useRef(false);
 
     useEffect(() => {
         setUpdated(Date.now());
@@ -35,14 +35,14 @@ const FormItem = ({
     }, [updated]);
 
     useEffect(() => {
-        if (itemsLoadedOnce) {
+        if (itemsLoadedOnce.current) {
             setSelectedState(selected);
         }
     }, [selected]);
 
     const getItems = () => {
         fetchAllItems((x) => {
-            setItemsLoadedOnce(true);
+            itemsLoadedOnce.current = true;
             if (filterValues) {
                 setItems(x.items.filter((x) => {
                     return filterValues.values.indexOf(x[filterValues.key]) === -1
