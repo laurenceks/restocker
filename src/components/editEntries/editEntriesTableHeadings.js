@@ -6,7 +6,7 @@ const entryTableHeadings = {
 const deletedEntryTableHeadings = {
     item: ["ID", "Name", "Stock on deletion", {text: "Deleted", colspan: 2}],
     location: ["ID", "Name", {text: "Deleted", colspan: 2}],
-    list: ["ID", {text: "Name", colspan: 2}],
+    list: ["ID", "Name", {text: "Deleted", colspan: 2}],
 }
 
 
