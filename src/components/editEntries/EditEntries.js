@@ -42,7 +42,7 @@ const EditEntries = ({type}) => {
                 },
                 callback: () => {
                     setAddData({...addDataTemplate});
-                    document.querySelectorAll("div.main form input")[0].focus()
+                    addForm.current.querySelector("input").focus();
                     getEntries();
                 }
             });
@@ -115,6 +115,7 @@ const EditEntries = ({type}) => {
         useEffect(() => {
             dataLoadedOnce.current = false;
             setDataList([]);
+            setAddData({...addDataTemplate});
             getEntries();
         }, [type]);
 
@@ -131,9 +132,7 @@ const EditEntries = ({type}) => {
 
         return (
             <div className="container">
-                <form ref={addForm} onSubmit={(e) => {
-                    validateForm(e, addForm, addEntry);
-                }}>
+                <form ref={addForm} onSubmit={(e) => validateForm(e, addForm, addEntry)}>
                     <div className="row my-3">
                         {React.createElement(AddDataForm, {addData, setAddData})}
                     </div>
