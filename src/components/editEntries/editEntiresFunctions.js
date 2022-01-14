@@ -435,7 +435,6 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
                 fragment: <Fragment>
                     <button className="btn btn-success me-3"
                             onClick={(e) => validateForm(e, `#${inputIds.name}, .form-listId-${entry.id}`, (x) => {
-                                console.log(x)
                                 if (x.isValid) {
                                     functions.editEntry({
                                         useEditData: true,
