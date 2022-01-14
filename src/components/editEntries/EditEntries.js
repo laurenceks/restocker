@@ -18,6 +18,7 @@ const EditEntries = ({type}) => {
         const [editData, setEditData] = useState(null);
         const [editId, setEditId] = useState(null);
         const [dataList, setDataList] = useState([]);
+        const [typeChanged, setTypeChanged] = useState(null);
         const addForm = useRef();
         const dataLoadedOnce = useRef(false);
 
@@ -116,6 +117,7 @@ const EditEntries = ({type}) => {
             dataLoadedOnce.current = false;
             setDataList([]);
             setAddData({...addDataTemplate});
+            setTypeChanged(Date.now())
             getEntries();
         }, [type]);
 
@@ -142,7 +144,8 @@ const EditEntries = ({type}) => {
                                   tableProps={{
                                       headers: entryTableHeadings[type],
                                       rows: makeEntryRows(dataList.filter((x) => !x.deleted)),
-                                      defaultSortIndex: 1
+                                      defaultSortIndex: 1,
+                                      updated: typeChanged
                                   }}
 
                     />
@@ -150,7 +153,8 @@ const EditEntries = ({type}) => {
                                   tableProps={{
                                       headers: deletedEntryTableHeadings[type],
                                       rows: makeEntryUndeleteRow(dataList.filter((x) => x.deleted)),
-                                      defaultSortIndex: 1
+                                      defaultSortIndex: 1,
+                                      updated: typeChanged
                                   }}
                     />
                 </div>
