@@ -332,6 +332,11 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
                             functions.setEditData(prevState => {
                                 return {...prevState, items: x.items}
                             })
+                            //update the full list so the table is re-rendered
+                            functions.setDataList((prevState) => {
+                                prevState[startIndex] = x;
+                                return [...prevState];
+                            })
                         }
                     }
                 }, {

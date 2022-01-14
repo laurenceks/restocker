@@ -18,7 +18,7 @@ const AddFormList = ({addData, setAddData}) => {
                            }}/>
             </div>
             <div className="col-12 col-md-3 mb-3 mb-md-0">
-                <FormItem id={"inputAddListItemId"}
+                <FormItem id={"inputAddListItemName"}
                           label={"Item"}
                           invalidFeedback={"You must select an item from the list"}
                           selected={addData.selected}
