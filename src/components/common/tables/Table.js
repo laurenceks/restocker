@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {isValidElement, useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
 import TableCell from "./TableCell";
 import naturalSort from "../../../functions/naturalSort";
@@ -84,7 +84,6 @@ const Table = ({
                     sortSettings.ascending && groupedRows.reverse();
                 } else {
                     groupedRows.forEach((x, i) => {
-                        //TODO exclude edit row from sorting
                         if (!x.some((x) => x.some((x) => x.type === "input"))) { //for each row group, sort each inner row
                             x.sort((a, b) => sortTableRows(a, b, columnStructures[i]))
                             sortSettings.ascending && x.reverse();
@@ -137,7 +136,7 @@ const Table = ({
                                                 }}
                                 >
                                     <div className="d-flex flex-row align-items-center">
-                                        {(x.text || x.length > 0) && <ArrowIconTransition
+                                        {(x.text || x.length > 0 || isValidElement(x)) && <ArrowIconTransition
                                             in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
                                             colourVariant={sortSettings.index !== i && "secondary"}
                                         >
