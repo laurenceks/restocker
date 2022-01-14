@@ -7,7 +7,7 @@ import {addDataForms, addDataTemplates} from "./editEntriesTemplates";
 import setCase from "../../functions/setCase";
 import {makeRows, makeUndeleteRow} from "./editEntiresFunctions";
 import TableSection from "../common/tables/TableSection";
-import {entryTableHeadings} from "./editEntriesTableHeadings";
+import {deletedEntryTableHeadings, entryTableHeadings} from "./editEntriesTableHeadings";
 
 const EditEntries = ({type}) => {
         const addDataTemplate = addDataTemplates[type];
@@ -148,7 +148,7 @@ const EditEntries = ({type}) => {
                     />
                     <TableSection title={`Deleted ${type}s`}
                                   tableProps={{
-                                      headers: entryTableHeadings[type],
+                                      headers: deletedEntryTableHeadings[type],
                                       rows: makeEntryUndeleteRow(dataList.filter((x) => x.deleted)),
                                       defaultSortIndex: 1
                                   }}
