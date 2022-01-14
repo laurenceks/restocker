@@ -10,6 +10,8 @@ $getAllLists = $db->prepare("
         SELECT lists.id,
        lists.name,
        lists.organisationid,
+       lists.deleted,
+                      lists.lastUpdated,
        items.id   AS itemId,
        items.name AS itemName,
        items.unit,
@@ -23,8 +25,6 @@ FROM   lists
               ON items.id = list_items.itemid
 WHERE  lists.organisationid = :organisationId
        AND items.deleted = 0 
-AND lists.deleted = 0
-AND list_items.deleted = 0
         ");
 $getAllLists->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllLists->execute();
@@ -35,9 +35,9 @@ $previousRow = array("locationId" => null, "id" => null);
 
 foreach ($allLists as $row) {
     if ($previousRow["id"] === $row["id"]) {
-        $output["lists"][count($output["lists"]) - 1]["items"][] = array_slice($row, 3);
+        $output["lists"][count($output["lists"]) - 1]["items"][] = array_slice($row, 5);
     } else {
-        $output["lists"][] = array("id" => $row["id"], "name" => $row["name"], "items" => array(array_slice($row, 3)));
+        $output["lists"][] = array("id" => $row["id"], "name" => $row["name"], "deleted" => $row["deleted"], "lastUpdated" => $row["lastUpdated"], "items" => array(array_slice($row, 5)));
     }
     $previousRow = $row;
 }
