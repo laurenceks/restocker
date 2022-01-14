@@ -68,7 +68,7 @@ const Table = ({
         if (allowSorting) {
             const maxCols = headers.reduce(countColumnsInRow, 0);
             const columnStructures = [];
-            if (sortedRows.some(x => x.some((x) => x.rowspan && x.rowspan > 1))) {
+            if (sortedRows.some(x => x.some((x) => x?.rowspan && x?.rowspan > 1))) {
                 let groupedRows = [];
                 let rowIndex = 0;
                 sortedRows.forEach((rowArray) => {
