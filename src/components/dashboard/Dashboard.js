@@ -289,7 +289,7 @@ const Dashboard = () => {
                 newDashboardData.tileClasses.outOfStock = getRangeClass(newDashboardData.itemsStats.outOfStock / newDashboardData.itemsList.length, dashboardRanges.outOfStock)
                 newDashboardData.tileClasses.belowWarningLevel = getRangeClass(newDashboardData.itemsStats.belowWarningLevel / newDashboardData.itemsList.length, dashboardRanges.belowWarningLevel)
                 newDashboardData.tileClasses.stockLevel = getRangeClass(newDashboardData.itemsStats.stockPercentage, dashboardRanges.stockLevel);
-                res.chartData.forEach((y) => {
+                res.chartData?.forEach((y) => {
                         newDashboardData.chartData.line.labels.push(new Date(y.date).toLocaleDateString("default", {weekday: "short"}));
                         let outOfStockOnThisDate = 0;
                         let belowWarningLevelOnThisDate = 0;
