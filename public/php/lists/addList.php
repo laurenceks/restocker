@@ -11,7 +11,7 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $output = $feedbackTemplate;
 
-if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $input["name"])))) {
+if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $input["inputAddListName"])))) {
     //a list with that name already exists
     $output["feedback"] = "A list with that name already exists, please change the list name and try again";
     $output["title"] = "List exists";
@@ -27,7 +27,7 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
     try {
         $addList = $db->prepare("INSERT INTO lists (organisationId, name, createdBy, editedBy) VALUES (:organisationId,:name, :uid1, :uid2)");
         $addList->bindValue(":organisationId", $_SESSION["user"]->organisationId);
-        $addList->bindParam(":name", $input["name"]);
+        $addList->bindParam(":name", $input["inputAddListName"]);
         $addList->bindValue(":uid1", $_SESSION["user"]->userId);
         $addList->bindValue(":uid2", $_SESSION["user"]->userId);
         $addList->execute();
@@ -35,7 +35,7 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
         if ($addListItem["success"]) {
             $output["success"] = true;
             $output["title"] = "List added";
-            $output["feedback"] = $input["name"] . " was added successfully";
+            $output["feedback"] = $input["inputAddListName"] . " was added successfully";
         } else {
             $output["feedback"] = $addListItem;
         }
