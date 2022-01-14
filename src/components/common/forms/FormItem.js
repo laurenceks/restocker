@@ -71,7 +71,7 @@ const FormItem = ({
                 form={form}
                 {...typeaheadProps}
                 disabled={disabled || !itemsLoadedOnce || typeaheadProps?.options?.length <= 1}
-                options={typeaheadProps.options}
+                options={typeaheadProps.options.filter((x) => !x.deleted)}
                 selected={selectedState}
                 //TODO don't allow new
                 onChange={(e) => {
