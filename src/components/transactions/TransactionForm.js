@@ -294,7 +294,7 @@ const TransactionForm = ({formType}) => {
                                     updateOptions({product: e});
                                 },
                                 labelKey: "name",
-                                options: (productType === "item" ? itemList : listList).sort((a, b) => {
+                                options: (productType === "item" ? itemList : listList).filter((x) => !x.deleted).sort((a, b) => {
                                     return naturalSort(a.name, b.name)
                                 }),
                                 selected: transactionData.selectedProduct
