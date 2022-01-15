@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import TableSection from "../common/tables/TableSection";
 import useFetch from "../../hooks/useFetch";
 import {GlobalAppContext} from "../../App";
