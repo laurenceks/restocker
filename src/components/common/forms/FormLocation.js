@@ -5,7 +5,7 @@ import naturalSort from "../../../functions/naturalSort";
 import FormTypeahead from "./FormTypeahead";
 import useInitialise from "../../../hooks/useInitialise";
 
-const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
+const FormLocation = ({lastUpdated, filterValues, defaultSelected, label, ...props}) => {
 
     const [locations, setLocations] = useState([]);
     const [updated, setUpdated] = useState(lastUpdated);
@@ -16,7 +16,7 @@ const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) =>
     });
 
     useEffect(() => {
-        const getItems = () => {
+        const getLocations = () => {
             fetchAllLocations((x) => {
                 locationsLoadedOnce.current = true;
                 if (filterValues) {
@@ -29,29 +29,19 @@ const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) =>
             })
         }
 
-        getItems();
+        getLocations();
     }, [updated]);
 
-    const getItems = () => {
-        fetchAllLocations((x) => {
-            locationsLoadedOnce.current = true;
-            if (filterValues) {
-                setLocations(x.locations.filter((x) => {
-                    return filterValues.values.indexOf(x[filterValues.key]) === -1
-                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
-            } else {
-                setLocations(x.locations.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
-            }
-        })
-    }
-    return <FormTypeahead {...props} label="Location" options={locations}/>;
-};
+    return <FormTypeahead {...props} label={label} options={locations}/>;
+}
 
-FormLocation.propTypes = {
-    lastUpdated: PropTypes.number
+    FormLocation.propTypes = {
+    lastUpdated: PropTypes.number,
+    label: PropTypes.string,
 };
 FormLocation.defaultProps = {
     lastUpdated: null,
+    label: "Location",
 };
 
 export default FormLocation;
