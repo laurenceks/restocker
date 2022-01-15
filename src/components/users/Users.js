@@ -3,6 +3,7 @@ import TableSection from "../common/tables/TableSection";
 import useFetch from "../../hooks/useFetch";
 import {GlobalAppContext} from "../../App";
 import {variantPairings} from "../common/styles";
+import useInitialise from "../../hooks/useInitialise";
 
 const Users = () => {
     class usersTableTemplate {
@@ -306,10 +307,10 @@ const Users = () => {
         });
     }
 
-    useEffect(() => {
+    useInitialise(() => {
         //get user list
         getUsers();
-    }, []);
+    });
 
     return (
         <div>

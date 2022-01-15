@@ -8,6 +8,7 @@ import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "@gouch/to-title-case";
 import fetchJson from "../../functions/fetchJson";
 import FormTypeahead from "../common/forms/FormTypeahead";
+import useInitialise from "../../hooks/useInitialise";
 
 const Register = () => {
     const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
@@ -15,13 +16,13 @@ const Register = () => {
     const [organisation, setOrganisation] = useState({});
     const registerForm = useRef();
 
-    useEffect(() => {
+    useInitialise(() => {
         fetchJson("./php/common/getUserOrganisations.php", {
             method: "GET",
         }, (x) => {
             setOrganisations(x);
         })
-    }, []);
+    });
 
     const register = formOutput => {
         setRegisterFeedback({...registerFeedback, inProgress: true})

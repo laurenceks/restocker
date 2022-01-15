@@ -5,6 +5,7 @@ import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} fro
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import ResetPassword from "./ResetPassword";
+import useInitialise from "../../hooks/useInitialise";
 
 const Verify = ({type}) => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
@@ -16,7 +17,7 @@ const Verify = ({type}) => {
                 selector: params.get("selector")
             }
         });
-        useEffect(() => {
+        useInitialise(() => {
             if (!params.get("selector") || !params.get("token")) {
                 setParamsState({
                     ...paramsState,
@@ -54,7 +55,7 @@ const Verify = ({type}) => {
                 });
             }
 // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, []);
+        });
 
         return (
             <div>

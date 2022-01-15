@@ -6,6 +6,7 @@ import Table from "../common/tables/Table";
 import validateForm from "../../functions/formValidation";
 import naturalSort from "../../functions/naturalSort";
 import {GlobalAppContext} from "../../App";
+import useInitialise from "../../hooks/useInitialise";
 
 const Lists = () => {
     class addDataTemplate {
@@ -61,10 +62,10 @@ const Lists = () => {
         setListRows(makeListRows(listList))
     }, [listList]);
 
-    useEffect(() => {
+    useInitialise(() => {
         //get list list
         getLists();
-    }, []);
+    });
 
     const makeListRows = (lists = listList || [], editListIndex = editData.index === 0 ? 0 : editData.index || -1) => {
         const newListRows = [];

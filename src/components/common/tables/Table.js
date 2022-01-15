@@ -113,7 +113,7 @@ const Table = ({
                 }
                 countPages(groupedRows);
                 length && (groupedRows = groupedRows.splice(currentStart, length));
-                sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
+                sortedRows = groupedRows.reduce((a, b) => [...a, ...b]);
             } else {
                 sortedRows.sort(sortTableRows);
                 !sortSettings.ascending && sortedRows.reverse();

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import fetchAllItems from "../../../functions/fetchAllItems";
 import naturalSort from "../../../functions/naturalSort";
 import FormTypeahead from "./FormTypeahead";
+import useInitialise from "../../../hooks/useInitialise";
 
 const FormItem = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
 
@@ -10,9 +11,9 @@ const FormItem = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
     const [updated, setUpdated] = useState(lastUpdated);
     const itemsLoadedOnce = useRef(false);
 
-    useEffect(() => {
+    useInitialise(() => {
         setUpdated(Date.now());
-    }, []);
+    });
 
     useEffect(() => {
         getItems();

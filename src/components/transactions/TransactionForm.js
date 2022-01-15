@@ -8,6 +8,7 @@ import Table from "../common/tables/Table";
 import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 import useFetch from "../../hooks/useFetch";
+import useInitialise from "../../hooks/useInitialise";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -226,12 +227,12 @@ const TransactionForm = ({formType}) => {
         updateOptions(passedData);
     }, [productType]);
 
-    useEffect(() => {
+    useInitialise(() => {
         //disable submission until item list updated
         setSubmitDisabled(true);
         //on initial render fetch item lists
         getItems();
-    }, []);
+    });
 
     useEffect(() => {
         //enable submit button, as fields validated once state set

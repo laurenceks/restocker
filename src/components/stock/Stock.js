@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
 import formatMySqlTimestamp from "../../functions/formatMySqlTimestamp";
+import useInitialise from "../../hooks/useInitialise";
 
 const Stock = () => {
     const stockTableHeaders = ["ID", "Name", "Current stock", "Warning level", "Last transaction"];
@@ -74,10 +75,10 @@ const Stock = () => {
         setStockList(newStockList);
     }
 
-    useEffect(() => {
+    useInitialise(() => {
         //on initial load fetch item lists
         getItems();
-    }, []);
+    });
 
     return (
         <>

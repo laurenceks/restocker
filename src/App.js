@@ -1,14 +1,15 @@
-import React, {createContext, useEffect, useState} from "react";
+import React, {createContext, useState} from "react";
 import 'bootswatch/dist/flatly/bootstrap.min.css';
 import './App.css';
 import Main from "./components/Main";
 import NotAuthorised from "./components/NotAuthorised";
+import useInitialise from "./hooks/useInitialise";
 
 export const GlobalAppContext = createContext();
 
 function App() {
     const [globalAppContext, setGlobalAppContext] = useState({loginCheckedOnce: false, isLoggedIn: false});
-    useEffect(() => {
+    useInitialise(() => {
         fetch("./php/login/checkUserLogin.php", {
             method: "GET",
         }).then((x) => {
@@ -21,7 +22,7 @@ function App() {
                 });
             })
         });
-    }, []);
+    });
 
     return (
         <GlobalAppContext.Provider value={[globalAppContext, setGlobalAppContext]}>

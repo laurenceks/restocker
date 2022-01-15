@@ -4,6 +4,7 @@ import FormInput from "../common/forms/FormInput";
 import Table from "../common/tables/Table";
 import validateForm from "../../functions/formValidation";
 import {GlobalAppContext} from "../../App";
+import useInitialise from "../../hooks/useInitialise";
 
 const Locations = () => {
         const addDataTemplate = {
@@ -163,9 +164,9 @@ const Locations = () => {
             });
         }
 
-        useEffect(() => {
+        useInitialise(() => {
             getLocations();
-        }, []);
+        });
 
         useEffect(() => {
             makeLocationRows();

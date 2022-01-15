@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import fetchAllLocations from "../../../functions/fetchAllLocations";
 import naturalSort from "../../../functions/naturalSort";
 import FormTypeahead from "./FormTypeahead";
+import useInitialise from "../../../hooks/useInitialise";
 
 const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
 
@@ -10,9 +11,9 @@ const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) =>
     const [updated, setUpdated] = useState(lastUpdated);
     const locationsLoadedOnce = useRef(false);
 
-    useEffect(() => {
+    useInitialise(() => {
         setUpdated(Date.now());
-    }, []);
+    });
 
     useEffect(() => {
         getItems();
