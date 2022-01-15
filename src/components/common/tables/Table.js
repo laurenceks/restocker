@@ -46,33 +46,33 @@ const Table = ({
         }
     }
 
-    const sortTableRows = (a, b, columnStructure = null, aIndex = sortSettings.index + (columnCount.current - a.length), bIndex = sortSettings.index + (columnCount.current - b.length)) => {
-        if (columnStructure) {
-            const col = columnStructure.reduce((a, b, c) => c < sortSettings.index ? a + b : a, 0)
-            aIndex = columnStructure?.length === a.length ? aIndex : col;
-            bIndex = columnStructure?.length === b.length ? bIndex : col;
-        }
-        if (a[aIndex]?.alwaysAtStart || b[bIndex]?.alwaysAtEnd) {
-            return sortSettings.ascending ? 1 : -1;
-        } else if (a[aIndex]?.alwaysAtEnd || b[bIndex]?.alwaysAtStart) {
-            return sortSettings.ascending ? -1 : 1;
-        } else {
-            return naturalSort(a[aIndex]?.sortValue ?? a[aIndex]?.text ?? a[aIndex]?.props?.defaultValue ?? a[aIndex], b[bIndex]?.sortValue ?? b[bIndex]?.text ?? b[bIndex]?.props?.defaultValue ?? b[bIndex]);
-        }
-    };
-
     const countColumnsInRow = (a, b) => a + (b?.colspan || 1);
-
-    const countPages = (arr) => {
-        pageCount.current = length ? Math.ceil(arr.length / length) || null : null;
-        pageNumbers.current = pageCount.current ? [...Array(pageCount.current).keys()].map(x => ++x) : [];
-    }
 
     useEffect(() => {
         setCurrentPageIndex(0);
     }, [updated])
 
     useEffect(() => {
+        const countPages = (arr) => {
+            pageCount.current = length ? Math.ceil(arr.length / length) || null : null;
+            pageNumbers.current = pageCount.current ? [...Array(pageCount.current).keys()].map(x => ++x) : [];
+        }
+
+        const sortTableRows = (a, b, columnStructure = null, aIndex = sortSettings.index + (columnCount.current - a.length), bIndex = sortSettings.index + (columnCount.current - b.length)) => {
+            if (columnStructure) {
+                const col = columnStructure.reduce((a, b, c) => c < sortSettings.index ? a + b : a, 0)
+                aIndex = columnStructure?.length === a.length ? aIndex : col;
+                bIndex = columnStructure?.length === b.length ? bIndex : col;
+            }
+            if (a[aIndex]?.alwaysAtStart || b[bIndex]?.alwaysAtEnd) {
+                return sortSettings.ascending ? 1 : -1;
+            } else if (a[aIndex]?.alwaysAtEnd || b[bIndex]?.alwaysAtStart) {
+                return sortSettings.ascending ? -1 : 1;
+            } else {
+                return naturalSort(a[aIndex]?.sortValue ?? a[aIndex]?.text ?? a[aIndex]?.props?.defaultValue ?? a[aIndex], b[bIndex]?.sortValue ?? b[bIndex]?.text ?? b[bIndex]?.props?.defaultValue ?? b[bIndex]);
+            }
+        };
+
         columnCount.current = headers.reduce((a, b) => a + (b.colspan || 1), 0);
         const currentStart = currentPageIndex * (length || 0);
 
@@ -122,7 +122,7 @@ const Table = ({
             }
         }
         setTableRows(sortedRows);
-    }, [sortSettings, rows, currentPageIndex, headers, length, allowSorting, countPages, sortTableRows]);
+    }, [sortSettings, rows, currentPageIndex, headers, length, allowSorting]);
 
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
@@ -155,8 +155,8 @@ const Table = ({
                                             colourVariant={sortSettings.index !== i && "secondary"}
                                         >
                                             {(sortSettings.ascending ?
-                                                <IoArrowDown className="d-block"/>:
-                                                 <IoArrowUp className="d-block"/>)}
+                                                <IoArrowDown className="d-block"/> :
+                                                <IoArrowUp className="d-block"/>)}
                                         </ArrowIconTransition>}
                                         <div>{x.text ?? x}</div>
                                     </div>
