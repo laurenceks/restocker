@@ -32,7 +32,7 @@ const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) =>
         })
     }
 
-    return <FormTypeahead {...props} options={locations}/>;
+    return <FormTypeahead {...props} label="Location" options={locations}/>;
 };
 
 FormLocation.propTypes = {
