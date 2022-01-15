@@ -122,7 +122,7 @@ const Table = ({
             }
         }
         setTableRows(sortedRows);
-    }, [sortSettings, rows, currentPageIndex]);
+    }, [sortSettings, rows, currentPageIndex, headers, length, allowSorting, countPages, sortTableRows]);
 
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
@@ -155,9 +155,8 @@ const Table = ({
                                             colourVariant={sortSettings.index !== i && "secondary"}
                                         >
                                             {(sortSettings.ascending ?
-                                                <IoArrowUp
-                                                    className="d-block"/> :
-                                                <IoArrowDown className="d-block"/>)}
+                                                <IoArrowDown className="d-block"/>:
+                                                 <IoArrowUp className="d-block"/>)}
                                         </ArrowIconTransition>}
                                         <div>{x.text ?? x}</div>
                                     </div>
