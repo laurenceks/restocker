@@ -16,21 +16,20 @@ const FormItem = ({lastUpdated, filterValues, defaultSelected, label, ...props})
     });
 
     useEffect(() => {
+        const getItems = () => {
+            fetchAllItems((x) => {
+                itemsLoadedOnce.current = true;
+                if (filterValues) {
+                    setItems(x.items.filter((x) => {
+                        return filterValues.values.indexOf(x[filterValues.key]) === -1
+                    }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
+                } else {
+                    setItems(x.items.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
+                }
+            })
+        }
         getItems();
-    }, [updated]);
-
-    const getItems = () => {
-        fetchAllItems((x) => {
-            itemsLoadedOnce.current = true;
-            if (filterValues) {
-                setItems(x.items.filter((x) => {
-                    return filterValues.values.indexOf(x[filterValues.key]) === -1
-                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
-            } else {
-                setItems(x.items.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
-            }
-        })
-    }
+    }, [defaultSelected, filterValues, updated]);
 
     return <FormTypeahead {...props} label={label} options={items}/>;
 };
