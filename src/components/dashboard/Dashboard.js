@@ -394,6 +394,7 @@ const Dashboard = () => {
                                defaultSortHeading={"Burn rate"}
                                rows={dashboardData.itemsRows}
                                length={5}
+                               showPaginationButtons={false}
                                fullWidth
                         />
                     </div>
