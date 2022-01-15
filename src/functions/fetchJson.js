@@ -5,13 +5,11 @@ const fetchJson = (url, options, successHandler, errorHandler = null) => {
     fetchWithAuthCheck(url, options, "json").then(async (x) => {
         successHandler(x);
     }).catch((e) => {
-        console.error(e.error || e);
-        const errorMessage = "The following error occurred on the server:\n\n" + e.text || e.error;
-        if (e.errorMessage || e.feedback || e.error) {
-            console.error(e.text || e.error);
+        if (e.errorMessage) {
+            console.error(e.errorMessage);
         }
-        if (errorHandler) {
-            errorHandler({...e, title: "Server error", feedback: errorMessage, isError: true});
+        if (errorHandler && !e.error === 401) {
+            errorHandler({...e, title: "Server error", feedback: e.feedback || e.errorMessage || "An internal server error occurred", isError: true});
         }
     });
 }
