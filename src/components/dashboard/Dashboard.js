@@ -307,7 +307,7 @@ const Dashboard = () => {
                 }
             }
         })
-    }, [dashBoardSettings, dashboardRanges.belowWarningLevel, dashboardRanges.burn, dashboardRanges.douse, dashboardRanges.outOfStock, dashboardRanges.stockLevel, getRates]);
+    }, [dashBoardSettings]);
 
     return (
         <div className="container">
