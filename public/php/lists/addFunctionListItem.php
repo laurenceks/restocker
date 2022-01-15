@@ -17,7 +17,7 @@ function addFunctionListItem($listId, $itemId, $itemName, $quantity, $organisati
             $addList->execute();
             return array("success" => true, "feedback" => "Item added to list");
         } catch (PDOException $e) {
-            return array("success" => false, "feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => array($e->getCode()), "errorTypes" => array("queryError"));
+            return array("success" => false, "feedback" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorMessage" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorType" => array("queryError"), "errorTypes" => array("queryError"));
         }
     }
 }

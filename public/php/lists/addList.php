@@ -40,7 +40,7 @@ if (checkFunctionExists("lists", "id", array(array("key" => "name", "value" => $
             $output["feedback"] = $addListItem;
         }
     } catch (PDOException $e) {
-        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
+        $output = array_merge($output, array("feedback" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorMessage" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorType" => "queryError"));
 
     }
 }

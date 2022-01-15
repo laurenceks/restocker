@@ -8,5 +8,9 @@ try {
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $db->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
 } catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+    $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+    $output["errorMessage"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+    $output["errorTypes"][] = "connectionError";
+    $output["errorType"] = "connectionError";
+    echo $output;
 }

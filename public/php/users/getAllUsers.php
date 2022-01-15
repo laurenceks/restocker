@@ -32,9 +32,9 @@ try {
     }
 } catch (PDOException $e) {
     $output["errorTypes"][] = "queryError";
-    $output["feedback"] = $e->getMessage();
-    $output["errorMessage"] = $e->getMessage();
-    $output["errorType"] = $e->getCode();
+    $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+    $output["errorMessage"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+    $output["errorType"] = "queryError";
 }
 
 //echo json_encode(processResult($getAllUsers->fetchAll(PDO::FETCH_ASSOC), array("verified", "approved", "admin", "superAdmin")));

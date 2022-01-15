@@ -12,7 +12,7 @@ function updateCurrentStockLevel() {
         $output["success"] = true;
         $output["feedback"] = "Stock levels updated";
     } catch (PDOException $e) {
-        return $output["feedback"] = $e->getMessage();
+        return $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
     }
     return json_encode($output);
 }

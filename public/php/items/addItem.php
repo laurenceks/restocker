@@ -27,8 +27,7 @@ if (checkFunctionExists("items", "id", array(array("key" => "name", "value" => $
         $output["title"] = "Item added";
         $output["feedback"] = $input["inputAddItemName"] . " was added successfully";
     } catch (PDOException $e) {
-        //TODO replace server error message with generic message for security
-        $output = array_merge($output, array("feedback" => $e->getMessage(), "errorMessage" => $e->getMessage(), "errorType" => "queryError"));
+        $output = array_merge($output, array("feedback" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorMessage" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorType" => "queryError"));
     }
 }
 

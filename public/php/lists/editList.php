@@ -56,9 +56,9 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                     }
                 } catch (PDOException $e) {
                     $output["errorTypes"][] = "queryError";
-                    $output["feedback"] = $e->getMessage();
-                    $output["errorMessage"] = $e->getMessage();
-                    $output["errorType"] = $e->getCode();
+                    $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+                    $output["errorMessage"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+                    $output["errorType"] = "queryError";
                 }
             }
         }
@@ -67,9 +67,9 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
         $output["feedback"] = $input["name"] . " was updated successfully";
     } catch (PDOException $e) {
         $output["errorTypes"][] = "queryError";
-        $output["feedback"] = $e->getMessage();
-        $output["errorMessage"] = $e->getMessage();
-        $output["errorType"] = $e->getCode();
+        $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+        $output["errorMessage"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+        $output["errorType"] = "queryError";
     }
 }
 echo json_encode($output);

@@ -24,8 +24,8 @@ try {
     $output["success"] = true;
     $output["feedback"] = $input["name"] . " was deleted successfully";
 } catch (PDOException $e) {
-    echo $output["feedback"] = $e->getMessage();
-    $output["errorMessage"] = $e->getMessage();
+    echo $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
+    $output["errorMessage"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
     $output["errorType"] = "queryError";
 }
 
