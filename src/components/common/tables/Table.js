@@ -154,7 +154,7 @@ const Table = ({
                                             in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
                                             colourVariant={sortSettings.index !== i && "secondary"}
                                         >
-                                            {(sortSettings.ascending ?
+                                            {(sortSettings.ascending || sortSettings.index !== i ?
                                                 <IoArrowDown className="d-block"/> :
                                                 <IoArrowUp className="d-block"/>)}
                                         </ArrowIconTransition>}
