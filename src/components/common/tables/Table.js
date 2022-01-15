@@ -93,12 +93,12 @@ const Table = ({
                 })
                 if (!columnStructures.every((x) => x[sortSettings.index])) {
                     groupedRows.sort((a, b) => sortTableRows(a[0], b[0]))
-                    sortSettings.ascending && groupedRows.reverse();
+                    !sortSettings.ascending && groupedRows.reverse();
                 } else {
                     groupedRows.forEach((x, i) => {
                         if (!x.some((x) => x.some((x) => x.type === "input"))) { //for each row group, sort each inner row
                             x.sort((a, b) => sortTableRows(a, b, columnStructures[i]))
-                            sortSettings.ascending && x.reverse();
+                            !sortSettings.ascending && x.reverse();
                         }
 
                         //then move cells with a rowspan to the first row
@@ -116,7 +116,7 @@ const Table = ({
                 sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
                 sortedRows.sort(sortTableRows);
-                sortSettings.ascending && sortedRows.reverse();
+                !sortSettings.ascending && sortedRows.reverse();
                 countPages(sortedRows);
                 length && (sortedRows = sortedRows.splice(currentStart, length));
             }
