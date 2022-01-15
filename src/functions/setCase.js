@@ -63,6 +63,8 @@ const setCase = (text = '', caseType = "title") => {
         case "studly_caps":
         case "studly-caps":
             // credit - https://codegolf.stackexchange.com/questions/122783/alternate-the-case
+            //not my code - suppress waning
+            // eslint-disable-next-line no-cond-assign
             return text.replace(/[a-z]/gi, (c) => c[`to${(text = !text) ? "Low" : "Upp"}erCase`]());
         case "title":
         case "titlecase":
