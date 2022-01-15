@@ -24,7 +24,6 @@ const Stock = () => {
     }
 
     const processItems = (x) => {
-        //TODO remodel data structure to use sort properly
         const newStockList = new stockTableTemplate();
         x.items.map((x) => {
             return {...x, sortKey: "name"}
