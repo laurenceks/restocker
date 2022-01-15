@@ -1,7 +1,9 @@
+/* eslint-disable */
 /*
  * Natural Sort algorithm for Javascript - Version 0.8.1 - Released under MIT license
  * Author: Jim Palmer (based on chunking idea from Dave Koelle)
  */
+
 const naturalSort = (a, b, sortIndex = null) => {
     const re = /(^([+\-]?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?(?=\D|\s|$))|^0x[\da-fA-F]+$|\d+)/g,
         sre = /^\s+|\s+$/g,   // trim pre-post whitespace
