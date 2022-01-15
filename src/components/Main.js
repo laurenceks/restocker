@@ -1,17 +1,16 @@
 import {useContext, useState} from 'react';
 import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
-import {Route, Switch} from "react-router-dom";
-import Users from "./users/Users";
+import {Redirect, Route, Switch} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
 import Stock from "./stock/Stock";
 import Profile from "./profile/Profile";
-import Lists from "./lists/Lists";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
 import EditEntries from "./editEntries/EditEntries";
+import Users from "./users/Users";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -39,15 +38,22 @@ const Main = props => {
                 <Switch>
                     <Route path={"/"} exact component={Dashboard}/>
                     <Route path={"/stock"} component={Stock}/>
-                    <Route path={"/withdraw"} render={()=><TransactionForm formType={"withdraw"}/>}/>
-                    <Route path={"/restock"} render={()=><TransactionForm formType={"restock"}/>}/>
-                    <Route path={"/transfer"} render={()=><TransactionForm formType={"transfer"}/>}/>
-                    <Route path={"/items"} render={() => <EditEntries type={"item"}/>}/>
-                    <Route path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
-                    <Route path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
-                    <Route path={"/profile"} component={Profile}/>
-                    <Route path={"/logout"} render={() =>logout()}/>
-                    <Route path={"/users"} render={()=><Users userId={globalAppContext.user.id}/>}/>
+                    <Route path={"/withdraw"} render={() => <TransactionForm formType={"withdraw"}/>}/>
+                    <Route path={"/restock"} render={() => <TransactionForm formType={"restock"}/>}/>
+                    <Route path={"/transfer"} render={() => <TransactionForm formType={"transfer"}/>}/>
+                    <Route path={"/logout"} render={() => logout()}/>
+                    {(globalAppContext.user.admin || globalAppContext.user.superAdmin) &&
+                    <>
+                        <Route path={"/profile"} component={Profile}/>
+                        <Route path={"/items"} render={() => <EditEntries type={"item"}/>}/>
+                        <Route path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
+                        <Route path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
+                        <Route path={"/users"} render={() => <Users userId={globalAppContext.user.id}/>}/>
+                    </>
+                    }
+                    <Route>
+                        <Redirect to="/"/>
+                    </Route>
                 </Switch>
             </div>
             <AcknowledgeModal {...acknowledgeModalOptions}/>
