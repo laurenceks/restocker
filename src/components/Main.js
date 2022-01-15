@@ -26,14 +26,6 @@ const Main = props => {
         toasts: setToasts,
     };
 
-    const logout = () => {
-        fetch("./php/login/logout.php", {
-            method: "GET",
-        }).then((x) => {
-            setGlobalAppContext({...globalAppContext, isLoggedIn: false, user: null});
-        });
-    }
-
     return (
         <div className="contentContainer w-100">
             <TopNav user={globalAppContext.user}/>
