@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {NavLink, useHistory} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
 import FormInput from "./common/forms/FormInput";
@@ -8,7 +8,7 @@ import {useRef} from "react";
 import naturalSort from "../functions/naturalSort";
 
 const TopNav = ({user}) => {
-    const history = useHistory()
+    const history = useNavigate()
     const searchInput = useRef();
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -79,7 +79,7 @@ const TopNav = ({user}) => {
                                        },
                                        onChange: (e) => {
                                            if (e[0]) {
-                                               history.push(e[0]?.link || "/");
+                                               history(e[0]?.link || "/");
                                                searchInput.current.clear();
                                            }
 

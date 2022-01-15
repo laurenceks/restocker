@@ -1,7 +1,7 @@
 import {useContext, useState} from 'react';
 import {GlobalAppContext} from "../App";
 import TopNav from "./TopNav";
-import {Redirect, Route, Switch} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
 import Stock from "./stock/Stock";
@@ -12,6 +12,7 @@ import ConfirmModal from "./Bootstrap/ConfirmModal";
 import EditEntries from "./editEntries/EditEntries";
 import Users from "./users/Users";
 import ProtectedRoute from "./common/ProtectedRoute";
+import Logout from "./login/Logout";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -37,20 +38,20 @@ const Main = props => {
         <div className="contentContainer w-100">
             <TopNav user={globalAppContext.user}/>
             <div className="main my-5 mx-auto px-1 px-md-0">
-                <Switch>
-                    <Route path={"/"} exact component={Dashboard}/>
-                    <Route path={"/stock"} component={Stock}/>
-                    <Route path={"/withdraw"} render={() => <TransactionForm formType={"withdraw"}/>}/>
-                    <Route path={"/restock"} render={() => <TransactionForm formType={"restock"}/>}/>
-                    <Route path={"/transfer"} render={() => <TransactionForm formType={"transfer"}/>}/>
-                    <Route path={"/logout"} render={() => logout()}/>
-                    <ProtectedRoute path={"/profile"} component={Profile}/>
-                    <ProtectedRoute path={"/items"} render={() => <EditEntries type={"item"}/>}/>
-                    <ProtectedRoute path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
-                    <ProtectedRoute path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
-                    <ProtectedRoute path={"/users"} render={() => <Users userId={globalAppContext.user.id}/>}/>
-                    <Redirect to="/"/>
-                </Switch>
+                <Routes>
+                    <Route path="/" exact element={<Dashboard/>}/>
+                    <Route path="/stock" element={<Stock/>}/>
+                    <Route path="/withdraw" element={<TransactionForm formType={"withdraw"}/>}/>
+                    <Route path="/restock" element={<TransactionForm formType={"restock"}/>}/>
+                    <Route path="/transfer" element={<TransactionForm formType={"transfer"}/>}/>
+                    <Route path="/logout" element={<Logout/>}/>
+                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/items" element={<ProtectedRoute element={<EditEntries type={"item"}/>}/>}/>
+                    <Route path="/locations" element={<ProtectedRoute element={<EditEntries type={"location"}/>}/>}/>
+                    <Route path="/lists" element={<ProtectedRoute element={<EditEntries type={"list"}/>}/>}/>
+                    <Route path="/users" element={<ProtectedRoute element={<Users userId={globalAppContext.user.id}/>}/>}/>
+                    <Route path="*" element={<Navigate to="/"/>}/>
+                </Routes>
             </div>
             <AcknowledgeModal {...acknowledgeModalOptions}/>
             <ToastStack toasts={toasts}/>

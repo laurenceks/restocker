@@ -5,14 +5,14 @@ import FormLink from "../common/forms/FormLink";
 import validateForm from "../../functions/formValidation.js"
 import LoginFeedback from "./LoginFeedback";
 import {GlobalAppContext} from "../../App";
-import {useHistory} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 const Login = props => {
     const [loginFeedback, setLoginFeedback] = useState(null);
     const loginForm = useRef();
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
-    const history = useHistory();
+    const history = useNavigate();
     const login = formOutput => {
         setLoginFeedback({inProgress: true})
         fetch("./php/login/login.php", {
@@ -22,7 +22,7 @@ const Login = props => {
             x.json().then((x) => {
                 if (x.success) {
                     setGlobalAppContext({...globalAppContext, user: x.user, isLoggedIn: true, loginCheckedOnce: true});
-                    history.push("/");
+                    history("/");
                 } else {
                     setLoginFeedback({feedback: x.feedback, feedbackClass: "bg-danger", inProgress: false})
                 }

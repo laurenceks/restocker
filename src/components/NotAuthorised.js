@@ -1,4 +1,4 @@
-import {Redirect, Route, Switch} from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 import Login from "./login/Login";
 import Register from "./login/Register";
 import ForgotPassword from "./login/ForgotPassword";
@@ -10,15 +10,15 @@ const NotAuthorised = () => {
     return (
         <div className="loginForm align-middle">
             <img src="./img/logo.svg" alt="Restocker logo" className="w-100 p-3 mb-4"/>
-            <Switch>
-                <Route path="/verify" component={Verify}/>
-                <Route path="/reVerify" component={ReVerify}/>
-                <Route path="/register" component={Register}/>
-                <Route path="/forgotPassword" component={ForgotPassword}/>
-                <Route path="/resetPassword" render={() => Verify("password")}/>
-                <Route path="/login" component={Login}/>
-                <Redirect to="/login"/>
-            </Switch>
+            <Routes>
+                <Route path="/verify" element={<Verify/>}/>
+                <Route path="/reVerify" element={<ReVerify/>}/>
+                <Route path="/register" element={<Register/>}/>
+                <Route path="/forgotPassword" element={<ForgotPassword/>}/>
+                <Route path="/resetPassword" element={<Verify type={"password"}/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="*" element={<Navigate to="/login"/>}/>
+            </Routes>
         </div>
     );
 };
