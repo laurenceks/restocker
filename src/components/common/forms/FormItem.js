@@ -1,29 +1,13 @@
 import {useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
-import {Typeahead} from "react-bootstrap-typeahead";
-import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import fetchAllItems from "../../../functions/fetchAllItems";
 import naturalSort from "../../../functions/naturalSort";
+import FormTypeahead from "./FormTypeahead";
 
-const FormItem = ({
-                      defaultSelected,
-                      disabled,
-                      form,
-                      id,
-                      inputClass,
-                      invalidFeedback,
-                      filterValues,
-                      label,
-                      labelKey,
-                      lastUpdated,
-                      onChange,
-                      typeaheadProps,
-                      selected
-                  }) => {
+const FormItem = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
 
     const [items, setItems] = useState([]);
     const [updated, setUpdated] = useState(lastUpdated);
-    const [selectedState, setSelectedState] = useState(defaultSelected);
     const itemsLoadedOnce = useRef(false);
 
     useEffect(() => {
@@ -34,86 +18,27 @@ const FormItem = ({
         getItems();
     }, [updated]);
 
-    useEffect(() => {
-        if (itemsLoadedOnce.current) {
-            setSelectedState(selected);
-        }
-    }, [selected]);
-
     const getItems = () => {
         fetchAllItems((x) => {
             itemsLoadedOnce.current = true;
             if (filterValues) {
                 setItems(x.items.filter((x) => {
                     return filterValues.values.indexOf(x[filterValues.key]) === -1
-                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)))
+                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
             } else {
-                setItems(x.items.sort((a, b) => naturalSort(a.name, b.name)))
+                setItems(x.items.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
             }
         })
     }
 
-    typeaheadProps = {
-        inputProps: {
-            useFloatingLabel: true,
-            id: id,
-            floatingLabelText: label,
-            className: inputClass
-        },
-        options: items,
-        ...typeaheadProps
-    };
-
-    return (
-        <div className={"formInputWrap"}>
-            <Typeahead
-                id={id}
-                form={form}
-                {...typeaheadProps}
-                disabled={disabled || !itemsLoadedOnce || typeaheadProps?.options?.length <= 1}
-                options={typeaheadProps.options.filter((x) => !x.deleted)}
-                selected={selectedState}
-                //TODO don't allow new
-                onChange={(e) => {
-                    setSelectedState(e);
-                    if (onChange) {
-                        onChange(e);
-                    }
-                }}
-                labelKey={labelKey}
-            />
-            {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
-        </div>
-    );
+    return <FormTypeahead {...props} options={items}/>;
 };
 
 FormItem.propTypes = {
-    form: PropTypes.string,
-    id: PropTypes.string,
-    label: PropTypes.string,
-    labelKey: PropTypes.string,
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    defaultSelected: PropTypes.array,
-    selected: PropTypes.array
+    lastUpdated: PropTypes.number
 };
 FormItem.defaultProps = {
-    form: "",
-    id: "input-" + parseInt(Math.random() * 1000000),
-    label: "Input",
-    labelKey: "name",
-    disabled: false,
-    defaultValue: null,
-    forceCase: null,
-    inputClass: null,
-    invalidFeedback: null,
-    max: null,
-    min: null,
-    onChange: null,
-    passwordId: null,
-    defaultSelected: [],
-    selected: [],
-    step: 1,
+    lastUpdated: null,
 };
 
 export default FormItem;

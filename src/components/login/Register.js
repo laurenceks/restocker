@@ -7,6 +7,7 @@ import LoginFeedback from "./LoginFeedback";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "@gouch/to-title-case";
 import fetchJson from "../../functions/fetchJson";
+import FormTypeahead from "../common/forms/FormTypeahead";
 
 const Register = () => {
     const [registerFeedback, setRegisterFeedback] = useState({success: false, inProgress: false});
@@ -65,33 +66,29 @@ const Register = () => {
                                    inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                     </div>
                     <div className="mb-3 formInputGroup">
-                        <FormInput type={"typeahead"}
-                                   id={"inputRegisterOrganisationWrap"}
-                                   typeaheadProps={{
-                                       inputProps:
+                        <FormTypeahead type={"typeahead"}
+                                       id={"inputRegisterOrganisationWrap"}
+                                       inputProps={
                                            {
                                                id: "inputRegisterOrganisation",
                                                useFloatingLabel: true,
                                                floatingLabelText: "Organisation",
                                                className: "formInput",
                                                "data-statename": "organisation"
-                                           },
-                                       allowNew: true,
-                                       onChange: (e) => {
-                                           if(e[0] && (organisations))
-                                           setOrganisation(e[0] ? {
-                                               ...e[0],
-                                               organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
-                                           } : {})
-                                       },
-                                       onInputChange: (x, e) => {
-                                           //TODO set input value to toTitleCase?
-                                           //setOrganisation([]);
-                                       },
-                                       labelKey: "organisation",
-                                       options: organisations
-                                   }}
-                                   invalidFeedback={"Please select your organisation, or add a new one"}
+                                           }
+                                       }
+                                       allowNew
+                                       forceCase="titleCase"
+                                       onChange={(e) => {
+                                           if (e[0] && (organisations))
+                                               setOrganisation(e[0] ? {
+                                                   ...e[0],
+                                                   organisation: e[0].customOption ? e[0].organisation.toTitleCase() : e[0].organisation
+                                               } : {})
+                                       }}
+                                       labelKey="organisation"
+                                       options={organisations}
+                                       invalidFeedback={"Please select your organisation, or add a new one"}
                         />
                         {organisation && organisation.customOption &&
                         <p className="my-3 text-muted small">{organisation.organisation} will be saved as a new

@@ -1,122 +1,44 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import PropTypes from 'prop-types';
-import {Typeahead} from "react-bootstrap-typeahead";
-import InputFeedbackTooltip from "./InputFeedbackTooltip";
-import naturalSort from "../../../functions/naturalSort";
 import fetchAllLocations from "../../../functions/fetchAllLocations";
+import naturalSort from "../../../functions/naturalSort";
+import FormTypeahead from "./FormTypeahead";
 
-const FormLocation = ({
-                          defaultSelected,
-                          disabled,
-                          form,
-                          id,
-                          inputClass,
-                          invalidFeedback,
-                          filterValues,
-                          label,
-                          labelKey,
-                          lastUpdated,
-                          onChange,
-                          typeaheadProps,
-                          selected
-                      }) => {
+const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
 
     const [locations, setLocations] = useState([]);
-    const [locationsLoadedOnce, setLocationsLoadedOnce] = useState(false);
     const [updated, setUpdated] = useState(lastUpdated);
-    const [selectedState, setSelectedState] = useState(defaultSelected);
+    const locationsLoadedOnce = useRef(false);
 
     useEffect(() => {
         setUpdated(Date.now());
     }, []);
 
     useEffect(() => {
-        getLocations();
+        getItems();
     }, [updated]);
 
-    useEffect(() => {
-        if (locationsLoadedOnce) {
-            setSelectedState(selected);
-            onChange(locations)
-        }
-    }, [selected]);
-
-    useEffect(() => {
-        if (locationsLoadedOnce && locations.length === 1) {
-            setSelectedState([locations[0]]);
-        }
-    }, [locations]);
-
-    const getLocations = () => {
+    const getItems = () => {
         fetchAllLocations((x) => {
-            setLocationsLoadedOnce(true);
+            locationsLoadedOnce.current = true;
             if (filterValues) {
                 setLocations(x.locations.filter((x) => {
                     return filterValues.values.indexOf(x[filterValues.key]) === -1
-                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)))
+                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
             } else {
-                setLocations(x.locations.sort((a, b) => naturalSort(a.name, b.name)))
+                setLocations(x.locations.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
             }
         })
     }
 
-
-    return (
-        <div className={"formInputWrap"}>
-            <Typeahead
-                id={id}
-                form={form}
-                inputProps={
-                    {
-                        useFloatingLabel: true,
-                        id: id,
-                        floatingLabelText: label,
-                    }
-                }
-                {...typeaheadProps}
-                disabled={disabled || !locationsLoadedOnce || locations.length <= 1}
-                options={locations}
-                selected={selectedState}
-                onChange={(e) => {
-                    setSelectedState(e);
-                    if (onChange) {
-                        onChange(e)
-                    }
-                }}
-                labelKey={labelKey}
-            />
-            {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
-        </div>
-    );
+    return <FormTypeahead {...props} options={locations}/>;
 };
 
 FormLocation.propTypes = {
-    form: PropTypes.string,
-    id: PropTypes.string,
-    label: PropTypes.string,
-    labelKey: PropTypes.string,
-    placeholder: PropTypes.string,
-    disabled: PropTypes.bool,
-    defaultSelected: PropTypes.array,
-    selected: PropTypes.array
+    lastUpdated: PropTypes.number
 };
 FormLocation.defaultProps = {
-    form: "",
-    id: "input-location-" + parseInt(Math.random() * 1000000),
-    label: "Location",
-    labelKey: "name",
-    disabled: false,
-    defaultValue: null,
-    forceCase: null,
-    inputClass: null,
-    invalidFeedback: null,
-    max: null,
-    min: null,
-    onChange: null,
-    passwordId: null,
-    defaultSelected: [],
-    selected: [],
-    step: 1,
+    lastUpdated: null,
 };
 
 export default FormLocation;
