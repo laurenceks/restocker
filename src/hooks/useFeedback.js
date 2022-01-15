@@ -7,21 +7,6 @@ export const useFeedback = (initialResponse) => {
     const [response, setResponse] = useState(initialResponse);
 
     useEffect(() => {
-        const defaultState = {
-            headerClass: variantPairings.warning.header,
-            yesButtonVariant: "primary",
-            handleClick: () => {
-                setStateFunctions.acknowledgeModal(prevState => {
-                    return {
-                        ...prevState,
-                        show: false,
-                    }
-                })
-                if (response.callback) {
-                    response.callback(response);
-                }
-            }
-        }
         if (response) {
             if (response.success) {
                 setStateFunctions.toasts(prevState => {
@@ -49,7 +34,23 @@ export const useFeedback = (initialResponse) => {
                 })
             }
         }
-    }, [response, setStateFunctions]);
+    }, [response]);
+
+    const defaultState = {
+        headerClass: variantPairings.warning.header,
+        yesButtonVariant: "primary",
+        handleClick: () => {
+            setStateFunctions.acknowledgeModal(prevState => {
+                return {
+                    ...prevState,
+                    show: false,
+                }
+            })
+            if (response.callback) {
+                response.callback(response);
+            }
+        }
+    }
 
     return setResponse
 }
