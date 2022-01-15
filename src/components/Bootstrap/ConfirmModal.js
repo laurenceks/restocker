@@ -23,7 +23,7 @@ const ConfirmModal = ({
     useEffect(() => {
         //reset options once not visible
         setModalOptions({})
-    }, [lastExited]);
+    }, [lastExited, setModalOptions]);
 
     return (
         <Modal show={show}
