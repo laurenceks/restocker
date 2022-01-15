@@ -18,7 +18,8 @@ const Table = ({
                    defaultSortDirection,
                    allowSorting,
                    length,
-                   updated
+                   updated,
+                   showPaginationButtons
                }) => {
 
     const headerIndex = headers.findIndex((x) => (x.text || x) === defaultSortHeading);
@@ -62,7 +63,7 @@ const Table = ({
 
     const countColumnsInRow = (a, b) => a + (b?.colspan || 1);
 
-    const paginate = (arr) => {
+    const countPages = (arr) => {
         pageCount.current = length ? Math.ceil(arr.length / length) || null : null;
         pageNumbers.current = pageCount.current ? [...Array(pageCount.current).keys()].map(x => ++x) : [];
     }
@@ -110,13 +111,13 @@ const Table = ({
                         groupedRows[i] = x;
                     });
                 }
-                paginate(groupedRows);
+                countPages(groupedRows);
                 length && (groupedRows = groupedRows.splice(currentStart, length));
                 sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
                 sortedRows.sort(sortTableRows);
                 sortSettings.ascending && sortedRows.reverse();
-                paginate(sortedRows);
+                countPages(sortedRows);
                 length && (sortedRows = sortedRows.splice(currentStart, length));
             }
         }
@@ -184,7 +185,7 @@ const Table = ({
                         })}
                         </tbody>
                     </table>
-                    {(length && pageCount.current > 1) &&
+                    {(length && pageCount.current > 1 && showPaginationButtons) &&
                     <nav aria-label="Table pages">
                         <ul className="pagination justify-content-center">
                             <li className={`page-item user-select-none ${currentPageIndex === 0 ? "disabled" : "cursor-pointer"}`}>
@@ -228,6 +229,7 @@ Table.propTypes = {
     rows: PropTypes.array,
     fullWidth: PropTypes.bool,
     allowSorting: PropTypes.bool,
+    showPaginationButtons: PropTypes.bool,
     rowEnter: PropTypes.func,
     rowLeave: PropTypes.func,
     defaultSortIndex: PropTypes.number,
@@ -242,6 +244,7 @@ Table.defaultProps = {
     rows: [],
     fullWidth: false,
     allowSorting: true,
+    showPaginationButtons: true,
     rowEnter: null,
     rowLeave: null,
     defaultSortIndex: 0,
