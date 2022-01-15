@@ -2,6 +2,7 @@ import validateForm from "../../functions/formValidation";
 import {variantPairings} from "../common/styles";
 import naturalSort from "../../functions/naturalSort";
 import {Fragment} from "react";
+import formatMySqlTimestamp from "../../functions/formatMySqlTimestamp";
 
 export const makeRows = (type, entryList, editId, functions) => {
     const rowFunctions = {
@@ -462,7 +463,7 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                         item.id,
                         item.name,
                         `${item.currentStock} ${item.unit}`,
-                        item.lastUpdated,
+                        {text: formatMySqlTimestamp(item.lastUpdated), sortValue: item.lastUpdated},
                         {
                             type: "button",
                             text: "Restore",
@@ -499,7 +500,7 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                 return ([
                         location.id,
                         location.name,
-                        location.lastUpdated,
+                        {text: formatMySqlTimestamp(location.lastUpdated), sortValue: location.lastUpdated},
                         {
                             type: "button",
                             text: "Restore",
@@ -536,7 +537,7 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                 return ([
                         list.id,
                         list.name,
-                        list.lastUpdated,
+                        {text: formatMySqlTimestamp(list.lastUpdated), sortValue: list.lastUpdated},
                         {
                             type: "button",
                             text: "Restore",

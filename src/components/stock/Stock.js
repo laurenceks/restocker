@@ -2,6 +2,7 @@ import TableSection from "../common/tables/TableSection";
 import {useEffect, useState} from "react";
 import fetchAllItems from "../../functions/fetchAllItems";
 import naturalSort from "../../functions/naturalSort";
+import formatMySqlTimestamp from "../../functions/formatMySqlTimestamp";
 
 const Stock = () => {
     const stockTableHeaders = ["ID", "Name", "Current stock", "Warning level", "Last transaction"];
@@ -34,7 +35,7 @@ const Stock = () => {
                         item.name,
                         `${item.currentStock} ${item.unit}`,
                         `${item.warningLevel} ${item.unit}`,
-                        item.lastUpdated
+                        {text: formatMySqlTimestamp(item.lastUpdated), sortValue: item.lastUpdated}
                     ]
                 );
                 if (item.currentStock === 0) {
@@ -44,7 +45,7 @@ const Stock = () => {
                             item.name,
                             `${item.currentStock} ${item.unit}`,
                             `${item.warningLevel} ${item.unit}`,
-                            item.lastUpdated
+                            {text: formatMySqlTimestamp(item.lastUpdated), sortValue: item.lastUpdated}
                         ]
                     );
                 } else {
@@ -55,7 +56,7 @@ const Stock = () => {
                                 item.name,
                                 `${item.currentStock} ${item.unit}`,
                                 `${item.warningLevel} ${item.unit}`,
-                                item.lastUpdated
+                                {text: formatMySqlTimestamp(item.lastUpdated), sortValue: item.lastUpdated}
                             ]
                         );
                     } else {
@@ -65,7 +66,7 @@ const Stock = () => {
                                 item.name,
                                 `${item.currentStock} ${item.unit}`,
                                 `${item.warningLevel} ${item.unit}`,
-                                item.lastUpdated
+                                {text: formatMySqlTimestamp(item.lastUpdated), sortValue: item.lastUpdated}
                             ]);
                     }
                 }
