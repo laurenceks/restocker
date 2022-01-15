@@ -15,11 +15,9 @@ const NotAuthorised = () => {
                 <Route path="/reVerify" component={ReVerify}/>
                 <Route path="/register" component={Register}/>
                 <Route path="/forgotPassword" component={ForgotPassword}/>
-                <Route path="/resetPassword" component={() => Verify("password")}/>
+                <Route path="/resetPassword" render={() => Verify("password")}/>
                 <Route path="/login" component={Login}/>
-                <Route>
-                    <Redirect to="/login"/>
-                </Route>
+                <Redirect to="/login"/>
             </Switch>
         </div>
     );

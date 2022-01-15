@@ -11,6 +11,7 @@ import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
 import EditEntries from "./editEntries/EditEntries";
 import Users from "./users/Users";
+import ProtectedRoute from "./common/ProtectedRoute";
 
 const Main = props => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
@@ -25,12 +26,13 @@ const Main = props => {
     };
 
     const logout = () => {
-        fetch("./php/login/tempLogout.php", {
+        fetch("./php/login/logout.php", {
             method: "GET",
         }).then((x) => {
             setGlobalAppContext({...globalAppContext, isLoggedIn: false, user: null});
         });
     }
+
     return (
         <div className="contentContainer w-100">
             <TopNav user={globalAppContext.user}/>
@@ -42,18 +44,12 @@ const Main = props => {
                     <Route path={"/restock"} render={() => <TransactionForm formType={"restock"}/>}/>
                     <Route path={"/transfer"} render={() => <TransactionForm formType={"transfer"}/>}/>
                     <Route path={"/logout"} render={() => logout()}/>
-                    {(globalAppContext.user.admin || globalAppContext.user.superAdmin) &&
-                    <>
-                        <Route path={"/profile"} component={Profile}/>
-                        <Route path={"/items"} render={() => <EditEntries type={"item"}/>}/>
-                        <Route path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
-                        <Route path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
-                        <Route path={"/users"} render={() => <Users userId={globalAppContext.user.id}/>}/>
-                    </>
-                    }
-                    <Route>
-                        <Redirect to="/"/>
-                    </Route>
+                    <ProtectedRoute path={"/profile"} component={Profile}/>
+                    <ProtectedRoute path={"/items"} render={() => <EditEntries type={"item"}/>}/>
+                    <ProtectedRoute path={"/locations"} render={() => <EditEntries type={"location"}/>}/>
+                    <ProtectedRoute path={"/lists"} render={() => <EditEntries type={"list"}/>}/>
+                    <ProtectedRoute path={"/users"} render={() => <Users userId={globalAppContext.user.id}/>}/>
+                    <Redirect to="/"/>
                 </Switch>
             </div>
             <AcknowledgeModal {...acknowledgeModalOptions}/>
