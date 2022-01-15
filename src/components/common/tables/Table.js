@@ -113,7 +113,7 @@ const Table = ({
                 }
                 countPages(groupedRows);
                 length && (groupedRows = groupedRows.splice(currentStart, length));
-                sortedRows = groupedRows.reduce((a, b) => [...a, ...b]);
+                sortedRows = groupedRows.reduce((a, b) => [...a, ...b],[]);
             } else {
                 sortedRows.sort(sortTableRows);
                 !sortSettings.ascending && sortedRows.reverse();
@@ -122,7 +122,7 @@ const Table = ({
             }
         }
         setTableRows(sortedRows);
-    }, [sortSettings, rows, currentPageIndex, headers, length, allowSorting]);
+    }, [sortSettings, rows, currentPageIndex]);
 
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
