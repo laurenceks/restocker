@@ -5,7 +5,7 @@ import naturalSort from "../../../functions/naturalSort";
 import FormTypeahead from "./FormTypeahead";
 import useInitialise from "../../../hooks/useInitialise";
 
-const FormItem = ({lastUpdated, filterValues, defaultSelected, label, ...props}) => {
+const FormItem = ({lastUpdated, filterValues, defaultSelected, ...props}) => {
 
     const [items, setItems] = useState([]);
     const [updated, setUpdated] = useState(lastUpdated);
@@ -31,16 +31,14 @@ const FormItem = ({lastUpdated, filterValues, defaultSelected, label, ...props})
         getItems();
     }, [defaultSelected, filterValues, updated]);
 
-    return <FormTypeahead {...props} label={label} options={items}/>;
+    return <FormTypeahead {...props} options={items}/>;
 };
 
 FormItem.propTypes = {
-    lastUpdated: PropTypes.number,
-    label: PropTypes.string,
+    lastUpdated: PropTypes.number
 };
 FormItem.defaultProps = {
     lastUpdated: null,
-    label: "Item",
 };
 
 export default FormItem;
