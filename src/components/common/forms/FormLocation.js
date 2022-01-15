@@ -30,9 +30,20 @@ const FormLocation = ({lastUpdated, filterValues, defaultSelected, ...props}) =>
         }
 
         getItems();
-    }, [defaultSelected, filterValues, updated]);
+    }, [updated]);
 
-
+    const getItems = () => {
+        fetchAllLocations((x) => {
+            locationsLoadedOnce.current = true;
+            if (filterValues) {
+                setLocations(x.locations.filter((x) => {
+                    return filterValues.values.indexOf(x[filterValues.key]) === -1
+                }).concat(defaultSelected || []).sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
+            } else {
+                setLocations(x.locations.sort((a, b) => naturalSort(a.name, b.name)).filter((x) => !x.deleted))
+            }
+        })
+    }
     return <FormTypeahead {...props} label="Location" options={locations}/>;
 };
 
