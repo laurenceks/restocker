@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import {NavLink, useNavigate} from "react-router-dom";
-import "../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
-import FormInput from "./common/forms/FormInput";
-import {mockSearchOptions} from "./common/mockData";
+import FormInput from "../common/forms/FormInput";
+import {mockSearchOptions} from "../common/mockData";
 import {useRef} from "react";
-import naturalSort from "../functions/naturalSort";
+import naturalSort from "../../functions/naturalSort";
 
 const TopNav = ({user}) => {
     const history = useNavigate()

@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react';
 import {GlobalAppContext} from "../App";
-import TopNav from "./TopNav";
+import TopNav from "./nav/TopNav";
 import {Navigate, Route, Routes} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
