@@ -47,11 +47,11 @@ const timeUntilNext = (from, unit = "s") => {
 function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, id, icon, autoHide, onClick}) {
     const [showState, setShowState] = useState(show);
     const [timestampUpdated, setTimestampUpdated] = useState(null);
-    const [timestampState, setTimestampState] = useState(timestamp);
     const [timestampText, setTimestampText] = useState("Just now");
     const setToasts = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
     const shownOnce = useRef(false);
     const deleteTimeout = useRef(null);
+    const timeStampRef = useRef(timestamp);
     const hovering = useRef(false);
     const visible = useRef(false);
     const clicked = useRef(false);
@@ -65,16 +65,16 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
     }
 
     useEffect(() => {
-        if (!showState) {
+        if (!shownOnce.current) {
             setShowState(true);
             shownOnce.current = true;
         }
-    }, [shownOnce.current]);
+    }, [showState]);
 
     useEffect(() => {
         if (visible.current) {
             //timestamp has been updated and the toast is still showing - update the text to the current time difference
-            const timeDiff = calculateTimeDiff(timestampState);
+            const timeDiff = calculateTimeDiff(timeStampRef.current);
             setTimestampText(timeDiff);
             setTimeout(() => {
                 //trigger new update to timestamp text on the next second
@@ -122,7 +122,7 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
                    if (!visible.current) {
                        visible.current = true;
                        setTimestampUpdated(Date.now());
-                       setTimestampState(Date.now);
+                       timeStampRef.current = Date.now();
                    }
                }}
                onExited={() => {
