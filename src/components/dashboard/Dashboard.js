@@ -23,7 +23,6 @@ import FormInput from "../common/forms/FormInput";
 import FormLocation from "../common/forms/FormLocation";
 import useFetch from "../../hooks/useFetch";
 
-const Dashboard = () => {
     class dashboardDataTemplate {
         constructor() {
             this.rates = {
@@ -69,7 +68,7 @@ const Dashboard = () => {
             }
         }
     }
-
+const Dashboard = () => {
     const getRates = useFetch();
     const dashboardLoadedOnce = useRef(false);
     const [dashboardData, setDashboardData] = useState(new dashboardDataTemplate());
@@ -308,7 +307,7 @@ const Dashboard = () => {
                 }
             }
         })
-    }, [dashBoardSettings]);
+    }, [dashBoardSettings, dashboardRanges.belowWarningLevel, dashboardRanges.burn, dashboardRanges.douse, dashboardRanges.outOfStock, dashboardRanges.stockLevel, getRates]);
 
     return (
         <div className="container">
