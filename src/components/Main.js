@@ -15,7 +15,7 @@ import ProtectedRoute from "./common/ProtectedRoute";
 import Logout from "./login/Logout";
 
 const Main = props => {
-    const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
+    const [globalAppContext] = useContext(GlobalAppContext);
     const [acknowledgeModalOptions, setAcknowledgeModalOptions] = useState({show: false});
     const [confirmModalOptions, setConfirmModalOptions] = useState({});
     const [toasts, setToasts] = useState([]);
