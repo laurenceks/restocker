@@ -3,7 +3,7 @@ import {NavLink, useNavigate} from "react-router-dom";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
 import FormInput from "../common/forms/FormInput";
-import {searchOptions} from "./searchOptions";
+import {mockSearchOptions} from "../common/mockData";
 import {useRef} from "react";
 import naturalSort from "../../functions/naturalSort";
 
@@ -65,7 +65,7 @@ const TopNav = ({user}) => {
                                    aria-label="Search"
                                    typeaheadProps={{
                                        ref: searchInput,
-                                       options: searchOptions.sort((a, b) => {
+                                       options: mockSearchOptions.sort((a, b) => {
                                            return naturalSort(a.label, b.label);
                                        }),
                                        renderMenuItemChildren: (option) => {
