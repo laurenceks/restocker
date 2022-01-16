@@ -24,7 +24,7 @@ const TopNav = ({user}) => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <NavLink exact={true} to={"/"} className="nav-link rounded-3 mx-1 px-2">Home</NavLink>
+                            <NavLink to={"/"} className="nav-link rounded-3 mx-1 px-2">Home</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to={"/stock"} className="nav-link rounded-3 mx-1 px-2">Stock</NavLink>
