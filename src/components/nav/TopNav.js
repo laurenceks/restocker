@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import {NavLink, useNavigate} from "react-router-dom";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
-import FormInput from "../common/forms/FormInput";
 import {mockSearchOptions} from "../common/mockData";
-import {useRef} from "react";
 import naturalSort from "../../functions/naturalSort";
+import FormTypeahead from "../common/forms/FormTypeahead";
+import {useState} from "react";
 
 const TopNav = ({user}) => {
     const history = useNavigate()
-    const searchInput = useRef();
+    const [searchState, setSearchState] = useState([]);
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
             <div className="container-fluid">
@@ -59,32 +59,33 @@ const TopNav = ({user}) => {
                         }
                     </ul>
                     <form className="d-flex">
-                        <FormInput className="form-control me-2"
-                                   type="typeahead"
-                                   placeholder="Search"
-                                   aria-label="Search"
-                                   typeaheadProps={{
-                                       ref: searchInput,
-                                       options: mockSearchOptions.sort((a, b) => {
+                        <FormTypeahead className="me-2"
+                                       aria-label="Search"
+                                       label={"Search"}
+                                       labelKey={"label"}
+                                       useFloatingLabel={false}
+                                       selected={searchState}
+                                       options={mockSearchOptions.sort((a, b) => {
                                            return naturalSort(a.label, b.label);
-                                       }),
-                                       renderMenuItemChildren: (option) => {
+                                       })}
+                                       renderMenuItemChildren={(option) => {
                                            return (
                                                <>
                                                    <p className="m-0 searchMenuItemLabel text-primary">{option.label}</p>
-                                                   {option.description && <p className="small"
-                                                                             style={{whiteSpace: "normal"}}>{option.description}</p>}
+                                                   {option.description &&
+                                                   <p className="small"
+                                                      style={{whiteSpace: "normal"}}>{option.description}</p>}
                                                </>
                                            );
-                                       },
-                                       onChange: (e) => {
+                                       }}
+                                       onChange={(e, ref) => {
+                                           setSearchState(e);
                                            if (e[0]) {
                                                history(e[0]?.link || "/");
-                                               searchInput.current.clear();
+                                               ref.current.clear();
                                            }
-
-                                       },
-                                   }}
+                                       }}
+                                       onBlur={(e, ref) => setSearchState([])}
                         />
                     </form>
                     <ul className="navbar-nav mb-2 mb-lg-0">

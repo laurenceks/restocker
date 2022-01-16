@@ -15,9 +15,11 @@ const FormTypeahead = ({
                            forceCase,
                            label,
                            labelKey,
+                           onBlur,
                            onChange,
                            options,
                            selected,
+                           useFloatingLabel,
                            ...props
                        }) => {
 
@@ -29,7 +31,7 @@ const FormTypeahead = ({
     }, [selected]);
 
     const inputProps = {
-        useFloatingLabel: true,
+        useFloatingLabel: useFloatingLabel,
         id: id,
         floatingLabelText: label,
         className: inputClass,
@@ -50,14 +52,11 @@ const FormTypeahead = ({
                 onChange={(e) => {
                     forceCase && e[0] && (e[0][labelKey] = setCase(e[0][labelKey], forceCase));
                     setSelectedState(e);
-                    if (onChange) {
-                        onChange(e);
-                    }
+                    onChange && onChange(e, typeaheadInputRef);
                 }}
                 onBlur={(e) => {
-                    if (selectedState.length === 0) {
-                        typeaheadInputRef.current.clear();
-                    }
+                    selectedState.length === 0 && typeaheadInputRef.current.clear();
+                    onBlur && onBlur(e, typeaheadInputRef);
                 }}
                 labelKey={labelKey}
             />
@@ -73,8 +72,11 @@ FormTypeahead.propTypes = {
     labelKey: PropTypes.string,
     placeholder: PropTypes.string,
     disabled: PropTypes.bool,
+    useFloatingLabel: PropTypes.bool,
     defaultSelected: PropTypes.array,
-    selected: PropTypes.array
+    selected: PropTypes.array,
+    onBlur: PropTypes.func,
+    onChange: PropTypes.func
 };
 FormTypeahead.defaultProps = {
     form: "",
@@ -82,12 +84,14 @@ FormTypeahead.defaultProps = {
     label: "Input",
     labelKey: "name",
     disabled: false,
+    useFloatingLabel: true,
     defaultValue: null,
     forceCase: null,
     inputClass: null,
     invalidFeedback: null,
     max: null,
     min: null,
+    onBlur: null,
     onChange: null,
     passwordId: null,
     defaultSelected: [],
