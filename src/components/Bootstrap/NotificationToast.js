@@ -44,7 +44,7 @@ const timeUntilNext = (from, unit = "s") => {
     return (Math.ceil(from / divider) * divider) - from;
 }
 
-function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, id, icon, autoHide, onClick}) {
+function NotificationToast({show, title, timestamp, bodyText, variant, headerClass, id, icon, autoHide, onClick}) {
     const [showState, setShowState] = useState(show);
     const [timestampUpdated, setTimestampUpdated] = useState(null);
     const [timestampText, setTimestampText] = useState("Just now");
@@ -143,7 +143,7 @@ function CompleteToast({show, title, timestamp, bodyText, variant, headerClass, 
     );
 }
 
-CompleteToast.propTypes = {
+NotificationToast.propTypes = {
     autoHide: PropTypes.bool,
     show: PropTypes.bool,
     timeStamp: PropTypes.number,
@@ -158,7 +158,7 @@ CompleteToast.propTypes = {
     variant: PropTypes.string,
 };
 
-CompleteToast.defaultProps = {
+NotificationToast.defaultProps = {
     autoHide: true,
     show: false,
     timestamp: Date.now(),
@@ -172,4 +172,4 @@ CompleteToast.defaultProps = {
     variant: "success"
 }
 
-export default CompleteToast;
+export default NotificationToast;

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import {ToastContainer} from "react-bootstrap";
-import CompleteToast from "./CompleteToast";
+import NotificationToast from "./NotificationToast";
 import {useEffect} from "react";
 
 function ToastStack({toasts, position}) {
@@ -10,7 +10,7 @@ function ToastStack({toasts, position}) {
     return (
         <ToastContainer className="p-3 position-fixed" position={position}>
             {toasts.map((x, i) => {
-                return <CompleteToast key={"toast-" + x.id} {...x}/>
+                return <NotificationToast key={"toast-" + x.id} {...x}/>
             })}
         </ToastContainer>
     );
