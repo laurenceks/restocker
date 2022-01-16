@@ -35,11 +35,6 @@ export const makeRows = (type, entryList, editId, functions) => {
                                     deleteId: item.id,
                                     targetName: item.name,
                                     bodyText: `Are you sure you want to delete ${item.name}?\n\nThe item will also be removed from any lists containing it.`,
-                                    handleNo: () => {
-                                        functions.setModalOptions(prevState => {
-                                            return {...prevState, show: false}
-                                        })
-                                    },
                                     handleYes: () => functions.deleteEntry(item.id, item.name)
                                 }
                             })
@@ -75,11 +70,6 @@ export const makeRows = (type, entryList, editId, functions) => {
                                     deleteId: location.id,
                                     targetName: location.name,
                                     bodyText: `Are you sure you want to delete ${location.name}?\n\n${location.currentStock ? `There ${location.currentStock > 1 ? "are" : "is"} currently ${location.currentStock || 0} item${location.currentStock === 1 ? "" : "s"} at ${location.name} and you will not be able to alter stock once the location is deleted.` : "This location does not currently have any stock."}`,
-                                    handleNo: () => {
-                                        functions.setModalOptions(prevState => {
-                                            return {...prevState, show: false}
-                                        })
-                                    },
                                     handleYes: () => functions.deleteEntry(location.id, location.name)
                                 }
                             })
@@ -143,11 +133,6 @@ export const makeRows = (type, entryList, editId, functions) => {
                                         deleteId: x.id,
                                         targetName: x.name,
                                         bodyText: `Are you sure you want to delete ${x.name}?\n\nThe item will also be removed from any lists containing it.`,
-                                        handleNo: () => {
-                                            functions.setModalOptions(prevState => {
-                                                return {...prevState, show: false}
-                                            })
-                                        },
                                         handleYes: () => functions.deleteEntry(x.id, x.name)
                                     }
                                 })
@@ -475,17 +460,9 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                                         show: true,
                                         deleteId: item.id,
                                         targetName: item.name,
+                                        headerClass: variantPairings.warning.header,
+                                        yesButtonVariant: "warning",
                                         bodyText: `Are you sure you want to restore ${item.name}?\n\nThe item will also be re-added to any lists that contained it.`,
-                                        handleNo: () => {
-                                            functions.setModalOptions(prevState => {
-                                                return {
-                                                    ...prevState,
-                                                    show: false,
-                                                    headerClass: variantPairings.warning.header,
-                                                    buttonVariant: "warning"
-                                                }
-                                            })
-                                        },
                                         handleYes: () => functions.restoreEntry(item.id, item.name)
                                     }
                                 })
@@ -512,17 +489,9 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                                         show: true,
                                         deleteId: location.id,
                                         targetName: location.name,
+                                        headerClass: variantPairings.warning.header,
+                                        yesButtonVariant: "warning",
                                         bodyText: `Are you sure you want to restore ${location.name}?`,
-                                        handleNo: () => {
-                                            functions.setModalOptions(prevState => {
-                                                return {
-                                                    ...prevState,
-                                                    show: false,
-                                                    headerClass: variantPairings.warning.header,
-                                                    buttonVariant: "warning"
-                                                }
-                                            })
-                                        },
                                         handleYes: () => functions.restoreEntry(location.id, location.name)
                                     }
                                 })
@@ -550,16 +519,8 @@ export const makeUndeleteRow = (type, deletedEntryList, functions) => {
                                         deleteId: list.id,
                                         targetName: list.name,
                                         bodyText: `Are you sure you want to restore ${list.name}?`,
-                                        handleNo: () => {
-                                            functions.setModalOptions(prevState => {
-                                                return {
-                                                    ...prevState,
-                                                    show: false,
-                                                    headerClass: variantPairings.warning.header,
-                                                    buttonVariant: "warning"
-                                                }
-                                            })
-                                        },
+                                        headerClass: variantPairings.warning.header,
+                                        yesButtonVariant: "warning",
                                         handleYes: () => functions.restoreEntry(list.id, list.name)
                                     }
                                 })

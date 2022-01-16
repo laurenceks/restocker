@@ -73,12 +73,7 @@ const EditEntries = ({type}) => {
                     method: "POST",
                     body: JSON.stringify({id: id, name: name}),
                 },
-                callback: () => {
-                    setModalOptions(prevState => {
-                        return {...prevState, show: false}
-                    })
-                    getEntries();
-                }
+                callback: getEntries
             });
         }
 
@@ -89,12 +84,7 @@ const EditEntries = ({type}) => {
                     method: "POST",
                     body: JSON.stringify({id, name}),
                 },
-                callback: () => {
-                    setModalOptions(prevState => {
-                        return {...prevState, show: false}
-                    })
-                    getEntries();
-                }
+                callback: getEntries
             });
         }
 

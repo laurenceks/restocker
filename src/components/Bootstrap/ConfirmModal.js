@@ -37,14 +37,20 @@ const ConfirmModal = ({
             </Modal.Header>
             <div style={{whiteSpace: "pre-wrap"}}><Modal.Body>{bodyText}</Modal.Body></div>
             <Modal.Footer>
-                <Button variant={noButtonVariant} onClick={handleNo || (() => {
+                <Button variant={noButtonVariant} onClick={(() => {
                     setModalOptions(prevState => {
                         return {...prevState, show: false}
                     })
+                    handleNo && handleNo();
                 })}>
                     {noText}
                 </Button>
-                <Button variant={yesButtonVariant} onClick={handleYes}>
+                <Button variant={yesButtonVariant} onClick={()=>{
+                    setModalOptions(prevState => {
+                        return {...prevState, show: false}
+                    })
+                    handleYes && handleYes();
+                }}>
                     {yesText}
                 </Button>
             </Modal.Footer>
