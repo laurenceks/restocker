@@ -21,7 +21,8 @@ const DashboardStatTile = ({title, number, colourClass, isNotInBootstrapGrid, ic
     }
     return (
         <div className={`${!isNotInBootstrapGrid && "col"} flex-grow-1 flex-shrink-0 }`}>
-            <div className={`d-flex align-bottom rounded ${classMap[colourClass]?.bg} dashboardStatTileContainer px-2 py-1 position-relative`}>
+            <div
+                className={`d-flex align-bottom rounded ${classMap[colourClass]?.bg} dashboardStatTileContainer px-2 py-1 position-relative`}>
                 <div className="d-flex flex-grow-0 align-items-end dashboardStatTileTitleWrap">
                     <p className={`fs-4 text-end lh-1 py-1 m-0 ${classMap[colourClass]?.text} dashboardStatTileTitle`}>{title}</p>
                 </div>
@@ -44,7 +45,7 @@ DashboardStatTile.propTypes = {
     ]),
     colourClass: PropTypes.string,
     isNotInBootstrapGrid: PropTypes.bool,
-    icon: PropTypes.object
+    icon: PropTypes.node
 };
 DashboardStatTile.defaultProps = {
     title: "",

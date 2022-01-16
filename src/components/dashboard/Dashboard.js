@@ -1,5 +1,4 @@
 import {useEffect, useRef, useState} from 'react';
-import DashboardStatTile from "./DashboardStatTile";
 import {
     AiOutlinePercentage,
     BsBoxArrowInRight,
@@ -14,6 +13,7 @@ import {
     IoWarningOutline,
     MdShowChart
 } from "react-icons/all";
+import DashboardStatTile from "./DashboardStatTile";
 import DashboardActionButton from "./DashboardActionButton";
 import Table from "../common/tables/Table";
 import {Doughnut, Line} from "react-chartjs-2";

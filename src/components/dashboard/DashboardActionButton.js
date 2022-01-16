@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import {useNavigate} from "react-router-dom";
 
-const DashboardStatTile = ({text, type, link, colour, icon, isNotInBootstrapGrid}) => {
+const DashboardActionButton = ({text, type, link, colour, icon, isNotInBootstrapGrid}) => {
     const history = useNavigate();
     return (
         <div className={`${!isNotInBootstrapGrid && "col"} flex-grow-1 flex-shrink-0 }`}>
@@ -20,15 +20,15 @@ const DashboardStatTile = ({text, type, link, colour, icon, isNotInBootstrapGrid
     );
 };
 
-DashboardStatTile.propTypes = {
+DashboardActionButton.propTypes = {
     link: PropTypes.string,
     text: PropTypes.string,
     type: PropTypes.string,
     colour: PropTypes.string,
     isNotInBootstrapGrid: PropTypes.bool,
-    icon: PropTypes.elementType
+    icon: PropTypes.node
 };
-DashboardStatTile.defaultProps = {
+DashboardActionButton.defaultProps = {
     text: "",
     colour: "btn-outline-primary",
     isNotInBootstrapGrid: false,
@@ -37,4 +37,4 @@ DashboardStatTile.defaultProps = {
     type: null,
 };
 
-export default DashboardStatTile;
+export default DashboardActionButton;
