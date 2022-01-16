@@ -1,44 +1,37 @@
 <?php
 
-use Delight\Auth\EmailNotVerifiedException;
-use Delight\Auth\InvalidEmailException;
-use Delight\Auth\NotLoggedInException;
-use Delight\Auth\TooManyRequestsException;
-use Delight\Auth\UserAlreadyExistsException;
-
 require "../security/userLoginSecurityCheck.php";
-require "../security/userAdminRightsCheck.php";
 require_once "../common/db.php";
+require "../common/feedbackTemplate.php";
+
+use Delight\Auth\Auth;
+
+$auth = new Auth($db);
+$id = $auth->getUserId();
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred");
+$output = $feedbackTemplate;
 
-try {
-    if ($auth->reconfirmPassword($_POST['password'])) {
-        $auth->changeEmail($_POST['newEmail'], function ($selector, $token) {
-            echo 'Send ' . $selector . ' and ' . $token . ' to the user (e.g. via email to the *new* address)';
-        });
-        echo 'The change will take effect as soon as the new email address has been confirmed';
+if (!$id = $_SESSION["user"]->id) {
+    //not the same user as logged in - shouldn't be possible
+    $output["feedback"] = "A user can only update their own profile";
+    $output["errorMessage"] = "A user can only update their own profile";
+    $output["errorType"] = "userIdMismatch";
+} else {
+    try {
+        $editItem = $db->prepare("UPDATE users_info SET firstName = :firstName, lastName = :lastName WHERE id = :id AND organisationId = :organisationId");
+        $editItem->bindValue(":organisationId", $_SESSION["user"]->organisationId);
+        $editItem->bindParam(":firstName", $input["inputProfileFirstName"]);
+        $editItem->bindParam(":lastName", $input["inputProfileLastName"]);
+        $editItem->bindParam(":id", $id);
+        $editItem->execute();
+        $output["success"] = true;
+        $output["title"] = "Profile updated";
+        $output["feedback"] = $input["inputProfileFirstName"] . "'s profile was updated successfully";
+    } catch (PDOException $e) {
+        $output = array_merge($output, array("feedback" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorMessage" => "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.", "errorType" => "queryError"));
     }
-    else {
-        echo 'We can\'t say if the user is who they claim to be';
-    }
-}
-catch (InvalidEmailException $e) {
-    die('Invalid email address');
-}
-catch (UserAlreadyExistsException $e) {
-    die('Email address already exists');
-}
-catch (EmailNotVerifiedException $e) {
-    die('Account not verified');
-}
-catch (NotLoggedInException $e) {
-    die('Not logged in');
-}
-catch (TooManyRequestsException $e) {
-    die('Too many requests');
 }
 
 
