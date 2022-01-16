@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import FormLink from "../common/forms/FormLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
 import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import ResetPassword from "./ResetPassword";
+import useInitialise from "../../hooks/useInitialise";
 
 const Verify = ({type}) => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
@@ -18,7 +19,7 @@ const Verify = ({type}) => {
             }
         });
 
-        useEffect(() => {
+        useInitialise(() => {
             if (!params.get("selector") || !params.get("token")) {
                 setParamsState({
                     ...paramsState,
@@ -55,7 +56,7 @@ const Verify = ({type}) => {
                     })
                 });
             }
-        }, []);
+        });
 
         return (
             <div>

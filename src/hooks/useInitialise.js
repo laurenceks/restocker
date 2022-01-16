@@ -1,12 +1,13 @@
-import {useRef} from "react";
+import {useEffect, useState} from "react";
 
 const useInitialise = (callback) => {
-    //TODO this is running every render!
-    const runOnce = useRef(false);
-    if (!runOnce.current) {
-        callback();
-        runOnce.current = true;
-    }
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+        if (!mounted) {
+            setMounted(true);
+            callback();
+        }
+    }, [mounted, callback]);
 }
 
 export default useInitialise;
