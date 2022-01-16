@@ -24,7 +24,7 @@ try {
         require_once "loginEmail/composeVerificationEmail.php";
         require "../common/appConfig.php";
 
-        $emailParams = composeVerificationEmail($selector, $token, $input["inputRegisterFirstName"]);
+        $emailParams = composeVerificationEmail($selector, $token, $input["inputRegisterFirstName"], $appName);
         $mailToSend = composeSmtpMail($input['inputRegisterEmail'], $input['inputRegisterFirstName'] . " " . $input['inputRegisterLastName'], "Verify your " . $appName . " account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });

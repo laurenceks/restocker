@@ -21,8 +21,8 @@ try {
         require "../../common/getUserIdFromSelector.php";
         require "../../common/appConfig.php";
         $name = getUserInfo(getUserIdFromSelector($selector, "users_confirmations"))->firstName;
-        $emailParams = composeVerificationEmail($selector, $token, $name);
-        $mailToSend = composeSmtpMail($input['inputReVerifyEmail'], $name, "Verify your " . " . $appName . " . " account", $emailParams["message"], $emailParams["messageAlt"]);
+        $emailParams = composeVerificationEmail($selector, $token, $name, $appName);
+        $mailToSend = composeSmtpMail($input['inputReVerifyEmail'], $name, "Verify your " . $appName . " account", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;

@@ -13,7 +13,7 @@ $auth = new Auth($db);
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-$output = array("success" => false, "feedback" => "An unknown error occurred", "input" => $input);
+$output = array("success" => false, "feedback" => "An unknown error occurred");
 
 if (!$input || !$input['selector'] || !$input['token']) {
     $output["feedback"] = "Parameters did not reach server";
@@ -22,7 +22,6 @@ if (!$input || !$input['selector'] || !$input['token']) {
 } else {
     try {
         $auth->confirmEmail($input['selector'], $input['token']);
-
         $output["feedback"] = "Email address has been verified";
         $output["success"] = true;
     } catch (InvalidSelectorTokenPairException $e) {
