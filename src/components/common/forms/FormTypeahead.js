@@ -4,6 +4,13 @@ import {Typeahead} from "react-bootstrap-typeahead";
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
 import setCase from "../../../functions/setCase";
 
+const checkIfAncestorsHaveIsInvalidClass = (e) => {
+    //make sure invalid classes of parent wrap persists between focus and blurs
+    if (e.target.closest(".is-invalid")) {
+        e.target.classList.add("is-invalid")
+    }
+}
+
 const FormTypeahead = ({
                            defaultSelected,
                            disabled,
@@ -49,12 +56,14 @@ const FormTypeahead = ({
                 disabled={disabled || options?.length <= 1}
                 options={options}
                 selected={selectedState}
+                onFocus={checkIfAncestorsHaveIsInvalidClass}
                 onChange={(e) => {
                     forceCase && e[0] && (e[0][labelKey] = setCase(e[0][labelKey], forceCase));
                     setSelectedState(e);
                     onChange && onChange(e, typeaheadInputRef);
                 }}
                 onBlur={(e) => {
+                    checkIfAncestorsHaveIsInvalidClass(e);
                     selectedState.length === 0 && typeaheadInputRef.current.clear();
                     onBlur && onBlur(e, typeaheadInputRef);
                 }}
