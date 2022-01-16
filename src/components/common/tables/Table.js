@@ -123,7 +123,6 @@ const Table = ({
         }
         setTableRows(sortedRows);
     }, [sortSettings, rows, currentPageIndex]);
-
     return (
         <div className={`table-responsive ${fullWidth && "w-100"}`}>
             {(rows && rows.length > 0) ?
@@ -150,9 +149,10 @@ const Table = ({
                                                 }}
                                 >
                                     <div className="d-flex flex-row align-items-center">
-                                        {(x.text || x.length > 0 || isValidElement(x)) && <ArrowIconTransition
+                                        {(x.text || x.length > 0 || isValidElement(x)) &&
+                                        <ArrowIconTransition
                                             in={(showSortArrow && (sortSettings.index === i || currentHeadingHoverIndex === i))}
-                                            colourVariant={sortSettings.index !== i && "secondary"}
+                                            colourVariant={sortSettings.index !== i ? "secondary" : null}
                                         >
                                             {(sortSettings.ascending || sortSettings.index !== i ?
                                                 <IoArrowDown className="d-block"/> :
