@@ -1,14 +1,8 @@
 import PropTypes from 'prop-types';
 import InputFeedbackTooltip from "./InputFeedbackTooltip";
-import {Typeahead} from "react-bootstrap-typeahead";
 import setCase from "../../../functions/setCase";
-
-const checkIfAncestorsHaveIsInvalidClass = (e) => {
-    //make sure invalid classes of parent wrap persists between focus and blurs
-    if (e.target.closest(".is-invalid")) {
-        e.target.classList.add("is-invalid")
-    }
-}
+import {useEffect, useRef, useState} from "react";
+import useInitialise from "../../../hooks/useInitialise";
 
 const FormInput = ({
                        defaultValue,
@@ -26,53 +20,50 @@ const FormInput = ({
                        placeholder,
                        step,
                        type,
-                       typeaheadProps,
                        value
                    }) => {
 
+    const [inputState, setInputState] = useState(defaultValue || value || "");
+    const renderedOnce = useRef(false);
+
+    useInitialise(() => renderedOnce.current = true)
+
+    useEffect(() => {
+        renderedOnce.current && setInputState(defaultValue || value);
+    }, [defaultValue, value]);
+
     return (
         <div className={"formInputWrap"}>
-            {type === "typeahead" ?
-                <Typeahead
-                    id={id}
-                    placeholder={placeholder || label}
-                    form={form}
-                    onFocus={checkIfAncestorsHaveIsInvalidClass}
-                    onBlur={checkIfAncestorsHaveIsInvalidClass}
-                    {...typeaheadProps}
-                />
-                :
-                <div className="form-floating">
-                    <input type={type} className={`form-control formInput${inputClass ? ` ${inputClass}` : ""}`}
-                           id={id}
-                           name={id}
-                           placeholder={placeholder || label}
-                           data-passwordid={passwordId}
-                           min={min}
-                           max={max}
-                           step={step}
-                           onChange={(e) => {
-                               const returnValue = type === "number" && e.target.value ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
+            <div className="form-floating">
+                <input type={type} className={`form-control formInput${inputClass ? ` ${inputClass}` : ""}`}
+                       id={id}
+                       name={id}
+                       placeholder={placeholder || label}
+                       data-passwordid={passwordId}
+                       min={min}
+                       max={max}
+                       step={step}
+                       onChange={(e) => {
+                           const returnValue = type === "number" && e.target.value ? parseInt(e.target.value) : forceCase && forceCase !== "" ? setCase(e.target.value, forceCase) : e.target.value;
+                           setInputState(returnValue);
 
-                               if (onChange) {
-                                   onChange(id, returnValue);
-                               }
-                           }}
-                           form={form}
-                           value={value}
-                           defaultValue={defaultValue}
-                           disabled={disabled}
-                    />
-                    <label htmlFor={id}>{label}</label>
-                </div>
-            }
+                           if (onChange) {
+                               onChange(id, returnValue);
+                           }
+                       }}
+                       form={form}
+                       disabled={disabled}
+                       value={inputState || ""}
+                />
+                <label htmlFor={id}>{label}</label>
+            </div>
             {invalidFeedback && <InputFeedbackTooltip text={invalidFeedback}/>}
         </div>
     );
 };
 
 FormInput.propTypes = {
-    defaultValue: PropTypes.string,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     forceCase: PropTypes.string,
     form: PropTypes.string,
     id: PropTypes.string,
@@ -93,7 +84,7 @@ FormInput.defaultProps = {
     placeholder: "Input",
     type: "text",
     disabled: false,
-    defaultValue: null,
+    defaultValue: "",
     forceCase: null,
     inputClass: null,
     invalidFeedback: null,
