@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import {NavLink, useNavigate} from "react-router-dom";
 import "bootstrap/dist/js/bootstrap.bundle.min.js"
 import {IoPersonCircle} from "react-icons/all";
-import {mockSearchOptions} from "../common/mockData";
+import {searchOptions} from "./searchOptions";
 import naturalSort from "../../functions/naturalSort";
 import FormTypeahead from "../common/forms/FormTypeahead";
 import {useState} from "react";
@@ -65,7 +65,7 @@ const TopNav = ({user}) => {
                                        labelKey={"label"}
                                        useFloatingLabel={false}
                                        selected={searchState}
-                                       options={mockSearchOptions.sort((a, b) => {
+                                       options={searchOptions.filter((x) => (user.admin || user.superAdmin) ? true : !x.adminOnly).sort((a, b) => {
                                            return naturalSort(a.label, b.label);
                                        })}
                                        renderMenuItemChildren={(option) => {
