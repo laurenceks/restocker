@@ -3,8 +3,12 @@ require '../vendor/autoload.php';
 
 use Delight\Auth\Auth;
 
-require_once "../common/db.php";
+require "../common/db.php";
 
 $auth = new Auth($db);
-$auth->logOutEverywhere();
+try {
+    $auth->logOutEverywhere();
+} catch (\Delight\Auth\NotLoggedInException $e) {
+    //User wasn't logged in - doesn't matter
+}
 $auth->destroySession();
