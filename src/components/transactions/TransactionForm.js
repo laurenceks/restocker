@@ -9,6 +9,7 @@ import setCase from "../../functions/setCase";
 import AcknowledgeModal from "../Bootstrap/AcknowledgeModal";
 import useFetch from "../../hooks/useFetch";
 import useInitialise from "../../hooks/useInitialise";
+import FormTypeahead from "../common/forms/FormTypeahead";
 
 const TransactionForm = ({formType}) => {
     class transactionDataTemplate {
@@ -104,14 +105,14 @@ const TransactionForm = ({formType}) => {
             destination: newData.destination || (destinationList.length === 1 ? destinationList : transactionData.selectedDestination) || [],
         };
         const newOptions = {
-            locationId: newData.location?.[0]?.id|| null,
-            locationName: newData.location?.[0]?.name|| null,
+            locationId: newData.location?.[0]?.id || null,
+            locationName: newData.location?.[0]?.name || null,
             selectedLocation: newData.location,
-            destinationId: newData.destination?.[0]?.id|| null,
+            destinationId: newData.destination?.[0]?.id || null,
             destinationName: newData.destination?.[0]?.name || null,
             selectedDestination: newData.destination,
             productId: newData.product?.length === 0 ? null : newData.product?.[0]?.id || transactionData.productId,
-            productName: newData.product?.[0]?.name|| null,
+            productName: newData.product?.[0]?.name || null,
             unit: newData.product?.[0]?.unit || null,
             quantity: newData.quantity || transactionData.quantity || 0,
             displayQuantity: newData.displayQuantity === "" ? "" : newData.displayQuantity || transactionData.displayQuantity || "",
@@ -279,26 +280,21 @@ const TransactionForm = ({formType}) => {
                         <p className="m-0">ID {transactionData.productId}</p>
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        <FormInput
-                            type={"typeahead"}
+                        <FormTypeahead
                             id={"inputTransactionProductName"}
-                            typeaheadProps={{
-                                inputProps:
-                                    {
-                                        id: "inputTransactionProductName",
-                                        useFloatingLabel: true,
-                                        floatingLabelText: productType === "item" ? "Item" : "List",
-                                        "data-statename": productType === "item" ? "Item" : "List",
-                                        disabled: (productType === "item" ? itemList : listList).length <= 1
-                                    },
-                                onChange: (e) => {
-                                    updateOptions({product: e});
-                                },
-                                labelKey: "name",
-                                options: (productType === "item" ? itemList : listList).filter((x) => !x.deleted).sort((a, b) => {
-                                    return naturalSort(a.name, b.name)
-                                }),
-                                selected: transactionData.selectedProduct
+                            label={productType === "item" ? "Item" : "List"}
+                            labelKey="name"
+                            selected={transactionData.selectedProduct}
+                            disabled={(productType === "item" ? itemList : listList).length <= 1}
+                            options={(productType === "item" ? itemList : listList).filter((x) => !x.deleted).sort((a, b) => {
+                                return naturalSort(a.name, b.name)
+                            })}
+                            inputProps={
+                                {
+                                    "data-statename": productType === "item" ? "Item" : "List",
+                                }}
+                            onChange={(e) => {
+                                updateOptions({product: e});
                             }}
                         />
                     </div>
@@ -324,30 +320,24 @@ const TransactionForm = ({formType}) => {
                         </div>
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        <FormInput
-                            type={"typeahead"}
-                            id={"inputTransactionLocation"}
-                            typeaheadProps={{
-                                inputProps:
-                                    {
-                                        id: "inputTransactionLocation",
-                                        useFloatingLabel: true,
-                                        floatingLabelText: formType === "transfer" ? "From" : "Location",
-                                        "data-statename": "Location",
-                                        disabled: locationList.length <= 1
-                                    },
-                                onChange: (e) => {
-                                    updateOptions({location: e});
-                                },
-                                labelKey: "name",
-                                options: locationList.sort((a, b) => {
-                                    return naturalSort(a.name, b.name)
-                                }),
-                                selected: transactionData.selectedLocation
+                        <FormTypeahead
+                            id="inputTransactionLocation"
+                            label={formType === "transfer" ? "From" : "Location"}
+                            labelKey="name"
+                            selected={transactionData.selectedLocation}
+                            disabled={locationList.length <= 1}
+                            inputProps={
+                                {
+                                    "data-statename": "Location",
+                                }
+                            }
+                            onChange={(e) => {
+                                updateOptions({location: e});
                             }}
+                            options={locationList.sort((a, b) => {
+                                return naturalSort(a.name, b.name)
+                            })}
                         />
-
-
                     </div>
                 </div>
                 {formType === "transfer" &&
@@ -355,27 +345,23 @@ const TransactionForm = ({formType}) => {
                     <div className="col-12 col-md-8 mb-3 d-none d-md-block">
                     </div>
                     <div className="col-12 col-md-4 mb-3">
-                        <FormInput
-                            type={"typeahead"}
-                            id={"inputTransactionDestination"}
-                            typeaheadProps={{
-                                inputProps:
-                                    {
-                                        id: "inputTransactionDestination",
-                                        useFloatingLabel: true,
-                                        floatingLabelText: "To",
-                                        "data-statename": "Destination",
-                                        disabled: destinationList.length <= 1
-                                    },
-                                onChange: (e) => {
-                                    updateOptions({destination: e});
-                                },
-                                labelKey: "name",
-                                options: destinationList.filter(x => x.id !== transactionData.locationId).sort((a, b) => {
-                                    return naturalSort(a.name, b.name)
-                                }),
-                                selected: transactionData.selectedDestination
+                        <FormTypeahead
+                            id="inputTransactionDestination"
+                            label="To"
+                            labelKey="name"
+                            selected={transactionData.selectedDestination}
+                            disabled={destinationList.length <= 1}
+                            inputProps={
+                                {
+                                    "data-statename": "Destination",
+                                }
+                            }
+                            onChange={(e) => {
+                                updateOptions({destination: e});
                             }}
+                            options={destinationList.filter(x => x.id !== transactionData.locationId).sort((a, b) => {
+                                return naturalSort(a.name, b.name)
+                            })}
                         />
                     </div>
                 </div>}

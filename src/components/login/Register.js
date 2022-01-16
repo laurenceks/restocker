@@ -67,8 +67,7 @@ const Register = () => {
                                    inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
                     </div>
                     <div className="mb-3 formInputGroup">
-                        <FormTypeahead type={"typeahead"}
-                                       id={"inputRegisterOrganisationWrap"}
+                        <FormTypeahead id={"inputRegisterOrganisationWrap"}
                                        inputProps={
                                            {
                                                id: "inputRegisterOrganisation",
