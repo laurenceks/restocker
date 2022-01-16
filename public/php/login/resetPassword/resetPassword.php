@@ -31,9 +31,10 @@ if (!$input || !$input['selector'] || !$input['token']) {
 
             require_once "../../common/sendSmtpMail.php";
             require_once "../loginEmail/composeLoginEmail.php";
+            require "../../common/appConfig.php";
 
-            $emailParams = composeLoginEmail(array("headline" => "Restocker password reset", "subheadline" => "Your password has been reset, " . $userDetails->firstName, "body" => "Your account password has been reset. If this wasn't you, click the button below and then \"Forgot password\" change your password again.", "buttonText" => "Login", "alt" => "Your Restocker account password has been reset", "url" => "/#/login",));
-            $mailToSend = composeSmtpMail($userDetails->email, $userDetails->firstName . " " . $userDetails->lastName, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
+            $emailParams = composeLoginEmail(array("headline" => $appName . " password reset", "subheadline" => "Your password has been reset, " . $userDetails->firstName, "body" => "Your account password has been reset. If this wasn't you, click the button below and then \"Forgot password\" change your password again.", "buttonText" => "Login", "alt" => "Your " . $appName . " account password has been reset", "url" => "/#/login",));
+            $mailToSend = composeSmtpMail($userDetails->email, $userDetails->firstName . " " . $userDetails->lastName, $appName . " password reset", $emailParams["message"], $emailParams["messageAlt"]);
             $output["mail"] = sendSmtpMail($mailToSend);
             $output["feedback"] = 'Password has been reset';
             $output["success"] = true;

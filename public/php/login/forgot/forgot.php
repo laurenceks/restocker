@@ -20,11 +20,12 @@ try {
         require_once "../loginEmail/composeLoginEmail.php";
         require "../../common/getUserInfo.php";
         require "../../common/getUserIdFromSelector.php";
+        require "../../common/appConfig.php";
 
         $name = getUserInfo(getUserIdFromSelector($selector, "users_resets"))->firstName;
         $forgotUrl = '/resetPassword?selector=' . urlencode($selector) . '&token=' . urlencode($token);
-        $emailParams = composeLoginEmail(array("headline" => "Restocker account recovery", "subheadline" => "Reset your password, " . $name, "body" => "Recover your Restocker account by clicking on the link below:", "buttonText" => "Reset password", "alt" => "Please copy and paste the below link into your browser to recover your Restocker account.\n\r\n\r" . $forgotUrl, "url" => $forgotUrl,));
-        $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, "Restocker password reset", $emailParams["message"], $emailParams["messageAlt"]);
+        $emailParams = composeLoginEmail(array("headline" => $appName . " account recovery", "subheadline" => "Reset your password, " . $name, "body" => "Recover your " . $appName . " account by clicking on the link below:", "buttonText" => "Reset password", "alt" => "Please copy and paste the below link into your browser to recover your " . $appName . " account.\n\r\n\r" . $forgotUrl, "url" => $forgotUrl,));
+        $mailToSend = composeSmtpMail($input["inputForgotEmail"], $name, $appName . " password reset", $emailParams["message"], $emailParams["messageAlt"]);
         $output["mail"] = sendSmtpMail($mailToSend);
     });
     $output["success"] = true;
