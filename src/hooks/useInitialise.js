@@ -1,6 +1,7 @@
 import {useRef} from "react";
 
-export const useInitialise = (callback) => {
+const useInitialise = (callback) => {
+    //TODO this is running every render!
     const runOnce = useRef(false);
     if (!runOnce.current) {
         callback();

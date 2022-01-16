@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from "react";
 import {GlobalAppContext} from "../App.js";
 import {variantPairings} from "../components/common/styles";
 
-export const useFeedback = (initialResponse) => {
+const useFeedback = (initialResponse) => {
     const setStateFunctions = useContext(GlobalAppContext)[0].setStateFunctions
     const [response, setResponse] = useState(initialResponse);
 

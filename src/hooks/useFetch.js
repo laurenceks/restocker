@@ -31,9 +31,11 @@ const fetchOptions = {
     getItemsAndLocations: {url: "./php/items/getAllItemsAndLocations.php", method: "GET"},
     getRates: {url: "./php/items/getRates.php", method: "POST"},
     addTransaction: {url: "./php/items/addTransaction.php", method: "POST"},
+    editProfile: {url: "./php/profile/editProfile.php", method: "POST"},
+    editProfileEmail: {url: "./php/profile/editProfileEmail.php", method: "POST"},
 }
 
-export const useFetch = () => {
+const useFetch = () => {
     let controller = new AbortController();
     const handleFeedback = useFeedback();
     const setToasts = useContext(GlobalAppContext)[0].setStateFunctions.toasts;
