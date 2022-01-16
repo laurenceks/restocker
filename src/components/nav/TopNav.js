@@ -38,24 +38,25 @@ const TopNav = ({user}) => {
                         <li className="nav-item">
                             <NavLink to={"/transfer"} className="nav-link rounded-3 mx-1 px-2">Transfer</NavLink>
                         </li>
-                        {(user?.admin || user?.superAdmin) &&
-                        <li className="nav-item dropdown mx-1">
-                            <div
-                                className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
-                                id="adminDropdown"
-                                role="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                <p className="m-0 px-2">Admin</p>
-                            </div>
-                            <ul className="dropdown-menu" aria-labelledby="adminDropdown">
-                                <li><NavLink className="dropdown-item" to={"/items"}>Items</NavLink></li>
-                                <li><NavLink className="dropdown-item" to={"/lists"}>Lists</NavLink></li>
-                                <li><NavLink className="dropdown-item" to={"/locations"}>Locations</NavLink></li>
-                                <li><NavLink className="dropdown-item" to={"/users"}>Users</NavLink></li>
-                                <li><NavLink className="dropdown-item" to={"/settings"}>Settings</NavLink></li>
-                            </ul>
-                        </li>
+                        {(user?.admin || user?.superAdmin) ?
+                            <li className="nav-item dropdown mx-1">
+                                <div
+                                    className="nav-link dropdown-toggle m-0 dropdown-icon d-flex align-items-center rounded-3"
+                                    id="adminDropdown"
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <p className="m-0 px-2">Admin</p>
+                                </div>
+                                <ul className="dropdown-menu" aria-labelledby="adminDropdown">
+                                    <li><NavLink className="dropdown-item" to={"/items"}>Items</NavLink></li>
+                                    <li><NavLink className="dropdown-item" to={"/lists"}>Lists</NavLink></li>
+                                    <li><NavLink className="dropdown-item" to={"/locations"}>Locations</NavLink></li>
+                                    <li><NavLink className="dropdown-item" to={"/users"}>Users</NavLink></li>
+                                    <li><NavLink className="dropdown-item" to={"/settings"}>Settings</NavLink></li>
+                                </ul>
+                            </li>
+                            : ""
                         }
                     </ul>
                     <form className="d-flex">
