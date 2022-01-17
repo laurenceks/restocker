@@ -3,19 +3,35 @@ import {useContext, useRef} from "react"
 import validateForm from "../../../functions/formValidation";
 import {GlobalAppContext} from "../../../App";
 import useFetch from "../../../hooks/useFetch";
-import {variantPairings} from "../../common/styles";
+import {maskUserData} from "../../../functions/maskUserData";
+import {useNavigate} from "react-router-dom";
 
 const DeleteAccountForm = () => {
 
     const [globalAppContext] = useContext(GlobalAppContext);
+    const maskedEmail = maskUserData(globalAppContext.user.email);
+    const maskedFirstName = maskUserData(globalAppContext.user.firstName);
+    const maskedLastName = maskUserData(globalAppContext.user.lastName);
 
     const fetchHook = useFetch();
-
+    const history = useNavigate();
     const formRef = useRef();
     const formReset = useRef();
 
     const deleteAccount = (form) => {
-        console.log(form);
+        fetchHook({
+            type: "deleteAccount",
+            options: {
+                method: "POST",
+                body: JSON.stringify({...form.values}),
+            },
+            callback: (response) => {
+                if (response.success) {
+                    formRef.current.reset()
+                    history("/logout")
+                }
+            }
+        })
     }
 
     return (
@@ -26,15 +42,23 @@ const DeleteAccountForm = () => {
                           return {
                               ...prevState,
                               show: true,
-                              //TODO: confirm masking matches db change
-                              bodyText: `Are you sure you want to delete you account?\n\nYour account will be deleted. A masked version of your email address ${globalAppContext.user.email.replace(/\B(\w)\B/g, "*")} will be kept to track previous changes. Your full email address will be deleted.\n\nTo regain access you will need to register again from scratch.\n\n`,
+                              bodyText: `Are you sure you want to delete you account?\n\nYour account will be permanently deleted. A masked version of your email address (${maskedEmail}) and name (${maskedFirstName} ${maskedLastName}) will be kept to reconcile previous changes. Your full email address will be deleted.\n\nTo regain access you will need to register again from scratch.\n\n`,
                               handleYes: () => {
                                   globalAppContext.setStateFunctions.confirmModal(prevState => {
                                       return {
                                           ...prevState,
                                           show: true,
                                           bodyText: "Are you really sure? This action CANNOT be undone!",
-                                          handleYes: () => deleteAccount(form)
+                                          handleYes: () => deleteAccount({
+                                              ...form,
+                                              values: {
+                                                  ...form.values,
+                                                  userId: globalAppContext.userId,
+                                                  maskedEmail,
+                                                  maskedFirstName,
+                                                  maskedLastName
+                                              }
+                                          })
                                       }
                                   })
                               }
@@ -56,6 +80,7 @@ const DeleteAccountForm = () => {
                                invalidFeedback={"Please enter your current password"}
                                passwordId={3}
                                reset={formReset.current}
+                               autocomplete={"current-password"}
                     />
                 </div>
                 <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
@@ -65,6 +90,7 @@ const DeleteAccountForm = () => {
                                invalidFeedback={"Passwords do not match"}
                                passwordId={3}
                                reset={formReset.current}
+                               autocomplete={"current-password"}
                     />
                 </div>
                 <div className="col-12 col-md-3">
