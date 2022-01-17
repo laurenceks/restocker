@@ -35,36 +35,36 @@ try {
     $output = array_merge($output, $unknownUserIdOutput);
 }
 
-try {
-    if (!$targetIsSuperAdmin && !$targetIsAdmin && ($currentIsAdmin || $currentIsSuperAdmin) || $targetIsAdmin && $currentIsSuperAdmin || $sameUser) {
-        //only delete if the target user is
-        //- not an admin/superAdmin and the current user is an admin
-        //- an admin but the current user is a super admin
-        //- is the one being deleted
-        $output = array_merge($output, deleteUserById($auth, $input["userId"], $_SESSION["user"]->organisationId, $input["maskedEmail"], $input["maskedFirstName"], $input["maskedLastName"]));
-    } else {
-        $output["title"] = "Forbidden";
-        if ($targetIsSuperAdmin) {
-            $output["feedback"] = "A super admin can only delete themselves or be deleted once demoted";
-            $output["errorMessage"] = "A super admin can only delete themselves or be deleted once demoted";
-            $output["errorType"] = "targetIsSuperAdmin";
-        } else if ($targetIsAdmin && !$currentIsSuperAdmin) {
-            $output["feedback"] = "An admin can only be deleted by a super admin or themselves";
-            $output["title"] = "Forbidden";
-            $output["errorMessage"] = "An admin can only be deleted by a super admin or themselves";
-            $output["errorType"] = "targetIsSuperAdminAndUserIsNotSuperAdmin";
-        } else if (!$currentIsAdmin && !$currentIsSuperAdmin && !$sameUser) {
-            $output["feedback"] = "Admin rights are needed to delete users other than yourself";
-            $output["errorMessage"] = "Admin rights are needed to delete users other than yourself";
-            $output["errorType"] = "userIsNotAdmin";
-        } else {
-            $output["feedback"] = "An unknown permissions error occurred";
-            $output["errorMessage"] = "An unknown permissions error occurred";
-            $output["errorType"] = "unknownPermissionsError";
-        }
+if (!$targetIsSuperAdmin && !$targetIsAdmin && ($currentIsAdmin || $currentIsSuperAdmin) || $targetIsAdmin && $currentIsSuperAdmin || $sameUser) {
+    //only delete if the target user is
+    //- not an admin/superAdmin and the current user is an admin
+    //- an admin but the current user is a super admin
+    //- is the one being deleted
+    $output = array_merge($output, deleteUserById($auth, $input["userId"], $_SESSION["user"]->organisationId, $input["maskedEmail"], $input["maskedFirstName"], $input["maskedLastName"]));
+    if ($output["success"]) {
+        $output["title"] = "User deleted";
+        $output["feedback"] = $input["userFullName"] . "'s account has been deleted";
     }
-} catch (UnknownIdException $e) {
-    $output = array_merge($output, $unknownUserIdOutput);
+} else {
+    $output["title"] = "Forbidden";
+    if ($targetIsSuperAdmin) {
+        $output["feedback"] = "A super admin can only delete themselves or be deleted once demoted";
+        $output["errorMessage"] = "A super admin can only delete themselves or be deleted once demoted";
+        $output["errorType"] = "targetIsSuperAdmin";
+    } else if ($targetIsAdmin && !$currentIsSuperAdmin) {
+        $output["feedback"] = "An admin can only be deleted by a super admin or themselves";
+        $output["title"] = "Forbidden";
+        $output["errorMessage"] = "An admin can only be deleted by a super admin or themselves";
+        $output["errorType"] = "targetIsSuperAdminAndUserIsNotSuperAdmin";
+    } else if (!$currentIsAdmin && !$currentIsSuperAdmin && !$sameUser) {
+        $output["feedback"] = "Admin rights are needed to delete users other than yourself";
+        $output["errorMessage"] = "Admin rights are needed to delete users other than yourself";
+        $output["errorType"] = "userIsNotAdmin";
+    } else {
+        $output["feedback"] = "An unknown permissions error occurred";
+        $output["errorMessage"] = "An unknown permissions error occurred";
+        $output["errorType"] = "unknownPermissionsError";
+    }
 }
 
 echo json_encode($output);
