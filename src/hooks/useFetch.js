@@ -34,6 +34,7 @@ const fetchOptions = {
     editAccount: {url: "./php/account/editAccount.php", method: "POST"},
     editAccountEmail: {url: "./php/account/editAccountEmail.php", method: "POST"},
     editAccountPassword: {url: "./php/account/editAccountPassword.php", method: "POST"},
+    deleteAccount: {url: "./php/account/deleteAccount.php", method: "POST"},
 }
 
 const useFetch = () => {
