@@ -4,11 +4,14 @@ import './App.css';
 import Main from "./components/Main";
 import NotAuthorised from "./components/NotAuthorised";
 import useInitialise from "./hooks/useInitialise";
+import {useLocation} from "react-router-dom";
 
 export const GlobalAppContext = createContext();
 
 function App() {
     const [globalAppContext, setGlobalAppContext] = useState({loginCheckedOnce: false, isLoggedIn: false});
+    const currentPath = useLocation().pathname;
+
     useInitialise(() => {
         fetch("./php/login/checkUserLogin.php", {
             method: "GET",
@@ -27,8 +30,9 @@ function App() {
     return (
         <GlobalAppContext.Provider value={[globalAppContext, setGlobalAppContext]}>
             <div className={"App"}>
-                {(globalAppContext.loginCheckedOnce && globalAppContext.isLoggedIn) ?
-                    < Main/> : globalAppContext.loginCheckedOnce && <NotAuthorised/>}
+                {currentPath === "/verify" ? <NotAuthorised/> :
+                    (globalAppContext.loginCheckedOnce && globalAppContext.isLoggedIn) ?
+                        < Main/> : globalAppContext.loginCheckedOnce && <NotAuthorised/>}
             </div>
         </GlobalAppContext.Provider>
     )
