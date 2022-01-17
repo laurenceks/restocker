@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import FormLink from "../common/forms/FormLink";
 import {NavLink} from "react-router-dom";
 import {IoCheckmarkCircleOutline, IoCloseCircleOutline, IoSyncCircleOutline} from "react-icons/all";
@@ -6,9 +6,11 @@ import PropTypes from "prop-types";
 import LoginFeedback from "./LoginFeedback";
 import ResetPassword from "./ResetPassword";
 import useInitialise from "../../hooks/useInitialise";
+import {GlobalAppContext} from "../../App";
 
 const Verify = ({type}) => {
         const params = new URLSearchParams(new URL(window.location.href.replace("/#", "")).search);
+        const loggedIn = useContext(GlobalAppContext)[0].isLoggedIn;
 
         const [paramsState, setParamsState] = useState({
             validParams: false,
@@ -70,9 +72,13 @@ const Verify = ({type}) => {
                     <LoginFeedback marginTop={false}
                                    feedbackClass={paramsState.feedbackClass}
                                    feedbackText={paramsState.feedback}/>}
-                {(!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify") &&
-                <NavLink to="/reVerify" className="btn btn-primary my-3">Re-send verification email</NavLink>}
-                {paramsState.success && <FormLink to={"/login"} label="Login"/>}
+                {!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify" &&
+                <NavLink to="/reVerify" className="btn btn-primary my-3 w-100">Re-send verification email</NavLink>
+                }
+                {!paramsState.success && paramsState.feedback !== "Email address already verified" && type === "verify" && loggedIn &&
+                <NavLink to="/" className="btn btn-primary my-3 w-100">Back to home</NavLink>
+                }
+                {paramsState.feedback && !loggedIn && <FormLink to={"/login"} label="Login"/>}
             </div>
         );
     }

@@ -30,7 +30,7 @@ function App() {
     return (
         <GlobalAppContext.Provider value={[globalAppContext, setGlobalAppContext]}>
             <div className={"App"}>
-                {currentPath === "/verify" ? <NotAuthorised/> :
+                {currentPath === "/verify" || currentPath === "/reVerify" ? <NotAuthorised/> :
                     (globalAppContext.loginCheckedOnce && globalAppContext.isLoggedIn) ?
                         < Main/> : globalAppContext.loginCheckedOnce && <NotAuthorised/>}
             </div>
