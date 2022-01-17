@@ -26,15 +26,18 @@ const FormInput = ({
 
     const [inputState, setInputState] = useState(defaultValue || value || "");
     const renderedOnce = useRef(false);
+    const resetSetOnce = useRef(false);
 
-    useInitialise(() => renderedOnce.current = true)
+    useInitialise(() => {
+        renderedOnce.current = true;
+    })
 
     useEffect(() => {
         renderedOnce.current && setInputState(defaultValue || value);
     }, [defaultValue, value]);
 
     useEffect(() => {
-        setInputState("");
+        resetSetOnce.current ? setInputState("") : resetSetOnce.current = true;
     }, [reset]);
 
     return (
@@ -80,6 +83,7 @@ FormInput.propTypes = {
     min: PropTypes.number,
     passwordId: PropTypes.number,
     step: PropTypes.number,
+    reset: PropTypes.number,
     disabled: PropTypes.bool
 };
 FormInput.defaultProps = {
@@ -98,6 +102,7 @@ FormInput.defaultProps = {
     onChange: null,
     passwordId: null,
     step: 1,
+    reset: Date.now()
 };
 
 export default FormInput;
