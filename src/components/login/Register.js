@@ -39,32 +39,59 @@ const Register = () => {
         });
     }
     return (
-        <form ref={registerForm} onSubmit={(e) => {
-            validateForm(e, registerForm, register, {organisation: organisation})
-        }} noValidate>
+        <form ref={registerForm}
+              onSubmit={(e) => {
+                  validateForm(e, registerForm, register, {organisation: organisation})
+              }}
+              noValidate>
             <fieldset disabled={(registerFeedback.inProgress || !organisations) && "disabled"}>
                 {!registerFeedback.success &&
                 <><h1 className="h3 mb-3 fw-normal">Register</h1>
                     <div className="mb-3 formInputGroup">
-                        <FormInput type={"text"} placeholder={"John"} label={"First name"}
+                        <FormInput type={"text"}
+                                   placeholder={"John"}
+                                   label={"First name"}
                                    id={"inputRegisterFirstName"}
-                                   inputClass={""} invalidFeedback={"Please enter your first name"}/>
-                        <FormInput type={"text"} placeholder={"Smith"} label={"Last name"}
+                                   inputClass={""}
+                                   invalidFeedback={"Please enter your first name"}
+                                   autocomplete={"given-name"}
+                        />
+                        <FormInput type={"text"}
+                                   placeholder={"Smith"}
+                                   label={"Last name"}
                                    id={"inputRegisterLastName"}
-                                   inputClass={""} invalidFeedback={"Please enter your last name"}/>
+                                   inputClass={""}
+                                   invalidFeedback={"Please enter your last name"}
+                                   autocomplete={"family-name"}
+                        />
                     </div>
                     <div className="mb-3 formInputGroup">
-                        <FormInput type={"email"} placeholder={"you@example.com"} label={"Email address"}
+                        <FormInput type={"email"}
+                                   placeholder={"you@example.com"}
+                                   label={"Email address"}
                                    id={"inputRegisterEmail"}
-                                   inputClass={""} invalidFeedback={"Please enter a valid email address"}/>
-                        <FormInput type={"password"} placeholder={"Password"} label={"Password"}
+                                   inputClass={""}
+                                   invalidFeedback={"Please enter a valid email address"}
+                                   autocomplete={"email"}
+                        />
+                        <FormInput type={"password"}
+                                   placeholder={"Password"}
+                                   label={"Password"}
                                    id={"inputRegisterPassword"}
                                    inputClass={""}
                                    invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
-                                   passwordId={1}/>
-                        <FormInput type={"password"} placeholder={"Confirm password"} label={"Confirm password"}
+                                   passwordId={1}
+                                   autocomplete={"new-password"}
+                        />
+                        <FormInput type={"password"}
+                                   placeholder={"Confirm password"}
+                                   label={"Confirm password"}
                                    id={"inputRegisterConfirmPassword"}
-                                   inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
+                                   inputClass={""}
+                                   invalidFeedback={"Passwords do not match"}
+                                   passwordId={1}
+                                   autocomplete={"new-password"}
+                        />
                     </div>
                     <div className="mb-3 formInputGroup">
                         <FormTypeahead id={"inputRegisterOrganisationWrap"}
@@ -89,9 +116,11 @@ const Register = () => {
                                        labelKey="organisation"
                                        options={organisations}
                                        invalidFeedback={"Please select your organisation, or add a new one"}
+                                       autocomplete={"organization"}
                         />
                         {organisation && organisation.customOption &&
-                        <p className="my-3 text-muted small">{organisation.organisation} will be saved as a new
+                        <p className="my-3 text-muted small">{organisation.organisation}
+                            will be saved as a new
                             organisation with you as the admin</p>}
                     </div>
                     <InputCheckbox id={"inputRegisterTsandCs"}

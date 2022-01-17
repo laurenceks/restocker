@@ -37,7 +37,9 @@ const Forgot = () => {
                         <FormInput type={"email"} placeholder={"you@example.com"}
                                    label={"Email address"}
                                    id={"inputForgotEmail"}
-                                   invalidFeedback={"Please enter your email address"}/>
+                                   invalidFeedback={"Please enter your email address"}
+                                   autocomplete={"email"}
+                        />
                     </div>
                     <button className="w-100 btn btn-lg btn-primary" type="submit">Send password reset</button>
                 </>

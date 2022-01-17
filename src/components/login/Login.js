@@ -40,10 +40,14 @@ const Login = props => {
                     <FormInput type={"email"} placeholder={"you@example.com"}
                                label={"Email address"}
                                id={"inputLoginEmail"}
-                               invalidFeedback={"Please enter your email address"}/>
+                               invalidFeedback={"Please enter your email address"}
+                               autocomplete="email"
+                    />
                     <FormInput type={"password"} placeholder={"Password"} label={"Password"}
                                id={"inputLoginPassword"}
-                               invalidFeedback={"Please enter your password"}/>
+                               invalidFeedback={"Please enter your password"}
+                               autocomplete="current-password"
+                    />
                 </div>
                 <InputCheckbox id={"inputLoginRemember"} label={"Remember me"} className={"my-3"}/>
                 <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>

@@ -5,6 +5,7 @@ import {useEffect, useRef, useState} from "react";
 import useInitialise from "../../../hooks/useInitialise";
 
 const FormInput = ({
+    autocomplete,
                        defaultValue,
                        disabled,
                        forceCase,
@@ -21,7 +22,7 @@ const FormInput = ({
                        reset,
                        step,
                        type,
-                       value
+                       value,
                    }) => {
 
     const [inputState, setInputState] = useState(defaultValue || value || "");
@@ -47,6 +48,7 @@ const FormInput = ({
                        id={id}
                        name={id}
                        placeholder={placeholder || label}
+                       autocomplete={autocomplete}
                        data-passwordid={passwordId}
                        min={min}
                        max={max}

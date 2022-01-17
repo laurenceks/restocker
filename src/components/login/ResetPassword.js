@@ -29,22 +29,34 @@ const ResetPassword = ({token, selector}) => {
             {resetPasswordFeedback.icon && <div className="my-3 w-100 d-flex justify-content-center">
                 {resetPasswordFeedback.icon}
             </div>}
-            <form className={"loginForm align-middle mt-0"} ref={resetPasswordForm} onSubmit={(e) => {
-                validateForm(e, resetPasswordForm, resetPassword)
-            }} noValidate>
+            <form className={"loginForm align-middle mt-0"}
+                  ref={resetPasswordForm}
+                  onSubmit={(e) => {
+                      validateForm(e, resetPasswordForm, resetPassword)
+                  }}
+                  noValidate>
                 <fieldset disabled={resetPasswordFeedback.inProgress && "disabled"}>
                     {(!resetPasswordFeedback.success) &&
                     <div>
                         <div className="mb-3 formInputGroup">
-                            <FormInput type={"password"} placeholder={"New password"} label={"New password"}
+                            <FormInput type={"password"}
+                                       placeholder={"New password"}
+                                       label={"New password"}
                                        id={"inputPasswordResetPassword"}
                                        inputClass={""}
                                        invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
-                                       passwordId={1}/>
-                            <FormInput type={"password"} placeholder={"Confirm new password"}
+                                       passwordId={1}
+                                       autocomplete={"new-password"}
+                            />
+                            <FormInput type={"password"}
+                                       placeholder={"Confirm new password"}
                                        label={"Confirm new password"}
                                        id={"inputPasswordResetConfirmPassword"}
-                                       inputClass={""} invalidFeedback={"Passwords do not match"} passwordId={1}/>
+                                       inputClass={""}
+                                       invalidFeedback={"Passwords do not match"}
+                                       passwordId={1}
+                                       autocomplete={"new-password"}
+                            />
                         </div>
                         <button className="w-100 btn btn-lg btn-primary" type="submit">Reset password</button>
                     </div>
