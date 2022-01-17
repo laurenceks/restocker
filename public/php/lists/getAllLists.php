@@ -24,7 +24,8 @@ FROM   lists
        LEFT JOIN items
               ON items.id = list_items.itemid
 WHERE  lists.organisationid = :organisationId
-       AND items.deleted = 0 
+       AND items.deleted = 0
+AND list_items.deleted = 0
         ");
 $getAllLists->bindValue(':organisationId', $_SESSION["user"]->organisationId);
 $getAllLists->execute();

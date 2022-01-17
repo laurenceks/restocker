@@ -36,12 +36,11 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                 $output["feedback"] = $output["errorType"] === "itemMissing" ? "\t• " . $item["itemName"] . "\n" : "An item you have selected is missing - possibly due to deletion - please try again:\n\n\t• " . $item["itemName"] . "\n";
             } else {
                 try {
-                    if (!$item["deleted"] || isset($item["listItemsId"])) {
                         if (isset($item["listItemsId"]) && checkFunctionExists("list_items", "id", array(array("key" => "id", "value" => $item["listItemsId"])), true)) {
                             //list item exists - update (including setting deletion)
                             $editListItem = $db->prepare("UPDATE list_items SET itemId = :itemId, quantity = :quantity, editedBy = :uid1, deleted = :deleted WHERE id = :listItemsId");
                             $editListItem->bindParam(":listItemsId", $item["listItemsId"]);
-                            $editListItem->bindParam(":deleted", $item["deleted"]);
+                            $editListItem->bindValue(":deleted", isset($item["deleted"]) ? $item["deleted"] : 0);
                         } else {
                             //list item doesn't exist - insert
                             $editListItem = $db->prepare("INSERT INTO list_items (listId, itemId, organisationId, quantity, createdBy, editedBy) VALUES (:listId, :itemId, :organisationId, :quantity, :uid1, :uid2)");
@@ -53,7 +52,6 @@ if (!checkFunctionExists("lists", "id", array(array("key" => "id", "value" => $i
                         $editListItem->bindParam(":quantity", $item["quantity"]);
                         $editListItem->bindValue(":uid1", $_SESSION["user"]->userId);
                         $editListItem->execute();
-                    }
                 } catch (PDOException $e) {
                     $output["errorTypes"][] = "queryError";
                     $output["feedback"] = "There was an error querying the database; please try again. If the error persists please contact a system administrator for assistance.";
