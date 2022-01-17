@@ -5,8 +5,9 @@ import {GlobalAppContext} from "../../App";
 import useFetch from "../../hooks/useFetch";
 import {useNavigate} from "react-router-dom";
 import {variantPairings} from "../common/styles";
+import EditAccountForm from "./accountForms/EditAccountForm";
 
-const Profile = () => {
+const Account = () => {
 
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
 
@@ -19,36 +20,14 @@ const Profile = () => {
         lastName: globalAppContext.user.lastName
     });
 
-    const profileFormRef = useRef();
     const emailFormRef = useRef();
     const passwordFormRef = useRef();
     const deleteFormRef = useRef();
     const passwordFormReset= useRef();
 
-    const editProfile = (form) => {
-        fetchHook({
-            type: "editProfile",
-            options: {
-                method: "POST",
-                body: JSON.stringify(form.values),
-            },
-            callback: () => {
-                setGlobalAppContext(prevState => {
-                    return {
-                        ...prevState,
-                        user: {
-                            ...prevState.user,
-                            firstName: form.values.inputProfileFirstName,
-                            lastName: form.values.inputProfileLastName
-                        }
-                    }
-                })
-            }
-        })
-    }
     const editEmail = (form) => {
         fetchHook({
-            type: "editProfileEmail",
+            type: "editAccountEmail",
             options: {
                 method: "POST",
                 body: JSON.stringify({
@@ -63,7 +42,7 @@ const Profile = () => {
                         ...prevState,
                         user: {
                             ...prevState.user,
-                            email: form.values.inputProfileEmail,
+                            email: form.values.inputAccountEmail,
                         }
                     }
                 });
@@ -73,7 +52,7 @@ const Profile = () => {
     }
     const editPassword = (form) => {
         fetchHook({
-            type: "editProfilePassword",
+            type: "editAccountPassword",
             options: {
                 method: "POST",
                 body: JSON.stringify({
@@ -93,50 +72,7 @@ const Profile = () => {
                 <h1>{globalAppContext.user.firstName}'s profile</h1>
                 <p className="m-0">{globalAppContext.user.superAdmin ? "Super admin" : globalAppContext.user.admin ? "Admin" : "User"}</p>
             </div>
-            <form ref={profileFormRef}
-                  id={"profileForm"}
-                  onSubmit={(e) => {
-                      validateForm(e, profileFormRef, editProfile)
-                  }}>
-                <div className="row align-items-center mb-3">
-                    <div className="col-12 col-md-3 mb-3 mb-md-0">
-                        <p className="m-0 text-md-end">ID {globalAppContext.user.id}</p>
-                    </div>
-                    <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
-                        <FormInput type={"text"}
-                                   id={"inputProfileFirstName"}
-                                   label={"First name"}
-                                   forceCase="capitalise"
-                                   invalidFeedback={"You must enter your first name"}
-                                   onChange={(id, val) => {
-                                       setUser({
-                                           ...user,
-                                           firstName: val
-                                       });
-                                   }}
-                                   value={user.firstName}
-                        />
-                    </div>
-                    <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
-                        <FormInput type={"text"}
-                                   id={"inputProfileLastName"}
-                                   label={"Last name"}
-                                   forceCase="capitalise"
-                                   invalidFeedback={"You must enter your last name"}
-                                   onChange={(id, val) => {
-                                       setUser({
-                                           ...user,
-                                           lastName: val
-                                       });
-                                   }}
-                                   value={user.lastName}
-                        />
-                    </div>
-                    <div className="col-12 col-md-3">
-                        <button type="submit" className="btn btn-primary w-100">Update</button>
-                    </div>
-                </div>
-            </form>
+            <EditAccountForm/>
             <form ref={emailFormRef} onSubmit={(e) => {
                 validateForm(e, emailFormRef, (form) => {
                     globalAppContext.setStateFunctions.confirmModal(prevState => {
@@ -145,7 +81,7 @@ const Profile = () => {
                             show: true,
                             headerClass: variantPairings.warning.header,
                             yesButtonVariant: "warning",
-                            bodyText: `Are you sure you want to change your email to ${form.values.inputProfileEmail}?`,
+                            bodyText: `Are you sure you want to change your email to ${form.values.inputAccountEmail}?`,
                             handleYes: () => editEmail(form)
                         }
                     })
@@ -154,7 +90,7 @@ const Profile = () => {
                 <div className="row mb-3 align-items-center">
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"text"}
-                                   id={"inputProfileEmail"}
+                                   id={"inputAccountEmail"}
                                    label={"Email address"}
                                    onChange={(id, val) => {
                                        setUser({
@@ -167,14 +103,14 @@ const Profile = () => {
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfilePassword1"}
+                                   id={"inputAccountPassword1"}
                                    label={"Password"}
                                    invalidFeedback={"Please enter your password"}
                                    passwordId={1}/>
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfilePassword2"}
+                                   id={"inputAccountPassword2"}
                                    label={"Confirm password"}
                                    invalidFeedback={"Passwords do not match"}
                                    passwordId={1}/>
@@ -206,7 +142,7 @@ const Profile = () => {
                 <div className="row align-items-center mb-3">
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfileOldPassword"}
+                                   id={"inputAccountOldPassword"}
                                    label={"Old password"}
                                    invalidFeedback={"Please enter your current password"}
                                    reset={passwordFormReset.current}
@@ -214,7 +150,7 @@ const Profile = () => {
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfileNewPassword1"}
+                                   id={"inputAccountNewPassword1"}
                                    label={"New password"}
                                    invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
                                    passwordId={2}
@@ -223,7 +159,7 @@ const Profile = () => {
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfileNewPassword2"}
+                                   id={"inputAccountNewPassword2"}
                                    label={"Confirm new password"}
                                    invalidFeedback={"Passwords do not match"}
                                    passwordId={2}
@@ -245,7 +181,7 @@ const Profile = () => {
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfileDeletePassword1"}
+                                   id={"inputAccountDeletePassword1"}
                                    label={"Current password"}
                                    invalidFeedback={"Please enter your current password"}
                                    passwordId={3}
@@ -253,7 +189,7 @@ const Profile = () => {
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
-                                   id={"inputProfileDeletePassword2"}
+                                   id={"inputAccountDeletePassword2"}
                                    label={"Confirm password"}
                                    invalidFeedback={"Passwords do not match"}
                                    passwordId={3}
@@ -268,4 +204,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default Account;

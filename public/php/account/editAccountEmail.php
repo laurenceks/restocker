@@ -15,13 +15,13 @@ $output = $feedbackTemplate;
 
 if (!$id = $_SESSION["user"]->id) {
     //not the same user as logged in - shouldn't be possible
-    $output["feedback"] = "A user can only update their own profile";
-    $output["errorMessage"] = "A user can only update their own profile";
+    $output["feedback"] = "A user can only update their own account";
+    $output["errorMessage"] = "A user can only update their own account";
     $output["errorType"] = "userIdMismatch";
 } else {
     try {
-        if ($auth->reconfirmPassword($input['inputProfilePassword1'])) {
-            $auth->changeEmail($input['inputProfileEmail'], function ($selector, $token) use ($input, $id, &$output) {
+        if ($auth->reconfirmPassword($input['inputAccountPassword1'])) {
+            $auth->changeEmail($input['inputAccountEmail'], function ($selector, $token) use ($input, $id, &$output) {
                 require_once "../common/sendSmtpMail.php";
                 require_once "../login/loginEmail/composeVerificationEmail.php";
                 require "../common/appConfig.php";
@@ -34,9 +34,9 @@ if (!$id = $_SESSION["user"]->id) {
                     $output["error"] = json_encode($e);
                 }*/
                 $emailParams = composeVerificationEmail($selector, $token, $input["firstName"], $appName);
-                $mailToSend = composeSmtpMail($input['inputProfileEmail'], $input['firstName'] . " " . $input['lastName'], "Verify your " . $appName . " account", $emailParams["message"], $emailParams["messageAlt"]);
+                $mailToSend = composeSmtpMail($input['inputAccountEmail'], $input['firstName'] . " " . $input['lastName'], "Verify your " . $appName . " account", $emailParams["message"], $emailParams["messageAlt"]);
                 $output["title"] = "Verification link sent";
-                $output["feedback"] = "Email verification link sent; follow the link sent to " . $input['inputProfileEmail'] . " to finish changing your email address (or ignore it to keep your current one)";
+                $output["feedback"] = "Email verification link sent; follow the link sent to " . $input['inputAccountEmail'] . " to finish changing your email address (or ignore it to keep your current one)";
                 $output["mail"] = sendSmtpMail($mailToSend);
                 $output["success"] = true;
             });

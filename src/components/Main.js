@@ -5,7 +5,7 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
 import Stock from "./stock/Stock";
-import Profile from "./profile/Profile";
+import Account from "./profile/Account";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
@@ -37,7 +37,7 @@ const Main = props => {
                     <Route path="/restock" element={<TransactionForm formType={"restock"}/>}/>
                     <Route path="/transfer" element={<TransactionForm formType={"transfer"}/>}/>
                     <Route path="/logout" element={<Logout/>}/>
-                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/account" element={<Account/>}/>
                     <Route path="/items" element={<ProtectedRoute element={<EditEntries type={"item"}/>}/>}/>
                     <Route path="/locations" element={<ProtectedRoute element={<EditEntries type={"location"}/>}/>}/>
                     <Route path="/lists" element={<ProtectedRoute element={<EditEntries type={"list"}/>}/>}/>

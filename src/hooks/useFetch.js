@@ -31,8 +31,9 @@ const fetchOptions = {
     getItemsAndLocations: {url: "./php/items/getAllItemsAndLocations.php", method: "GET"},
     getRates: {url: "./php/items/getRates.php", method: "POST"},
     addTransaction: {url: "./php/items/addTransaction.php", method: "POST"},
-    editProfile: {url: "./php/profile/editProfile.php", method: "POST"},
-    editProfileEmail: {url: "./php/profile/editProfileEmail.php", method: "POST"},
+    editAccount: {url: "./php/account/editAccount.php", method: "POST"},
+    editAccountEmail: {url: "./php/account/editAccountEmail.php", method: "POST"},
+    editAccountPassword: {url: "./php/account/editAccountPassword.php", method: "POST"},
 }
 
 const useFetch = () => {

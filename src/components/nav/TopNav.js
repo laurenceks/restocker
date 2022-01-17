@@ -99,16 +99,16 @@ const TopNav = ({user}) => {
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 <IoPersonCircle className="smallIcon mx-2 mx-lg-0"/>
-                                <NavLink className="m-0 mx-2 d-lg-none" to={"/profile"}>{user.email}</NavLink>
+                                <NavLink className="m-0 mx-2 d-lg-none" to={"/account"}>{user.email}</NavLink>
                             </div>
                             <ul className="dropdown-menu userDropdown" aria-labelledby="userDropdown">
                                 <li className="d-none d-lg-block"><NavLink className="dropdown-item"
-                                                                           to={`/profile`}>{user.email}</NavLink></li>
+                                                                           to={`/account`}>{user.email}</NavLink></li>
                                 <li className="d-none d-lg-block">
                                     <hr className="dropdown-divider"/>
                                 </li>
                                 <li className="d-block d-lg-none"><NavLink className="dropdown-item"
-                                                                           to={"/profile"}>Profile</NavLink></li>
+                                                                           to={"/account"}>Profile</NavLink></li>
                                 <li><NavLink className="dropdown-item" to={"/logout"}>Logout</NavLink></li>
                             </ul>
                         </li>
