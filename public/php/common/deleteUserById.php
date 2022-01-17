@@ -7,7 +7,7 @@ function deleteUserById($auth, $id, $orgId, $maskedEmail, $maskedFirstName, $mas
     try {
         require "../security/userSameOrganisationAsTargetCheck.php";
         require "../common/db.php";
-        require "../common/simpleExecuteOutput.php";
+        require_once "../common/simpleExecuteOutput.php";
         targetHasSameOrganisationAsCurrentUser($id);
         $auth->admin()->deleteUserById($id);
 
