@@ -24,7 +24,7 @@ const Login = props => {
                     setGlobalAppContext({...globalAppContext, user: x.user, isLoggedIn: true, loginCheckedOnce: true});
                     history("/");
                 } else {
-                    setLoginFeedback({feedback: x.feedback, feedbackClass: "bg-danger", inProgress: false})
+                    setLoginFeedback({...x, feedbackClass: "bg-danger", inProgress: false})
                 }
             })
         });
@@ -49,6 +49,8 @@ const Login = props => {
                 <button className="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
                 {(loginFeedback && !loginFeedback.inProgress) &&
                 <LoginFeedback feedbackText={loginFeedback.feedback} feedbackClass={loginFeedback.feedbackClass}/>}
+                {(loginFeedback && !loginFeedback.inProgress && loginFeedback.errorType === "emailNotVerified") &&
+                <button className="w-100 btn btn-lg btn-primary mt-3" onClick={() =>history("/reVerify")}>Resend verification email</button>}
                 <FormLink to={"/forgotPassword"} label={"Forgot password"}/>
                 <FormLink to={"/register"} label={"Register"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
