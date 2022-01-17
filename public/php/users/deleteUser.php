@@ -4,9 +4,9 @@ require "../common/simpleExecuteOutput.php";
 require '../vendor/autoload.php';
 require_once "../common/db.php";
 require "../common/feedbackTemplate.php";
+require "../common/deleteUserById.php";
 
 $input = json_decode(file_get_contents('php://input'), true);
-
 
 use Delight\Auth\Auth;
 use Delight\Auth\Role;
@@ -41,19 +41,7 @@ try {
         //- not an admin/superAdmin and the current user is an admin
         //- an admin but the current user is a super admin
         //- is the one being deleted
-        try {
-            require "../security/userSameOrganisationAsTargetCheck.php";
-            targetHasSameOrganisationAsCurrentUser($input["userId"]);
-            //TODO move delete operation into separate func file for consistency
-            $auth->admin()->deleteUserById($input["userId"]);
-            $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
-            $deleteUserFromDb = $db->prepare("UPDATE `users_confirmations` SET email = CONCAT(SUBSTRING(email, 1, 1), REGEXP_REPLACE(SUBSTRING(email, 2, POSITION('@' IN email)-3), '[A-z]', '*'),SUBSTRING(email, POSITION('@' IN email)-1, 1), '@', SUBSTRING(email, POSITION('@' IN email)+1, 1), REGEXP_REPLACE(SUBSTRING(email, POSITION('@' IN email)+2, LENGTH(email) - POSITION('@' IN email)-2), '[A-z]', '*'), SUBSTRING(email, LENGTH(email), 1)) WHERE user_id = :userId; DELETE FROM `users_info` WHERE userId =  :userId; DELETE FROM `users_resets` WHERE user = :userId; ");
-            $deleteUserFromDb->bindValue(':userId', $input["userId"]);
-            $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            $output = simpleExecuteOutput($deleteUserFromDb);
-        } catch (UnknownIdException $e) {
-            $output = array_merge($output, $unknownUserIdOutput);
-        }
+        $output = array_merge($output, deleteUserById($auth, $input["userId"], $_SESSION["user"]->organisationId, $input["maskedEmail"], $input["maskedFirstName"], $input["maskedLastName"]));
     } else {
         $output["title"] = "Forbidden";
         if ($targetIsSuperAdmin) {
