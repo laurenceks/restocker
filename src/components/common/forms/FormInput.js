@@ -18,6 +18,7 @@ const FormInput = ({
                        onChange,
                        passwordId,
                        placeholder,
+                       reset,
                        step,
                        type,
                        value
@@ -31,6 +32,10 @@ const FormInput = ({
     useEffect(() => {
         renderedOnce.current && setInputState(defaultValue || value);
     }, [defaultValue, value]);
+
+    useEffect(() => {
+        setInputState("");
+    }, [reset]);
 
     return (
         <div className={"formInputWrap"}>
