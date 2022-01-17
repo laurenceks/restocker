@@ -21,6 +21,7 @@ function App() {
                     ...globalAppContext,
                     loginCheckedOnce: true,
                     isLoggedIn: x.isLoggedIn,
+                    userId: x.user?.userId,
                     user: x.user
                 });
             })
