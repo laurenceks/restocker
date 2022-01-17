@@ -3,7 +3,7 @@ function getUserInfo($userId, $auth = null) {
     if ($userId) {
         require "db.php";
         $getUserInfo = $db->prepare("
-        SELECT users.email, users_info.*, users_organisations.organisation
+        SELECT users.email, users_info.*, users_info.userId as id, users_organisations.organisation
         FROM users
         LEFT JOIN users_info ON users.id = users_info.userId
         LEFT JOIN users_organisations ON users_info.organisationId = users_organisations.id
