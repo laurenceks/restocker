@@ -2,14 +2,13 @@ import {useContext} from "react";
 import {GlobalAppContext} from "../../App";
 
 const Logout = () => {
-    const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
+    const setGlobalAppContext = useContext(GlobalAppContext)[1];
 
     fetch("./php/login/logout.php", {
         method: "GET",
     }).then((x) => {
-        setGlobalAppContext({...globalAppContext, isLoggedIn: false, user: null});
+        setGlobalAppContext({loginCheckedOnce: true, isLoggedIn: false});
     });
-
     return null;
 };
 

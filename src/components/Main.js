@@ -41,7 +41,7 @@ const Main = props => {
                     <Route path="/items" element={<ProtectedRoute element={<EditEntries type={"item"}/>}/>}/>
                     <Route path="/locations" element={<ProtectedRoute element={<EditEntries type={"location"}/>}/>}/>
                     <Route path="/lists" element={<ProtectedRoute element={<EditEntries type={"list"}/>}/>}/>
-                    <Route path="/users" element={<ProtectedRoute element={<Users userId={globalAppContext.user.id}/>}/>}/>
+                    <Route path="/users" element={<ProtectedRoute element={<Users userId={globalAppContext.userId}/>}/>}/>
                     <Route path="*" element={<Navigate to="/"/>}/>
                 </Routes>
             </div>
