@@ -7,6 +7,7 @@ function deleteUserById($auth, $id, $orgId, $maskedEmail, $maskedFirstName, $mas
     try {
         require "../security/userSameOrganisationAsTargetCheck.php";
         require "../common/db.php";
+        require "../common/simpleExecuteOutput.php";
         targetHasSameOrganisationAsCurrentUser($id);
         $auth->admin()->deleteUserById($id);
 
@@ -28,7 +29,6 @@ DELETE FROM `users_info` WHERE userId = :userId;
         $deleteUserFromDb->bindValue(':userId', $id);
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         $deleteOutput = simpleExecuteOutput($deleteUserFromDb);
-
 
         $output["success"] = $insertOutput["success"] && $deleteOutput["success"];
         $output["insertOutput"] = $insertOutput;
