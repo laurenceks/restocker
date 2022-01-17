@@ -41,28 +41,33 @@ if (!$id = $_SESSION["user"]->id) {
                 $output["success"] = true;
             });
         } else {
+            $output["title"] = "Incorrect password";
             $output["feedback"] = "Incorrect password entered";
             $output["errorMessage"] = "Incorrect password entered";
             $output["errorType"] = "incorrectPassword";
         }
     } catch (\Delight\Auth\InvalidEmailException $e) {
+        $output["title"] = "Invalid email";
         $output["feedback"] = "Invalid email address entered";
         $output["errorMessage"] = "Invalid email address entered";
         $output["errorType"] = "invalidEmail";
     } catch (\Delight\Auth\UserAlreadyExistsException $e) {
+        $output["title"] = "Email address in use";
         $output["feedback"] = "That email address already has an account";
         $output["errorMessage"] = "Email address in use";
         $output["errorType"] = "emailTaken";
     } catch (\Delight\Auth\EmailNotVerifiedException $e) {
+        $output["title"] = "Unverified email";
         $output["feedback"] = "Your current email is not verified";
         $output["errorMessage"] = "Email not verified";
         $output["errorType"] = "emailNotVerified";
     } catch (\Delight\Auth\NotLoggedInException $e) {
-        //TODO handle security
+        $output["failedLoginCheck"] = true;
         $output["feedback"] = "You are not logged in";
         $output["errorMessage"] = "You are not logged in";
         $output["errorType"] = "notLoggedIn";
     } catch (\Delight\Auth\TooManyRequestsException $e) {
+        $output["title"] = "Too many requests";
         $output["feedback"] = "Too many requests - please try again later";
         $output["errorMessage"] = "Too many requests";
         $output["errorType"] = "tooManyRequests";
