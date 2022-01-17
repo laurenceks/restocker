@@ -84,6 +84,7 @@ const TopNav = ({user}) => {
                                            if (e[0]) {
                                                history(e[0]?.link || "/");
                                                ref.current.clear();
+                                               setSearchState([])
                                            }
                                        }}
                                        onBlur={(e, ref) => setSearchState([])}
