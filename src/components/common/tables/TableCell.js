@@ -39,11 +39,17 @@ const renderCellContent = (x) => {
     }
 }
 
-const TableCell = ({className, content, align}) => {
+const TableCell = ({className, content, align, hoverGroup}) => {
     return (
-        <td className={`${align && align + " "} ${className || ""}`}
+        <td className={`${align && align + " "} ${content?.cellData?.["data-rowGroupId"] === hoverGroup.current && hoverGroup.current && "hover"} ${className || ""}`}
             colSpan={content.colspan}
             rowSpan={content.rowspan}
+            onMouseEnter={() => {
+                hoverGroup.set(content?.cellData?.["data-rowGroupId"])
+            }}
+            onMouseLeave={() => {
+                hoverGroup.set(null)
+            }}
             {...content.cellData}
         >
             {content.fragment ?? renderCellContent(content)}

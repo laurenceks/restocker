@@ -13,6 +13,7 @@ const Table = ({
                    fullWidth,
                    rowEnter,
                    rowLeave,
+                   defaultHoverGroup,
                    defaultSortHeading,
                    defaultSortIndex,
                    defaultSortDirection,
@@ -29,22 +30,12 @@ const Table = ({
     });
     const [showSortArrow, setShowSortArrow] = useState(false);
     const [currentHeadingHoverIndex, setCurrentHeadingHoverIndex] = useState(null);
+    const [currentHoverGroup, setCurrentHoverGroup] = useState(defaultHoverGroup);
     const [tableRows, setTableRows] = useState(rows);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const columnCount = useRef(0);
     const pageCount = useRef(null);
     const pageNumbers = useRef([]);
-
-    const setHoverGroups = (e, enter = true) => {
-        document.querySelectorAll(`.td-rowGroupId-${e.target.dataset.rowgroupid}`).forEach((x) => {
-            x.classList[enter ? "add" : "remove"]("hover");
-        })
-        if (enter && rowEnter) {
-            rowEnter(e);
-        } else if (!enter && rowLeave) {
-            rowLeave(e);
-        }
-    }
 
     const countColumnsInRow = (a, b) => a + (b?.colspan || 1);
 
@@ -113,7 +104,7 @@ const Table = ({
                 }
                 countPages(groupedRows);
                 length && (groupedRows = groupedRows.splice(currentStart, length));
-                sortedRows = groupedRows.reduce((a, b) => [...a, ...b],[]);
+                sortedRows = groupedRows.reduce((a, b) => [...a, ...b], []);
             } else {
                 sortedRows.sort(sortTableRows);
                 !sortSettings.ascending && sortedRows.reverse();
@@ -168,14 +159,15 @@ const Table = ({
                         {tableRows.map((x, i) => {
                             return (
                                 <tr key={`${title}-tr-${i}`}
-                                    onMouseEnter={setHoverGroups}
-                                    onMouseLeave={(e) => setHoverGroups(e, false)}>
+                                    onMouseEnter={rowEnter}
+                                    onMouseLeave={rowLeave}>
                                     {x.map((y, j) => {
                                         return y || y === 0 || y === "" ?
                                             <TableCell key={`${title}-tr-${i}-td-${j}`}
                                                        content={y}
                                                        className={y?.className}
                                                        align={y?.cellAlignClass}
+                                                       hoverGroup={{current: currentHoverGroup, set: setCurrentHoverGroup}}
                                             />
                                             : null
                                     })}
