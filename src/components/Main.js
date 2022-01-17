@@ -37,7 +37,7 @@ const Main = props => {
                     <Route path="/restock" element={<TransactionForm formType={"restock"}/>}/>
                     <Route path="/transfer" element={<TransactionForm formType={"transfer"}/>}/>
                     <Route path="/logout" element={<Logout/>}/>
-                    <Route path="/account" element={<Account/>}/>
+                    <Route path="/account/*" element={<Account/>}/>
                     <Route path="/items" element={<ProtectedRoute element={<EditEntries type={"item"}/>}/>}/>
                     <Route path="/locations" element={<ProtectedRoute element={<EditEntries type={"location"}/>}/>}/>
                     <Route path="/lists" element={<ProtectedRoute element={<EditEntries type={"list"}/>}/>}/>

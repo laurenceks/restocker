@@ -26,9 +26,9 @@ const DeleteAccountForm = () => {
                           return {
                               ...prevState,
                               show: true,
-                              bodyText: "Are you sure you want to delete you account?\n\nYour account will be deleted. A masked version of your email address (EX) will be kept to track previous changes. Your full email address will be deleted.\n\nTo regain access you will need to register again from scratch.\n\n",
+                              //TODO: confirm masking matches db change
+                              bodyText: `Are you sure you want to delete you account?\n\nYour account will be deleted. A masked version of your email address ${globalAppContext.user.email.replace(/\B(\w)\B/g, "*")} will be kept to track previous changes. Your full email address will be deleted.\n\nTo regain access you will need to register again from scratch.\n\n`,
                               handleYes: () => {
-                                  const maskedEmail = globalAppContext.user.email.match(/(\w)(\w*?)(\w?)@(\w)(\w*)([\.\w]+)/)
                                   globalAppContext.setStateFunctions.confirmModal(prevState => {
                                       return {
                                           ...prevState,
