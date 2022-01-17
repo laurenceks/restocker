@@ -1,5 +1,5 @@
 <?php
-function checkFunctionExists($table, $selectKey, $keyValues, $checkDeleted = false, $compareValues = false, $entryId = null) {
+function checkFunctionExists($table, $selectKey, $keyValues, $includeDeleted = false, $compareValues = false, $entryId = null) {
     require_once "../security/userLoginSecurityCheck.php";
     require "../common/db.php";
 
@@ -20,7 +20,7 @@ function checkFunctionExists($table, $selectKey, $keyValues, $checkDeleted = fal
         }
 
         if ($j > 0) {
-            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($checkDeleted ? "" : " AND deleted = 0") . ($entryId ? " AND id != :id" : ""));
+            $check = $db->prepare("SELECT " . $selectKey . " FROM " . $table . $whereString . ($includeDeleted ? "" : " AND deleted = 0") . ($entryId ? " AND id != :id" : ""));
             foreach ($keyValues as $pair) {
                 $check->bindValue(':value' . $k, $pair["value"]);
                 $k++;
