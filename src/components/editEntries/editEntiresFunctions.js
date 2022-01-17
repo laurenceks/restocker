@@ -276,11 +276,11 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
                         label: "Item",
                         id: `input-listId-${x.id}-itemId-${y.itemId}-name`,
                         inputClass: `form-listId-${x.id}`,
-                        defaultSelected: [{
+                        defaultSelected: x.items[i].itemId?[{
                             ...x.items[i],
                             name: x.items[i].itemName,
                             id: x.items[i].itemId
-                        }],
+                        }] : [],
                         filterValues: {key: "id", values: x.items.map(x => x.itemId)},
                         onChange: (e) => {
                             x.items.splice(i, 1, {
@@ -357,7 +357,7 @@ const makeEditRow = (type, entry, functions, editId, entryList = []) => {
             };
             const listIndex = entryList.findIndex((x) => x.id === editId)
             const cellTemplate = {
-                cellData: {"data-rowgroupid": entry.id},
+                cellData: {"data-rowGroupId": entry.id},
                 className: `td-rowGroupId-${entry.id}`,
                 cellAlignClass: "align-top"
             };

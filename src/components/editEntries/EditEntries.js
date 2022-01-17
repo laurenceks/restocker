@@ -115,13 +115,6 @@ const EditEntries = ({type}) => {
             makeEntryRows();
         }, [editId]);
 
-        useEffect(() => {
-            //trigger hover effect by applying class to 'grouped' rows
-            document.querySelectorAll(`.td-entryGroupId-${editData?.id}`).forEach((x) => {
-                x.classList.add("hover")
-            })
-        }, [dataList, editData]);
-
         return (
             <div className="container">
                 <form ref={addForm} onSubmit={(e) => validateForm(e, addForm, addEntry)}>
@@ -135,7 +128,8 @@ const EditEntries = ({type}) => {
                                       headers: entryTableHeadings[type],
                                       rows: makeEntryRows(dataList.filter((x) => !x.deleted)),
                                       defaultSortIndex: 1,
-                                      updated: typeChanged
+                                      updated: typeChanged,
+                                      defaultHoverGroup: editId
                                   }}
 
                     />
