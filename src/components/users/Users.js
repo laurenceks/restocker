@@ -4,6 +4,7 @@ import useFetch from "../../hooks/useFetch";
 import {GlobalAppContext} from "../../App";
 import {variantPairings} from "../common/styles";
 import useInitialise from "../../hooks/useInitialise";
+import {maskUserData} from "../../functions/maskUserData";
 
 const Users = () => {
     class usersTableTemplate {
@@ -38,13 +39,13 @@ const Users = () => {
     const [globalAppContext, setGlobalAppContext] = useContext(GlobalAppContext);
     const usersLoadedOnce = useRef(false);
 
-    const changeUserStatus = ({id, userFullName}, type) => {
+    const changeUserStatus = (args, type) => {
         setModalOptions(prevState => {
             return {...prevState, show: false}
         })
         fetchHook({
             type, options: {
-                body: JSON.stringify({userId: id, userFullName})
+                body: JSON.stringify({...args, userId: args.id})
             }, callback: getUsers
         })
     }
@@ -177,7 +178,10 @@ const Users = () => {
                                                     bodyText: `This will deny ${userFullName}'s request and delete their account`,
                                                     handleYes: () => changeUserStatus({
                                                         userFullName,
-                                                        id: user.userId
+                                                        id: user.userId,
+                                                        maskedFirstName: maskUserData(user.firstName),
+                                                        maskedLastName: maskUserData(user.lastName),
+                                                        maskedEmail: maskUserData(user.email),
                                                     }, "deleteUser")
                                                 }
                                             })
@@ -243,7 +247,10 @@ const Users = () => {
                                                 bodyText: `This will deny ${userFullName}'s request and delete their account`,
                                                 handleYes: () => changeUserStatus({
                                                     userFullName,
-                                                    id: user.userId
+                                                    id: user.userId,
+                                                    maskedFirstName: maskUserData(user.firstName),
+                                                    maskedLastName: maskUserData(user.lastName),
+                                                    maskedEmail: maskUserData(user.email),
                                                 }, "deleteUser")
                                             }
                                         })
@@ -291,6 +298,9 @@ const Users = () => {
                                                         bodyText: `This will delete ${userFullName}'s account and they will have to re-register to regain access to the system`,
                                                         handleYes: () => changeUserStatus({
                                                             userFullName,
+                                                            maskedFirstName: maskUserData(user.firstName),
+                                                            maskedLastName: maskUserData(user.lastName),
+                                                            maskedEmail: maskUserData(user.email),
                                                             id: user.userId
                                                         }, "deleteUser")
                                                     }
