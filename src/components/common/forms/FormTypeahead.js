@@ -37,6 +37,10 @@ const FormTypeahead = ({
         setSelectedState(selected);
     }, [selected]);
 
+    useEffect(() => {
+        setSelectedState(defaultSelected);
+    }, [defaultSelected]);
+
     const inputProps = {
         useFloatingLabel: useFloatingLabel,
         id: id,

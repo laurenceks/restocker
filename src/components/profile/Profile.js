@@ -23,6 +23,7 @@ const Profile = () => {
     const emailFormRef = useRef();
     const passwordFormRef = useRef();
     const deleteFormRef = useRef();
+    const passwordFormReset= useRef();
 
     const editProfile = (form) => {
         fetchHook({
@@ -46,7 +47,6 @@ const Profile = () => {
         })
     }
     const editEmail = (form) => {
-        console.log(form.values)
         fetchHook({
             type: "editProfileEmail",
             options: {
@@ -58,7 +58,6 @@ const Profile = () => {
                 }),
             },
             callback: (response) => {
-                console.log(response);
                 setGlobalAppContext(prevState => {
                     return {
                         ...prevState,
@@ -68,11 +67,21 @@ const Profile = () => {
                         }
                     }
                 });
+                emailFormRef.current.reset()
             }
         })
     }
-    const editPassword = (e) => {
-        console.log(e);
+    const editPassword = (form) => {
+        fetchHook({
+            type: "editProfilePassword",
+            options: {
+                method: "POST",
+                body: JSON.stringify({
+                    ...form.values
+                }),
+            },
+            callback: () => passwordFormRef.current.reset()
+        })
     }
     const deleteAccount = (e) => {
         console.log(e);
@@ -177,14 +186,30 @@ const Profile = () => {
             </form>
             <form ref={passwordFormRef}
                   onSubmit={(e) => {
-                      validateForm(e, passwordFormRef, null)
-                  }}>
+                      validateForm(e, passwordFormRef, (form) => {
+                          globalAppContext.setStateFunctions.confirmModal(prevState => {
+                              return {
+                                  ...prevState,
+                                  show: true,
+                                  headerClass: variantPairings.warning.header,
+                                  yesButtonVariant: "warning",
+                                  bodyText: `Are you sure you want to change your password?`,
+                                  handleYes: () => editPassword(form)
+                              }
+                          })
+                      })
+                  }}
+                  onReset={() =>{
+                      passwordFormReset.current = Date.now();
+                  }}
+            >
                 <div className="row align-items-center mb-3">
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
                                    id={"inputProfileOldPassword"}
                                    label={"Old password"}
                                    invalidFeedback={"Please enter your current password"}
+                                   reset={passwordFormReset.current}
                         />
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
@@ -193,6 +218,7 @@ const Profile = () => {
                                    label={"New password"}
                                    invalidFeedback={"Please enter a password at least eight characters long with one lower case letter, one capital, one number and a symbol"}
                                    passwordId={2}
+                                   reset={passwordFormReset.current}
                         />
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
@@ -201,6 +227,7 @@ const Profile = () => {
                                    label={"Confirm new password"}
                                    invalidFeedback={"Passwords do not match"}
                                    passwordId={2}
+                                   reset={passwordFormReset.current}
                         />
                     </div>
                     <div className="col-12 col-md-3">
@@ -211,14 +238,15 @@ const Profile = () => {
             <form ref={deleteFormRef}
                   onSubmit={(e) => {
                       validateForm(e, deleteFormRef, deleteAccount)
-                  }}>
+                  }}
+            >
                 <div className="row align-items-center mb-3">
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                     </div>
                     <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                         <FormInput type={"password"}
                                    id={"inputProfileDeletePassword1"}
-                                   label={"New password"}
+                                   label={"Current password"}
                                    invalidFeedback={"Please enter your current password"}
                                    passwordId={3}
                         />

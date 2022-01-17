@@ -31,7 +31,7 @@ const FormItem = ({lastUpdated, filterValues, defaultSelected, label, ...props})
         getItems();
     }, [defaultSelected, filterValues, updated]);
 
-    return <FormTypeahead {...props} label={label} options={items}/>;
+    return <FormTypeahead {...props} label={label} options={items} defaultSelected={defaultSelected}/>;
 };
 
 FormItem.propTypes = {
