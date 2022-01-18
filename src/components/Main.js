@@ -5,7 +5,7 @@ import {Navigate, Route, Routes} from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import TransactionForm from "./transactions/TransactionForm";
 import Stock from "./stock/Stock";
-import Account from "./profile/Account";
+import Account from "./account/Account";
 import AcknowledgeModal from "./Bootstrap/AcknowledgeModal";
 import ToastStack from "./Bootstrap/ToastStack";
 import ConfirmModal from "./Bootstrap/ConfirmModal";
