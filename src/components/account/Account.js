@@ -4,8 +4,7 @@ import EditAccountForm from "./accountForms/EditAccountForm";
 import EditAccountEmailForm from "./accountForms/EditAccountEmailForm";
 import EditAccountPasswordForm from "./accountForms/EditAccountPasswordForm";
 import DeleteAccountForm from "./accountForms/DeleteAccountForm";
-import {Navigate, Route, Routes} from "react-router-dom";
-import NavColButton from "../common/NavColButton";
+import {Navigate, NavLink, Route, Routes} from "react-router-dom";
 
 const Account = () => {
 
@@ -17,11 +16,39 @@ const Account = () => {
                 <h1>{globalAppContext.user.firstName}'s account</h1>
                 <p className="m-0">{globalAppContext.user.superAdmin ? "Super admin" : globalAppContext.user.admin ? "Admin" : "User"}</p>
             </div>
-            <div className="my-3 row">
-                <NavColButton to={"/account/profile"} text="Profile" cols={3}/>
-                <NavColButton to={"/account/email"} text="Change email" cols={3}/>
-                <NavColButton to={"/account/password"} text="Change password" cols={3}/>
-                <NavColButton to={"/account/delete"} text="Delete account" cols={3} variant={"danger"}/>
+            <div className="mt-3 mb-5 row">
+                <div className="col col-12">
+                    <ul className="nav nav-pills">
+                        <li className="nav-item">
+                            <NavLink className="nav-link link-primary"
+                                     aria-current="page"
+                                     to="/account/profile">
+                                Profile
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link link-primary"
+                                     aria-current="page"
+                                     to="/account/email">
+                                Email
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link link-primary"
+                                     aria-current="page"
+                                     to="/account/password">
+                                Password
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink className="nav-link link-danger"
+                                     aria-current="page"
+                                     to="/account/delete">
+                                Delete
+                            </NavLink>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <Routes>
                 <Route path={"/profile"} element={<EditAccountForm/>}/>

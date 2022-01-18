@@ -72,6 +72,7 @@ const DeleteAccountForm = () => {
         >
             <div className="row align-items-center mb-3">
                 <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
+                    <p className="m-0 text-md-end">Confirm your password to delete your account</p>
                 </div>
                 <div className="col-12 col-md-3 mb-3 mb-md-0 formInputGroup">
                     <FormInput type={"password"}
