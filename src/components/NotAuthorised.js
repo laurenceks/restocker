@@ -4,6 +4,8 @@ import Register from "./login/Register";
 import ForgotPassword from "./login/ForgotPassword";
 import Verify from "./login/Verify";
 import ReVerify from "./login/ReVerify";
+import TextPage from "./login/policies/TextPage";
+import PrivacyPolicy from "./login/policies/PrivacyPolicy";
 
 const NotAuthorised = () => {
 
@@ -17,6 +19,15 @@ const NotAuthorised = () => {
                 <Route path="/forgotPassword" element={<ForgotPassword/>}/>
                 <Route path="/resetPassword" element={<Verify type={"password"}/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/privacy"
+                       element={<TextPage>
+                           <PrivacyPolicy
+                               appName={"Restocker"}
+                               url={window.location.pathName}
+                               websiteName={"Restocker"}
+                               email={"help@restocker.com"}
+                           />
+                       </TextPage>}/>
                 <Route path="*" element={<Navigate to="/login"/>}/>
             </Routes>
         </div>

@@ -139,6 +139,8 @@ const Register = () => {
                 }
                 <FormLink to={"/login"}
                           label={registerFeedback.success ? "Back to login" : "Login with an existing account"}/>
+                <FormLink to={"/privacy"}
+                          label={"Privacy policy"}/>
                 <p className="my-3 text-muted">&copy; Laurence Summers 2021</p>
             </fieldset>
         </form>
