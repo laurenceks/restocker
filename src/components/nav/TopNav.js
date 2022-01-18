@@ -53,7 +53,6 @@ const TopNav = ({user}) => {
                                     <li><NavLink className="dropdown-item" to={"/lists"}>Lists</NavLink></li>
                                     <li><NavLink className="dropdown-item" to={"/locations"}>Locations</NavLink></li>
                                     <li><NavLink className="dropdown-item" to={"/users"}>Users</NavLink></li>
-                                    <li><NavLink className="dropdown-item" to={"/settings"}>Settings</NavLink></li>
                                 </ul>
                             </li>
                             : ""
