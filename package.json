@@ -1,6 +1,6 @@
 {
   "name": "restocker",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "private": true,
   "dependencies": {
     "@gouch/to-title-case": "^2.2.1",
